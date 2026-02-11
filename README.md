@@ -1,7 +1,7 @@
 # Holon: Agentic Coder
 
-**Git-native, sandbox-isolated, self-evolving agentic coding architecture** built around **fractal (recursive) intents**, **competitive planning variants**, **append-only learning**, and **entropy-aware decision-making
-**.
+**Git-native, sandbox-isolated, self-evolving agentic coding architecture** built around **fractal (recursive) intents**, **competitive planning variants**, **append-only learning**,
+and **entropy-aware decision-making**.
 
 Repository: [https://github.com/thomashan/holon-agentic-coder](https://github.com/thomashan/holon-agentic-coder)
 
@@ -116,7 +116,7 @@ Holon has two durable stores:
 
 ```mermaid
 flowchart TB
-H[Human / Root Goals] --> I[Intent Node\n#40;fractal recursion#41;]
+    H[Human / Root Goals] --> I[Intent Node\n#40;fractal recursion#41;]
 I --> PV[Planning Variant Pool\nv1, v2, v3...]
 PV --> PE[Plan Evaluation\npre + post metrics]
 PE --> D[Decision Engine\nP#40;success#41;, ΔS, EV]
@@ -177,22 +177,29 @@ A plan is a versioned variant tied to an intent and the model tier used to produ
 Holon uses a filesystem-like branch structure to represent the intent hierarchy. Sub-intents are nested under their parent's path.
 
 #### Root Intent Branch
+
 ```
 intent/I-root-{seq}-{slug}
 ```
+
 Example: `intent/I-root-050-refactor-metrics`
 
 #### Sub-Intent Branch (Nested)
+
 ```
 intent/{parent_path}/I-{seq}-{sub_seq}-{sub_slug}
 ```
+
 Example: `intent/I-root-050-refactor-metrics/I-050-001-improve-estimators`
 
 #### Plan Branch (Execution)
+
 Work derived from a specific plan variant occurs on a plan branch nested under the intent:
+
 ```
 intent/{intent_path}/plan/{plan_id}
 ```
+
 Example: `intent/I-root-050-refactor-metrics/plan/P-I-050-v2-deep`
 
 ---
