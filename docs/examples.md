@@ -122,17 +122,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "entropy": 12.0,
     "impact": 80,
     "cost": 50,
-    "ev": 0.75
-    *
-    80
-    -
-    0.3
-    *
-    12.0
-    -
-    50
-    =
-    6.4,
+    "ev": "0.75 * 80 - 0.3 * 12.0 - 50 = 6.4",
     "lambda": 0.3
   }
 }
@@ -179,17 +169,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "entropy": 8.0,
     "impact": 60,
     "cost": 30,
-    "ev": 0.65
-    *
-    60
-    -
-    0.3
-    *
-    8.0
-    -
-    30
-    =
-    6.6,
+    "ev": "0.65 * 60 - 0.3 * 8.0 - 30 = 6.6",
     "lambda": 0.3
   }
 }
@@ -241,17 +221,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "entropy": 15.0,
     "impact": 85,
     "cost": 60,
-    "ev": 0.80
-    *
-    85
-    -
-    0.3
-    *
-    15.0
-    -
-    60
-    =
-    3.5,
+    "ev": "0.80 * 85 - 0.3 * 15.0 - 60 = 3.5",
     "lambda": 0.3
   }
 }
@@ -315,17 +285,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "entropy": 5.0,
     "impact": 50,
     "cost": 20,
-    "ev": 0.60
-    *
-    50
-    -
-    0.3
-    *
-    5.0
-    -
-    20
-    =
-    8.5
+    "ev": "0.60 * 50 - 0.3 * 5.0 - 20 = 8.5"
   }
 }
 ```
@@ -356,17 +316,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "entropy": 3.0,
     "impact": 40,
     "cost": 15,
-    "ev": 0.55
-    *
-    40
-    -
-    0.3
-    *
-    3.0
-    -
-    15
-    =
-    6.1
+    "ev": "0.55 * 40 - 0.3 * 3.0 - 15 = 6.1"
   }
 }
 ```
@@ -472,16 +422,15 @@ $ docker run --rm --network none -v $(pwd):/workspace holon-sandbox:latest
 ```python
 # Step 1: Implement simple heuristic
 def estimate_p_success_v1(plan, ledger):
-
-
-# Simple heuristic: base 0.6, adjust for novelty
-base = 0.6
-novelty_penalty = 0.2 * plan.novelty
-return max(0.0, min(1.0, base - novelty_penalty))
-
+    
+    # Simple heuristic: base 0.6, adjust for novelty
+    base = 0.6
+    novelty_penalty = 0.2 * plan.novelty
+    return max(0.0, min(1.0, base - novelty_penalty))
+    
 # Step 2: Write to file
 with open('holon/metrics/p_success.py', 'w') as f:
-    f.write(code)
+        f.write(code)
 
 # Step 3: Write unit tests
 # ... test code ...
@@ -539,26 +488,11 @@ actual_cost = 18  # Measured: 3 minutes execution time
     },
     "calibration": {
       "p_success_error": 0.40,
-      #
-      |
-      0.60
-      -
-      1.0
-      |
       "entropy_error": 0.8,
-      #
-      |
-      5.0
-      -
-      4.2
-      |
       "impact_error": 5.0
-      #
-      |
-      50
-      -
-      55
-      |
+    },
+    "metadata": {
+      "note": "Errors calculated as |predicted - actual|. Predicted values were: p_success: 0.60, entropy: 5.0, impact: 50"
     }
   }
 }
@@ -777,17 +711,7 @@ $ git checkout -b intent/I-root-002-implement-metrics-module
     "entropy": 45.0,
     "impact": 200,
     "cost": 150,
-    "ev": 0.85
-    *
-    200
-    -
-    0.3
-    *
-    45.0
-    -
-    150
-    =
-    6.5
+    "ev": "0.85 * 200 - 0.3 * 45.0 - 150 = 6.5"
   }
 }
 ```
