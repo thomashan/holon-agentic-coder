@@ -116,22 +116,22 @@ Holon has two durable stores:
 
 ```mermaid
 flowchart TB
-    H[Human / Root Goals] --> I[Intent Node\n#40;fractal recursion#41;]
-I --> PV[Planning Variant Pool\nv1, v2, v3...]
-PV --> PE[Plan Evaluation\npre + post metrics]
-PE --> D[Decision Engine\nP#40;success#41;, ΔS, EV]
-D --> MR[Model Router\nfast vs deep tiers]
+    H[Human / Root Goals] --> I[Intent Node<br>#40;fractal recursion#41;]
+I --> PV[Planning Variant Pool<br>v1, v2, v3...]
+PV --> PE[Plan Evaluation<br>pre + post metrics]
+PE --> D[Decision Engine<br>P#40;success#41;, ΔS, EV]
+D --> MR[Model Router<br>fast vs deep tiers]
 MR --> SI[Sub-Intent Expansion]
-SI --> RB1[Rebase Gate 1\n#40;pre-execution#41;]
-RB1 --> SX[Sandbox Execution\n#40;1 sandbox per sub-intent#41;]
-SX --> RB2[Rebase Gate 2\n#40;post-execution#41;]
+SI --> RB1[Rebase Gate 1<br>#40;pre-execution#41;]
+RB1 --> SX[Sandbox Execution<br>#40;1 sandbox per sub-intent#41;]
+SX --> RB2[Rebase Gate 2<br>#40;post-execution#41;]
 RB2 --> MP[Merge ONLY to Parent]
-MP --> L[Evolution Ledger\nappend-only]
-MP --> KB[Knowledge Base\ncurated + versioned]
-L --> SEL[Selection Pressure\n#40;plan fitness, routing ROI#41;]
+MP --> L[Evolution Ledger<br>append-only]
+MP --> KB[Knowledge Base<br>curated + versioned]
+L --> SEL[Selection Pressure<br>#40;plan fitness, routing ROI#41;]
 KB --> SEL
 SEL --> PV
-MP --> HR[Human Review\nParent intent only]
+MP --> HR[Human Review<br>Parent intent only]
 HR --> MAIN[Merge to main]
 ```
 
