@@ -94,6 +94,7 @@ return result
 **Use case:** Medium-entropy intents (10-30), moderate complexity, external dependencies.
 
 **Implementation:**
+
 ```bash
 docker run \
 --rm \
@@ -126,12 +127,12 @@ python /workspace/execute.py
 
 ```python
 def select_sandbox(predicted_entropy, novelty, trust_level):
-if predicted_entropy > 30 or novelty > 0.8:
-return "vm_sandbox"
-elif predicted_entropy > 10 or trust_level == "baseline":
-return "container_sandbox"
-else:
-return "process_sandbox"
+    if predicted_entropy > 30 or novelty > 0.8:
+        return "vm_sandbox"
+    elif predicted_entropy > 10 or trust_level == "baseline":
+        return "container_sandbox"
+    else:
+        return "process_sandbox"
 ```
 
 ### Sandbox escape detection
@@ -186,7 +187,7 @@ Monitor for:
 
 ```python
 def compute_trust_score(agent_id, ledger):
-executions = ledger.get_executions(agent_id=agent_id)
+    executions = ledger.get_executions(agent_id=agent_id)
 
     success_rate = sum(e.status == "success" for e in executions) / len(executions)
     mean_calibration_error = mean(abs(e.predicted.p_success - e.actual.p_success) for e in executions)
@@ -197,29 +198,28 @@ executions = ledger.get_executions(agent_id=agent_id)
     rebase_conflicts = sum(e.rebase_conflicts for e in executions)
     
     trust_score = (
-        0.4 * success_rate +
-        0.3 * (1 - min(1.0, mean_calibration_error)) +
-        0.2 * (1 - min(1.0, mean_entropy_error / 50)) +
-        0.1 * (1 - min(1.0, rebase_conflicts / 10))
-        - 0.5 * sandbox_escapes  # severe penalty
+            0.4 * success_rate +
+            0.3 * (1 - min(1.0, mean_calibration_error)) +
+            0.2 * (1 - min(1.0, mean_entropy_error / 50)) +
+            0.1 * (1 - min(1.0, rebase_conflicts / 10))
+            - 0.5 * sandbox_escapes  # severe penalty
     )
-    
-    return max(0.0, min(1.0, trust_score))
 
+    return max(0.0, min(1.0, trust_score))
 ```
 
 ### Trust level assignment
 
 ```python
 def assign_trust_level(trust_score, execution_count):
-if trust_score < 0.5 or execution_count < 10:
-return "baseline"
-elif trust_score < 0.7 or execution_count < 30:
-return "medium"
-elif trust_score < 0.85 or execution_count < 100:
-return "high"
-else:
-return "highest"  # still requires human approval for sensitive actions
+    if trust_score < 0.5 or execution_count < 10:
+        return "baseline"
+    elif trust_score < 0.7 or execution_count < 30:
+        return "medium"
+    elif trust_score < 0.85 or execution_count < 100:
+        return "high"
+    else:
+        return "highest"  # still requires human approval for sensitive actions
 ```
 
 ### Trust degradation
@@ -247,22 +247,18 @@ Every intent has an **entropy budget** that limits its blast radius:
 
 ```python
 def allocate_entropy_budget(intent_type, parent_budget, trust_level):
-if intent_type == "root":
-
-# Root intents get full budget (set by human)
-
-return parent_budget
-else:
-
-# Sub-intents get fraction of parent budget
-
-fraction = {
-"baseline": 0.3,
-"medium": 0.5,
-"high": 0.7,
-"highest": 0.9
-}[trust_level]
-return parent_budget * fraction
+    if intent_type == "root":
+    # Root intents get full budget (set by human)
+        return parent_budget
+    else:
+        # Sub-intents get fraction of parent budget
+        fraction = {
+            "baseline": 0.3,
+            "medium": 0.5,
+            "high": 0.7,
+            "highest": 0.9
+        }[trust_level]
+        return parent_budget * fraction
 ```
 
 ### Budget enforcement
@@ -349,52 +345,55 @@ Human review is **required** for:
 
 ```json
 {
-"intent_id": "I-root-001-bootstrap-metrics",
-"goal": "Bootstrap naive metrics estimators and ledger logging",
-"status": "awaiting_review",
-"branch": "intent/I-root-001-bootstrap-metrics",
-"parent_branch": "main",
-"agent_id": "agent-planner-03",
-"trust_level": "medium",
-"predicted_metrics": {
-"p_success": 0.75,
-"entropy": 18.5,
-"impact": 85,
-"ev": 58.3
-},
-"actual_metrics": {
-"p_success": 1.0,
-"entropy": 22.1,
-"impact": 90,
-"ev": 67.2
-},
-"calibration": {
-"p_success_error": 0.25,
-"entropy_error": 3.6,
-"impact_error": 5.0
-},
-"diff_summary": {
-"files_modified": 8,
-"lines_added": 342,
-"lines_deleted": 12,
-"modules_added": ["holon/metrics/p_success.py", "holon/metrics/entropy.py"]
-},
-"test_results": {
-"passed": 15,
-"failed": 0,
-"coverage": 0.87
-},
-"ledger_trace": [
-"seq 42: intent_created",
-"seq 43: plan_variant_created (v1)",
-"seq 44: plan_variant_created (v2)",
-"seq 45: plan_variant_created (v3)",
-"seq 46: planning_converged (winner: v3)",
-"seq 47: execution_started",
-"seq 48-67: tool_calls (git, pytest, python)",
-"seq 68: execution_completed (success)"
-],
-"review_url": "https://github.com/user/holon/compare/main...intent/I-root-001-bootstrap-metrics"
+  "intent_id": "I-root-001-bootstrap-metrics",
+  "goal": "Bootstrap naive metrics estimators and ledger logging",
+  "status": "awaiting_review",
+  "branch": "intent/I-root-001-bootstrap-metrics",
+  "parent_branch": "main",
+  "agent_id": "agent-planner-03",
+  "trust_level": "medium",
+  "predicted_metrics": {
+    "p_success": 0.75,
+    "entropy": 18.5,
+    "impact": 85,
+    "ev": 58.3
+  },
+  "actual_metrics": {
+    "p_success": 1.0,
+    "entropy": 22.1,
+    "impact": 90,
+    "ev": 67.2
+  },
+  "calibration": {
+    "p_success_error": 0.25,
+    "entropy_error": 3.6,
+    "impact_error": 5.0
+  },
+  "diff_summary": {
+    "files_modified": 8,
+    "lines_added": 342,
+    "lines_deleted": 12,
+    "modules_added": [
+      "holon/metrics/p_success.py",
+      "holon/metrics/entropy.py"
+    ]
+  },
+  "test_results": {
+    "passed": 15,
+    "failed": 0,
+    "coverage": 0.87
+  },
+  "ledger_trace": [
+    "seq 42: intent_created",
+    "seq 43: plan_variant_created (v1)",
+    "seq 44: plan_variant_created (v2)",
+    "seq 45: plan_variant_created (v3)",
+    "seq 46: planning_converged (winner: v3)",
+    "seq 47: execution_started",
+    "seq 48-67: tool_calls (git, pytest, python)",
+    "seq 68: execution_completed (success)"
+  ],
+  "review_url": "https://github.com/user/holon/compare/main...intent/I-root-001-bootstrap-metrics"
 }
 ```
 

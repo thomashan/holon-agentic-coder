@@ -80,7 +80,7 @@ $$
 EV = P(success) \times Impact - Cost - \lambda \cdot \Delta S
 $$
 
-- `\lambda` is an entropy penalty hyperparameter (system-level constant).
+- $\lambda$ is an entropy penalty hyperparameter (system-level constant).
 - All terms must use consistent units or be normalized by agreed scales.
 
 #### Bootstrap P(success) estimator (recommended initial form)
@@ -198,7 +198,7 @@ Additional triggers:
 #### Formal checks (example)
 
 $$
-\text{EV\_gap} = EV_{1} - EV_{2}
+EV\_gap = EV_{1} - EV_{2}
 $$
 
 Converge if:
