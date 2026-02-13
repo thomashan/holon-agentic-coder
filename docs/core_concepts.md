@@ -5,6 +5,48 @@ behavior and system operation.
 
 ---
 
+## The Project as a Unique World
+
+Each project is effectively its own **unique world** defined by a specific **rule set** and **constraints** that govern how work is done, how code behaves, and how the system evolves.
+
+### Rule Set
+
+The rule set includes the "language" of the project — not just programming languages, but also:
+
+- Language versions and dialects (e.g., Python 3.9 vs 3.11, TypeScript strictness levels)
+- Coding conventions and style guides
+- API contracts and data schemas
+- Testing frameworks and coverage requirements
+- Deployment environments and runtime assumptions
+- Implicit domain-specific protocols and workflows
+
+These rules shape what is valid, safe, and effective within the project world.
+
+### Constraints
+
+Constraints are the boundaries and policies that must be respected, such as:
+
+- Security policies and access controls
+- Architectural patterns and design principles (e.g., microservices, event-driven)
+- Performance and scalability requirements
+- Compliance and regulatory mandates
+- Team workflows and review processes
+
+Constraints limit the space of acceptable changes and exploration, ensuring stability and compliance.
+
+### Why This Matters
+
+Foundational models provide broad priors but cannot fully capture the infinite variety of these project-specific rule sets and constraints. Each project world is unique and dynamic, evolving over time as rules and
+constraints change.
+
+Holon’s agents must therefore **learn, adapt, and evolve within the context of these unique worlds**. They do this by generating hypotheses (plans and intents) that test assumptions about the rule set and constraints,
+learning from outcomes, and updating their internal models accordingly.
+
+This recursive, fractal-like exploration and adaptation is the core mechanism that enables Holon to bridge the gap between general foundational knowledge and project-specific expertise, delivering solutions tailored to
+the unique physics of each project world.
+
+---
+
 ## 1) Intent Ontology
 
 ### 1.1 Intent

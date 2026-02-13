@@ -48,6 +48,17 @@ Holon is designed to make these failure modes structurally difficult by:
 
 ---
 
+## Important Notice
+
+Before diving deep into this README, we **strongly urge** all readers to first read the [`core_concepts.md`](docs/core_concepts.md) document. It contains essential foundational information, terminology, and principles
+that are critical for fully understanding the architecture, workflows, and design decisions described here.
+
+The concepts in `core_concepts.md` provide the semantic backbone of this project and will help you make sense of the details and rationale presented throughout this README and the rest of the documentation.
+
+Please take the time to review `core_concepts.md` carefully to get the most out of this project.
+
+---
+
 ## Core principles (non-negotiable invariants)
 
 ### 1) Intent is fractal (recursive, unbounded depth)
@@ -97,7 +108,16 @@ Agents may route tasks to different models (e.g., Gemini Flash vs DeepThink). Ro
 - evaluated,
 - and improved via selection pressure (Routing ROI).
 
-### 9) Earned autonomy (long-term)
+### 9) Unique project worlds require autonomous evolution
+
+Each project is effectively its own **unique world** with distinct rules, constraints, and dynamics. Foundational models provide powerful priors but cannot fully capture the infinite variety of possible project worlds.
+
+True progress arises from **autonomous exploration and evolution within these unique rules**. Agents use foundational models as starting hypotheses but actively experiment, learn from failures, and evolve domain-specific
+strategies tailored to the project’s context.
+
+This recursive, fractal-like learning process is the core of Holon’s value proposition, shifting the focus from scaling models alone to building self-improving agentic systems that adapt within their own environments.
+
+### 10) Earned autonomy (long-term)
 
 Agents should eventually propose their own intents and spawn sub-intents recursively—but autonomy is **earned** through demonstrated intent quality and calibration.
 
