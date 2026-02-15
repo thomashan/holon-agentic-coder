@@ -104,7 +104,23 @@ A **Sub-Intent** is an intent spawned by another intent to break down complex wo
 
 ---
 
-## 3) The Entropy Framework
+## 3) The Entropy Framework - Disorder, Novelty, and Stability
+
+At its core, entropy measures the **degree of disorder, uncertainty, and novelty** introduced by an intent or plan within the unique project world. It quantifies how much a plan disrupts the current stable state —
+introducing complexity, unpredictability, or divergence from known patterns.
+
+Think of entropy as the "amount of surprise or disruption" a plan causes. Just as physical entropy measures disorder in a thermodynamic system, Holon's entropy measures disorder in the informational and operational state
+of the project.
+
+Managing entropy is crucial:
+
+- **Too much entropy** leads to chaos, instability, and risk of failure.
+- **Too little entropy** leads to stagnation, lack of innovation, and missed opportunities for improvement.
+
+Entropy is distinct from a simple risk score or probability of failure. It captures both known risks and the unknown unknowns — the hidden complexities and emergent behaviours that can arise in a complex project
+environment.
+
+By explicitly measuring and budgeting entropy, Holon agents can safely explore novel strategies while maintaining overall system stability, enabling a balanced evolution of the project world.
 
 ### 3.1 Intent Entropy ($\Delta S_{intent}$)
 
