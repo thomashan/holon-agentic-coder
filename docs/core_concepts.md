@@ -150,14 +150,17 @@ By explicitly measuring and budgeting entropy, Holon agents can safely explore n
 - Controlling system entropy requires managing the entropy of individual intents and their interactions.
 - Agents must balance exploration (which increases intent entropy) with system stability (which requires keeping system entropy within bounds).
 
-### 3.4 Entropy Budget
+### 3.4 Entropy Budget and Recursive Recalculation
 
-- A predefined limit on allowable system entropy.
-- Ensures the system remains stable and manageable.
-- Intents that would cause system entropy to exceed the budget may be:
-    - Pruned or discarded
-    - Delayed until entropy is reduced
-    - Broken down into smaller, lower-entropy sub-intents
+- **System Stability Limit:** A predefined limit on allowable system entropy that ensures the project world remains stable, navigable, and manageable.
+- **Branch Pruning and Maintenance:** System entropy accounts for the proliferation of old, stale, or merged branches. When the budget is exceeded, the system triggers automated pruning of the branch namespace to reduce
+  disorder.
+- **Constraint-Driven Actions:** Intents or plans that would cause system entropy to exceed the budget are subject to:
+    - **Pruning or Discarding:** High-entropy or low-value branches are abandoned and deleted.
+    - **Execution Delay:** Work is paused until system maintenance (e.g., merging or pruning) reduces entropy.
+    - **Fractal Decomposition:** Complex intents are broken down into smaller, lower-entropy sub-intents to distribute risk.
+- **Recursive Upward Propagation:** Entropy is not static. Each time a child intent's entropy is merged or updated, the parent intent's entropy and the entropy of all ancestors up to the root intent is automatically
+  recalculated. This ensures that the "blast radius" of changes is accurately reflected throughout the entire intent hierarchy in real-time.
 
 ---
 
