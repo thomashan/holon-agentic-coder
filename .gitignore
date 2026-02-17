@@ -3,6 +3,10 @@
 
 .DS_Store
 
+# agents
+.junie
+.pi
+
 .venv
 __pycache__
 build
