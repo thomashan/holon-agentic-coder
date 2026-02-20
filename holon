@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# holon - CLI wrapper for Holon autonomous agentic coder
+
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: holon <command> [args...]
+
+Commands:
+  create-intent <intent_json>                      Create a new intent branch and log intent
+  plan <intent_branch> <agent_name> <model_name>  Generate plan branches for an intent
+  execute <plan_branch> <agent_name> <model_name> <action_slug>  Execute an action on a plan branch
+
+Examples:
+  holon create-intent app/scripts/intent_bootstrap_cli.json
+EOF
+}
+
+if [ $# -lt 1 ]; then
+  usage
+  exit 1
+fi
+
+COMMAND=$1
+shift
+
+run_in_container() {
+  local role=$1
+  shift
+
+  # Always mount SSH keys for Git auth
+  local common_args=(
+    -v "$HOME/.ssh":/home/holon/.ssh:ro
+    -e HOLON_ROLE="$role"
+  )
+
+  # For intent-creator, also mount the intent JSON file
+  if [ "$role" = "intent-creator" ]; then
+    local host_json_path="${1:?Error: intent_json path required}"
+    shift
+
+    docker run --rm -it \
+      -v "$host_json_path":/tmp/intent.json:ro \
+      "${common_args[@]}" \
+      holon/orchestrator "$@"
+  else
+    # For other roles (planner, executor, etc.)
+    docker run --rm -it \
+      "${common_args[@]}" \
+      holon/orchestrator "$@"
+  fi
+}
+
+case "$COMMAND" in
+  create-intent)
+    if [ $# -ne 1 ]; then
+      echo "Usage: holon create-intent <intent_json>"
+      exit 1
+    fi
+    run_in_container intent-creator "$1"
+    ;;
+
+  plan)
+    if [ $# -ne 3 ]; then
+      echo "Usage: holon plan <intent_branch> <agent_name> <model_name>"
+      exit 1
+    fi
+    run_in_container planner "$1" "$2" "$3"
+    ;;
+
+  execute)
+    if [ $# -ne 4 ]; then
+      echo "Usage: holon execute <plan_branch> <agent_name> <model_name> <action_slug>"
+      exit 1
+    fi
+    run_in_container executor "$1" "$2" "$3" "$4"
+    ;;
+
+  *)
+    echo "Unknown command: $COMMAND"
+    usage
+    exit 1
+    ;;
+esac
