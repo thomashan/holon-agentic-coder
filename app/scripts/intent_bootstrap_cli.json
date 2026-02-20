@@ -1,0 +1,8 @@
+{
+  "intent_id": "I-0",
+  "parent_id": null,
+  "title": "Bootstrap CLI",
+  "description": "Create the initial holon CLI for intent creation",
+  "branch": "I-0-bootstrap-cli",
+  "goal": "Give the system the ability to spawn its own future tasks"
+}
