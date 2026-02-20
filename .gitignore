@@ -2,3 +2,9 @@
 .idea
 
 .DS_Store
+
+# agents
+.junie
+.pi
+.agents
+.antigravitycli
