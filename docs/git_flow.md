@@ -31,6 +31,12 @@ This document defines the **Git branching, rebasing, and merging discipline** fo
 - **Parent Intent**: Immediate parent of a sub-intent in the tree (may itself be a sub-intent)
 - **Sub-Intent**: Any intent spawned by another intent (can have its own sub-intents)
 
+### 1.5 ID Generation
+
+- All intent, plan, execution IDs are generated using the current Unix timestamp.
+- This ensures decentralised, collision-free ID creation across the entire fractal tree.
+- Example: `I-1771422315`, `P-1771422316`, `E-1771422317`
+
 ---
 
 ## 2) Branch Naming Convention
@@ -40,37 +46,37 @@ Every intent uses the `/_` suffix to serve as a terminal leaf node, which preven
 ### 2.1 Root Intent Branch
 
 ```
-I-{seq}-{slug}/_
+I-{timestamp}-{slug}/_
 ```
 
 Example:
 
 ```
-I-50-refactor-metrics/_
+I-1771890389-refactor-metrics/_
 ```
 
 ### 2.2 Sub-Intent Branch (Nested)
 
 ```
-I-{seq}-{slug}/I-{subseq}-{subslug}/_
+I-{timestamp}-{slug}/I-{timestamp}-{slug}/_
 ```
 
 Example:
 
 ```
-I-50-refactor-metrics/I-51-improve-estimators/_
+I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_
 ```
 
 ### 2.3 Sub-Sub-Intent Branch (Deeper Nesting)
 
 ```
-I-{seq}-{slug}/I-{subseq}-{subslug}/I-{subsubseq}-{subsubslug}/_
+I-{timestamp}-{slug}/I-{timestamp}-{slug}/I-{timestamp}-{slug}/_
 ```
 
 Example:
 
 ```
-I-50-refactor-metrics/I-51-improve-estimators/I-52-p-success/_
+I-1771890389-refactor-metrics/I-1771890390-improve-estimators/I-1771890391-p-success/_
 ```
 
 **Pattern:** Each level appends to the path, creating a filesystem-like hierarchy.
@@ -80,13 +86,13 @@ I-50-refactor-metrics/I-51-improve-estimators/I-52-p-success/_
 Plan branches are created as siblings to the `/_` node within the same intent directory, using a timestamped identifier to allow for multiple competing proposals.
 
 ```
-I-{seq}-{slug}/P-{timestamp}-{agent}-{model}
+I-{timestamp}-{slug}/P-{timestamp}-{agent}-{model}
 ```
 
 Example:
 
 ```
-I-50-refactor-metrics/P-1771422315-claude-code-claude-sonnet-4.5
+I-1771890389-refactor-metrics/P-1771422315-claude-code-claude-sonnet-4.5
 ```
 
 ### 2.5 Execution Branch (Action)
@@ -94,13 +100,13 @@ I-50-refactor-metrics/P-1771422315-claude-code-claude-sonnet-4.5
 Execution branches are branched off a specific plan, appending the action slug to the plan's path to maintain a strict lineage from intent to proposal to implementation.
 
 ```
-I-{seq}-{slug}/P-{timestamp}-{agent}-{model}/E-{timestamp}-{action-slug}
+I-{timestamp}-{slug}/P-{timestamp}-{agent}-{model}/E-{timestamp}-{action-slug}
 ```
 
 Example:
 
 ```
-I-50-refactor-metrics/P-1771422315-claude-code-sonnet-4.5/E-1771422350-init-project
+I-1771890389-refactor-metrics/P-1771422315-claude-code-sonnet-4.5/E-1771422350-init-project
 ```
 
 ### 2.6 Hierarchy Summary
@@ -125,16 +131,16 @@ Every sub-intent **must rebase from its immediate parent**:
 **Before execution:**
 
 ```bash
-$ git checkout I-50-refactor-metrics/I-51-improve-estimators/_
+$ git checkout I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_
 $ git fetch origin
-$ git rebase I-50-refactor-metrics/_
+$ git rebase I-1771890389-refactor-metrics/_
 ```
 
 **After execution:**
 
 ```bash
 $ git fetch origin
-$ git rebase I-50-refactor-metrics/_
+$ git rebase I-1771890389-refactor-metrics/_
 ```
 
 ### 3.3 Conflict Handling
@@ -168,8 +174,8 @@ If rebase fails:
 
 ```bash
 # Sub-intent completes
-$ git checkout I-50-refactor-metrics
-$ git merge I-50-refactor-metrics/I-51-improve-estimators/_
+$ git checkout I-1771890389-refactor-metrics
+$ git merge I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_
 # Automatic, no human review
 ```
 
@@ -179,9 +185,9 @@ $ git merge I-50-refactor-metrics/I-51-improve-estimators/_
 {
   "event_type": "git_merge_attempted",
   "payload": {
-    "intent_id": "I-51-improve-estimators",
-    "from_branch": "I-50-refactor-metrics/I-51-improve-estimators/_",
-    "to_branch": "I-50-refactor-metrics/_",
+    "intent_id": "I-1771890390-improve-estimators",
+    "from_branch": "I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_",
+    "to_branch": "I-1771890389-refactor-metrics/_",
     "status": "success",
     "merge_type": "automatic_sub_intent",
     "human_review_required": false
@@ -209,11 +215,11 @@ $ git merge I-50-refactor-metrics/I-51-improve-estimators/_
 
 ```bash
 # Human reviews
-$ holon review approve I-50-refactor-metrics
+$ holon review approve I-1771890389-refactor-metrics
 
 # System merges
 $ git checkout main
-$ git merge I-50-refactor-metrics/_
+$ git merge I-1771890389-refactor-metrics/_
 $ git push origin main
 ```
 
@@ -223,7 +229,7 @@ $ git push origin main
 {
   "event_type": "intent_promoted_to_main",
   "payload": {
-    "intent_id": "I-50-refactor-metrics",
+    "intent_id": "I-1771890389-refactor-metrics",
     "merge_sha": "abc123",
     "reviewer": "human@example.com"
   }
@@ -334,11 +340,11 @@ def parallel_merge(sub_intents, parent_branch):
 ```bash
 # Root intent
 $ git checkout main
-$ git checkout -b I-50-refactor-metrics/_
+$ git checkout -b I-1771890389-refactor-metrics/_
 
 # Sub-intent
-$ git checkout I-50-refactor-metrics/_
-$ git checkout -b I-50-refactor-metrics/I-51-improve-estimators
+$ git checkout I-1771890389-refactor-metrics/_
+$ git checkout -b I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_
 ```
 
 ### 7.2 Execution
@@ -351,22 +357,22 @@ $ git checkout -b I-50-refactor-metrics/I-51-improve-estimators
 ### 7.3 Rebase (Post-Execution)
 
 ```bash
-$ git rebase I-50-refactor-metrics/_
+$ git rebase I-1771890389-refactor-metrics/_
 ```
 
 ### 7.4 Merge (Automatic for Sub-Intents)
 
 ```bash
-$ git checkout I-50-refactor-metrics/_
-$ git merge I-50-refactor-metrics/I-51-improve-estimators/_
+$ git checkout I-1771890389-refactor-metrics/_
+$ git merge I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_
 ```
 
 ### 7.5 Promotion (Human Review for Root Intents)
 
 ```bash
-$ holon review approve I-50-refactor-metrics
+$ holon review approve I-1771890389-refactor-metrics
 $ git checkout main
-$ git merge I-50-refactor-metrics/_
+$ git merge I-1771890389-refactor-metrics/_
 $ git push origin main
 ```
 
@@ -374,8 +380,8 @@ $ git push origin main
 
 ```bash
 # Delete merged branches
-$ git branch -d I-50-refactor-metrics/I-51-improve-estimators/_
-$ git branch -d I-50-refactor-metrics/_
+$ git branch -d I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_
+$ git branch -d I-1771890389-refactor-metrics/_
 ```
 
 ---
@@ -387,53 +393,53 @@ $ git branch -d I-50-refactor-metrics/_
 Intent Hierarchy:
 
 ```
-I-50-refactor-metrics (root)
-├── I-51-improve-estimators (sub, depth 1)
-│ ├── I-52-p-success (sub-sub, depth 2)
-│ ├── I-53-entropy (sub-sub, depth 2)
-│ └── I-54-impact (sub-sub, depth 2)
-├── I-55-add-logging (sub, depth 1)
-└── I-56-add-tests (sub, depth 1)
+I-1771890389-refactor-metrics (root)
+├── I-1771890390-improve-estimators (sub, depth 1)
+│ ├── I-1771890391-p-success (sub-sub, depth 2)
+│ ├── I-1771890392-entropy (sub-sub, depth 2)
+│ └── I-1771890393-impact (sub-sub, depth 2)
+├── I-1771890394-add-logging (sub, depth 1)
+└── I-1771890395-add-tests (sub, depth 1)
 ```
 
 Git branch structure:
 
 ```
 main
-└── I-50-refactor-metrics
+└── I-1771890389-refactor-metrics
     ├── _
-    ├── P-1000000000-claude-code-opus-4.6
-    ├── P-1000000000-gemini-cli-gemini-3
-    ├── E-1000000000-opencode-big-pickle
-    ├── I-51-improve-estimators
+    ├── P-1771890396-claude-code-opus-4.6
+    ├── P-1771890397-gemini-cli-gemini-3
+    │   └── E-1771890398-opencode-big-pickle
+    ├── I-1771890390-improve-estimators
     │   ├── _
-    │   ├── P-1000000001-claude-code-opus-4.6
-    │   ├── I-52-p-success
+    │   ├── P-1771890398-claude-code-opus-4.6
+    │   ├── I-1771890391-p-success
     │   │   └── _
-    │   ├── I-53-entropy
+    │   ├── I-1771890392-entropy
     │   │   └── _
-    │   └── I-54-impact
+    │   └── I-1771890393-impact
     │       └── _
-    ├── I-55-add-logging
+    ├── I-1771890394-add-logging
     │   └── _
-    └── I-56-add-tests
+    └── I-1771890395-add-tests
         └── _
 ```
 
 ### Merge Flow
 
 1. **Depth 2 → Depth 1** (automatic):
-    - `I-50-refactor-metrics/I-51-improve-estimators/I-52-p-success/_` → `I-50-refactor-metrics/I-51-improve-estimators/_`
-    - `I-50-refactor-metrics/I-51-improve-estimators/I-53-entropy/_` → `I-50-refactor-metrics/I-51-improve-estimators/_`
-    - `I-50-refactor-metrics/I-51-improve-estimators/I-54-impact/_` → `I-50-refactor-metrics/I-51-improve-estimators/_`
+    - `I-1771890389-refactor-metrics/I-1771890390-improve-estimators/I-1771890391-p-success/_` → `I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_`
+    - `I-1771890389-refactor-metrics/I-1771890390-improve-estimators/I-1771890392-entropy/_` → `I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_`
+    - `I-1771890389-refactor-metrics/I-1771890390-improve-estimators/I-1771890393-impact/_` → `I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_`
 
 2. **Depth 1 → Root** (automatic):
-    - `I-50-refactor-metrics/I-51-improve-estimators/_` → `I-50-refactor-metrics/_`
-    - `I-50-refactor-metrics/I-55-add-logging/_` → `I-50-refactor-metrics/_`
-    - `I-50-refactor-metrics/I-56-add-tests/_` → `I-50-refactor-metrics/_`
+    - `I-1771890389-refactor-metrics/I-1771890390-improve-estimators/_` → `I-1771890389-refactor-metrics/_`
+    - `I-1771890389-refactor-metrics/I-1771890394-add-logging/_` → `I-1771890389-refactor-metrics/_`
+    - `I-1771890389-refactor-metrics/I-1771890395-add-tests/_` → `I-1771890389-refactor-metrics/_`
 
 3. **Root → Main** (human review):
-    - `I-50-refactor-metrics/_` → `main` (after human approval)
+    - `I-1771890389-refactor-metrics/_` → `main` (after human approval)
 
 ---
 
@@ -482,7 +488,7 @@ All Git operations are logged to the ledger:
 {
   "event_type": "git_branch_created",
   "payload": {
-    "branch": "I-50-refactor-metrics"
+    "branch": "I-1771890389-refactor-metrics"
   }
 }
 {
@@ -523,25 +529,10 @@ Sub-intents should be discarded (branch closed without merging) when:
 
 ### 11.2 Discard Process
 
-```python
-def discard_sub_intent(sub_intent, reason):
-    # Log to ledger
-    ledger.log({
-        "event_type": "sub_intent_discarded",
-        "payload": {
-            "intent_id": sub_intent.intent_id,
-            "reason": reason,
-            "merge_value": sub_intent.merge_value,
-            "success_actual": sub_intent.success_actual
-        }
-    })
-
-    # Extract KB learnings (even from failures)
-    if sub_intent.kb_entries_created > 0:
-        extract_kb_learnings(sub_intent)
-
-    # Close branch
-    git.branch_delete(sub_intent.branch_name)
+```bash
+# Close branch and delete locally/remotely
+$ git branch -D <branch-name>
+$ git push origin --delete <branch-name>
 ```
 
 ### 11.3 Learning from Discarded Intents

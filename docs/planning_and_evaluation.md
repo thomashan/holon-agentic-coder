@@ -8,7 +8,7 @@ handling, and how the results integrate with the ledger and git flow.
 ### Overview
 
 Planning is the process of converting an Intent (goal + constraints) into one or more actionable Plan Variants. Evaluation ranks these variants and decides when to stop planning and move to execution. Planning is
-competitive: multiple hypotheses (variants) are created, scored, and compared using stable metrics. All planning activity is logged to the ledger and materialized as plan artifacts (plan graph + metadata + branch).
+competitive: multiple hypotheses (variants) are created, scored, and compared using stable metrics. All planning activity is logged to the ledger and materialised as plan artefacts (plan graph + metadata + branch).
 
 Key goals:
 
@@ -35,7 +35,7 @@ Key goals:
 
 #### Plan Variant (artifact)
 
-Each plan variant is a first-class artifact with:
+Each plan variant is a first-class artefact with:
 
 - `plan_id` (e.g., `P-{intent_id}-v{variant}-{model_tier}`)
 - `plan_graph` (steps, sub-intents, dependencies)
