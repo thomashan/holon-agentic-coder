@@ -37,6 +37,12 @@ This document defines the **Git branching, rebasing, and merging discipline** fo
 - This ensures decentralised, collision-free ID creation across the entire fractal tree.
 - Example: `I-1771422315`, `P-1771422316`, `E-1771422317`
 
+### 1.5 ID Generation
+
+- All intent, plan, execution IDs are generated using the current Unix timestamp.
+- This ensures decentralised, collision-free ID creation across the entire fractal tree.
+- Example: `I-1771422315`, `P-1771422316`, `E-1771422317`
+
 ---
 
 ## 2) Branch Naming Convention

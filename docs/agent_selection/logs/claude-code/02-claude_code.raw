@@ -1,0 +1,94 @@
+POST /v1/messages?beta=true HTTP/1.1
+Proxy-Connection: Keep-Alive
+Accept: application/json
+Authorization: Bearer
+Content-Type: application/json
+User-Agent: claude-cli/2.1.49 (external, cli)
+X-Stainless-Arch: arm64
+X-Stainless-Lang: js
+X-Stainless-OS: MacOS
+X-Stainless-Package-Version: 0.74.0
+X-Stainless-Retry-Count: 0
+X-Stainless-Runtime: node
+X-Stainless-Runtime-Version: v24.3.0
+X-Stainless-Timeout: 3000
+anthropic-beta: claude-code-20250219,interleaved-thinking-2025-05-14,prompt-caching-scope-2026-01-05
+anthropic-dangerous-direct-browser-access: true
+anthropic-version: 2023-06-01
+x-api-key: [redacted]
+x-app: cli
+Connection: keep-alive
+Host: localhost:1234
+Accept-Encoding: gzip, deflate, br, zstd
+Content-Length: 1066
+
+{"model":"default_model","messages":[{"role":"user","content":[{"type":"text","text":"hello"}]}],"system":[{"type":"text","text":"x-anthropic-billing-header: cc_version=2.1.49.b45; cc_entrypoint=cli; cch=6577f;"},{"type":"text","text":"You are Claude Code, Anthropic's official CLI for Claude."},{"type":"text","text":"Analyze if this message indicates a new conversation topic. If it does, extract a 2-3 word title that captures the new topic. Format your response as a JSON object with two fields: 'isNewTopic' (boolean) and 'title' (string, or null if isNewTopic is false)."}],"tools":[],"metadata":{"user_id":"[redacted]"},"max_tokens":32000,"temperature":1,"output_config":{"format":{"type":"json_schema","schema":{"type":"object","properties":{"isNewTopic":{"type":"boolean"},"title":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["isNewTopic","title"],"additionalProperties":false}}},"stream":true}
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive
+Date: Thu, 01 Jan 2026 00:00:00 GMT
+Transfer-Encoding: chunked
+
+947
+event: message_start
+data: {"type":"message_start","message":{"id":"msg_t2caqzgfjyihzghvna5t","type":"message","role":"assistant","content":[],"model":"qwen/qwen3-coder-30b","stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":91,"output_tokens":0,"cache_read_input_tokens":0}}}
+
+event: content_block_start
+data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{\n"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"  \""}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"isNew"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Topic"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\":"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" false"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":",\n"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"  \""}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"title"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\":"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" null"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\n"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"}"}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":""}}
+
+event: content_block_stop
+data: {"type":"content_block_stop","index":0}
+
+event: message_delta
+data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":91,"output_tokens":16,"cache_read_input_tokens":0}}
+
+event: message_stop
+data: {"type":"message_stop"}
+
+
+0

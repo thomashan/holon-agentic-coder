@@ -1,0 +1,48 @@
+POST /v1/messages?beta=true HTTP/1.1
+Proxy-Connection: Keep-Alive
+Accept: application/json
+Authorization: Bearer
+Content-Type: application/json
+User-Agent: claude-cli/2.1.49 (external, cli)
+X-Stainless-Arch: arm64
+X-Stainless-Lang: js
+X-Stainless-OS: MacOS
+X-Stainless-Package-Version: 0.74.0
+X-Stainless-Retry-Count: 0
+X-Stainless-Runtime: node
+X-Stainless-Runtime-Version: v24.3.0
+X-Stainless-Timeout: 3000
+anthropic-beta: claude-code-20250219,interleaved-thinking-2025-05-14,prompt-caching-scope-2026-01-05
+anthropic-dangerous-direct-browser-access: true
+anthropic-version: 2023-06-01
+x-api-key: [redacted]
+x-app: cli
+Connection: keep-alive
+Host: localhost:1234
+Accept-Encoding: gzip, deflate, br, zstd
+Content-Length: 287
+
+{"model":"default_model","max_tokens":1,"messages":[{"role":"user","content":"test"}],"temperature":1,"metadata":{"user_id":"[redacted]"}}
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 255
+ETag: W/"ff-iNpRDLBPVcLtqxDL1jTdW2LB6Z8"
+Date: Thu, 01 Jan 2026 00:00:00 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{
+  "id": "msg_vzhavrhj1g9mst6y5w6ku",
+  "type": "message",
+  "role": "assistant",
+  "content": [],
+  "model": "qwen/qwen3-coder-30b",
+  "stop_reason": "max_tokens",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 9,
+    "output_tokens": 0
+  }
+}
