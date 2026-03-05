@@ -69,6 +69,7 @@ kb/
 │   ├── p_success_v1.json
 │   ├── p_success_v2.json
 │   ├── entropy_v1.json
+│   ├── learning_value_v1.json
 │   └── index.json
 ├── routing_heuristics/
 │   ├── routing_v1.json
@@ -368,7 +369,7 @@ Every KB entry MUST contain:
 
 ### 4) Estimator
 
-**Definition:** A versioned implementation of a metric estimator (P(success), ΔS, Impact, etc.).
+**Definition:** A versioned implementation of a metric estimator (P(success), ΔS, Impact, LearningValue, etc.).
 
 **Use case:** System uses active estimator version; agents propose improvements.
 

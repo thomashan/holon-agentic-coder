@@ -22,7 +22,7 @@ Agents enable:
 
 ### 2) Agents are metric-driven
 
-- Agents use **P(success), ΔS, Impact, Cost** to evaluate plans.
+- Agents use **P(success), ΔS, Impact, Cost, LearningValue** to evaluate plans.
 - Agents select plans with highest EV under constraints.
 - Agents learn from **calibration errors** (predicted vs actual).
 
@@ -84,6 +84,7 @@ Agents enable:
 - **Deep tier:** High-entropy intents (> 30), novel problems, complex decomposition
 
 **Example:**
+
 ```python
 class PlannerAgent:
     def __init__(self, agent_id, model, trust_level):
@@ -91,19 +92,18 @@ class PlannerAgent:
         self.model = model
         self.trust_level = trust_level
 
-
     def generate_plan_variants(self, intent, kb, ledger, num_variants=3):
         variants = []
         for i in range(num_variants):
             # Retrieve similar patterns
             patterns = kb.find_similar_intents(intent.goal, intent.constraints)
-    
+
             # Generate plan structure
             plan = self.generate_plan_structure(intent, patterns)
-    
+
             # Estimate metrics
             predicted = self.estimate_metrics(plan, ledger)
-    
+
             # Create plan variant
             variant = PlanVariant(
                 plan_id=f"P-{intent.intent_id}-v{i + 1}-{self.model.tier}",
@@ -112,28 +112,30 @@ class PlannerAgent:
                 model=self.model
             )
             variants.append(variant)
-    
+
         return variants
-    
-    
+
     def estimate_metrics(self, plan, ledger):
         # Use active estimators from KB
         p_success_estimator = kb.get_active_estimator("p_success")
         entropy_estimator = kb.get_active_estimator("entropy")
         impact_estimator = kb.get_active_estimator("impact")
-    
+        learning_value_estimator = kb.get_active_estimator("learning_value")
+
         p_success = p_success_estimator.estimate(plan, ledger)
         entropy = entropy_estimator.estimate(plan, ledger)
         impact = impact_estimator.estimate(plan, ledger)
+        learning_value = learning_value_estimator.estimate(plan, ledger)
         cost = self.estimate_cost(plan)
-    
-        ev = p_success * impact - LAMBDA * entropy - cost
-    
+
+        ev = p_success * impact + MU * learning_value - LAMBDA * entropy - cost
+
         return PredictedMetrics(
             p_success=p_success,
             entropy=entropy,
             impact=impact,
             cost=cost,
+            learning_value=learning_value,
             ev=ev
         )
 
@@ -156,7 +158,7 @@ class PlannerAgent:
 
 - Execution results (success/failure)
 - Artifacts (code, diffs, test results)
-- Actual metrics (measured P(success), ΔS, Impact, Cost)
+- Actual metrics (measured P(success), ΔS, Impact, Cost, LearningValue)
 
 **Capabilities:**
 
@@ -180,83 +182,90 @@ class PlannerAgent:
 - **Deep tier:** Complex execution (novel problems, error recovery, adaptation)
 
 **Example:**
+
 ```python
 class ExecutorAgent:
-def __init__(self, agent_id, model, trust_level):
-self.agent_id = agent_id
-self.model = model
-self.trust_level = trust_level
 
-    def execute_plan(self, intent, plan, sandbox):
-        ledger.log("execution_started", intent_id=intent.intent_id, plan_id=plan.plan_id)
-        
-        try:
-            # Execute each step
-            for step in plan.steps:
-                self.execute_step(step, sandbox)
-            
-            # Run tests
-            test_results = sandbox.run_tests()
-            
-            # Measure actual metrics
-            actual = self.measure_metrics(intent, plan, sandbox)
-            
-            # Log completion
-            ledger.log("execution_completed", 
-                       intent_id=intent.intent_id,
-                       status="success",
-                       actual=actual,
-                       test_results=test_results)
-            
-            return ExecutionResult(status="success", actual=actual)
-        
-        except Exception as e:
-            ledger.log("execution_completed",
-                       intent_id=intent.intent_id,
-                       status="failure",
-                       failure_reason=str(e))
-            
-            return ExecutionResult(status="failure", error=e)
-    
-    def execute_step(self, step, sandbox):
-        # Retrieve tactics from KB
-        tactics = kb.find_tactics(step.description, step.language)
-        
-        if tactics:
-            # Use proven tactic
-            tactic = tactics[0]
-            result = sandbox.run_code(tactic.code)
-        else:
-            # Generate new implementation
-            code = self.generate_code(step)
-            result = sandbox.run_code(code)
-        
-        ledger.log("tool_call", 
-                   tool_name=step.tool,
-                   command=step.command,
-                   exit_code=result.exit_code)
-        
-        return result
-    
-    def measure_metrics(self, intent, plan, sandbox):
-        # Measure actual P(success) (1.0 if we got here, 0.0 if exception)
-        p_success = 1.0
-        
-        # Measure actual entropy
-        entropy = self.measure_entropy(intent, sandbox)
-        
-        # Measure actual impact
-        impact = self.measure_impact(intent, sandbox)
-        
-        # Measure actual cost
-        cost = self.measure_cost(sandbox)
-        
-        return ActualMetrics(
-            p_success=p_success,
-            entropy=entropy,
-            impact=impact,
-            cost=cost
-        )
+
+    def __init__(self, agent_id, model, trust_level):
+        self.agent_id = agent_id
+        self.model = model
+        self.trust_level = trust_level
+
+        def execute_plan(self, intent, plan, sandbox):
+            ledger.log("execution_started", intent_id=intent.intent_id, plan_id=plan.plan_id)
+
+            try:
+                # Execute each step
+                for step in plan.steps:
+                    self.execute_step(step, sandbox)
+
+                # Run tests
+                test_results = sandbox.run_tests()
+
+                # Measure actual metrics
+                actual = self.measure_metrics(intent, plan, sandbox)
+
+                # Log completion
+                ledger.log("execution_completed",
+                           intent_id=intent.intent_id,
+                           status="success",
+                           actual=actual,
+                           test_results=test_results)
+
+                return ExecutionResult(status="success", actual=actual)
+
+            except Exception as e:
+                ledger.log("execution_completed",
+                           intent_id=intent.intent_id,
+                           status="failure",
+                           failure_reason=str(e))
+
+                return ExecutionResult(status="failure", error=e)
+
+        def execute_step(self, step, sandbox):
+            # Retrieve tactics from KB
+            tactics = kb.find_tactics(step.description, step.language)
+
+            if tactics:
+                # Use proven tactic
+                tactic = tactics[0]
+                result = sandbox.run_code(tactic.code)
+            else:
+                # Generate new implementation
+                code = self.generate_code(step)
+                result = sandbox.run_code(code)
+
+            ledger.log("tool_call",
+                       tool_name=step.tool,
+                       command=step.command,
+                       exit_code=result.exit_code)
+
+            return result
+
+        def measure_metrics(self, intent, plan, sandbox):
+            # Measure actual P(success) (1.0 if we got here, 0.0 if exception)
+            p_success = 1.0
+
+            # Measure actual entropy
+            entropy = self.measure_entropy(intent, sandbox)
+
+            # Measure actual impact
+            impact = self.measure_impact(intent, sandbox)
+
+            # Measure actual cost
+            cost = self.measure_cost(sandbox)
+
+            # Measure learning value
+            learning_value = self.measure_learning_value(intent, sandbox)
+
+            return ActualMetrics(
+                p_success=p_success,
+                entropy=entropy,
+                impact=impact,
+                cost=cost,
+                learning_value=learning_value
+            )
 
 ```
 
@@ -296,67 +305,70 @@ self.trust_level = trust_level
 - **Deep tier:** Failure mode analysis (root cause reasoning)
 
 **Example:**
+
 ```python
 class CuratorAgent:
-def __init__(self, agent_id, model, trust_level):
-self.agent_id = agent_id
-self.model = model
-self.trust_level = trust_level
 
-    def extract_patterns(self, ledger, kb, lookback_days=7):
-        # Query recent successful intents
-        intents = ledger.query_intents(
-            status="success",
-            since=now() - timedelta(days=lookback_days)
-        )
-        
-        # Group by similarity
-        clusters = self.cluster_by_similarity(intents)
-        
-        # For each cluster with 3+ members
-        for cluster in clusters:
-            if len(cluster) >= 3:
-                # Extract common structure
-                pattern = self.extract_common_structure(cluster)
-                
-                # Validate evidence threshold
-                if self.validate_evidence(pattern, cluster):
-                    # Propose KB entry
-                    kb_entry = self.create_pattern_entry(pattern, cluster)
+
+    def __init__(self, agent_id, model, trust_level):
+        self.agent_id = agent_id
+        self.model = model
+        self.trust_level = trust_level
+
+        def extract_patterns(self, ledger, kb, lookback_days=7):
+            # Query recent successful intents
+            intents = ledger.query_intents(
+                status="success",
+                since=now() - timedelta(days=lookback_days)
+            )
+
+            # Group by similarity
+            clusters = self.cluster_by_similarity(intents)
+
+            # For each cluster with 3+ members
+            for cluster in clusters:
+                if len(cluster) >= 3:
+                    # Extract common structure
+                    pattern = self.extract_common_structure(cluster)
+
+                    # Validate evidence threshold
+                    if self.validate_evidence(pattern, cluster):
+                        # Propose KB entry
+                        kb_entry = self.create_pattern_entry(pattern, cluster)
+                        kb.propose_entry(kb_entry)
+
+                        ledger.log("kb_entry_proposed",
+                                   kb_id=kb_entry.kb_id,
+                                   kb_type="pattern",
+                                   evidence=kb_entry.evidence)
+
+        def extract_failure_modes(self, ledger, kb, lookback_days=7):
+            # Query recent failed intents
+            failures = ledger.query_intents(
+                status="failure",
+                since=now() - timedelta(days=lookback_days)
+            )
+
+            # Group by failure reason
+            failure_groups = self.group_by_failure_reason(failures)
+
+            # For each group with 3+ members
+            for reason, group in failure_groups.items():
+                if len(group) >= 3:
+                    # Analyze root cause
+                    root_cause = self.analyze_root_cause(group)
+
+                    # Identify mitigations
+                    mitigations = self.identify_mitigations(root_cause, kb)
+
+                    # Propose failure mode entry
+                    kb_entry = self.create_failure_mode_entry(reason, root_cause, mitigations, group)
                     kb.propose_entry(kb_entry)
-                    
+
                     ledger.log("kb_entry_proposed",
                                kb_id=kb_entry.kb_id,
-                               kb_type="pattern",
+                               kb_type="failure_mode",
                                evidence=kb_entry.evidence)
-    
-    def extract_failure_modes(self, ledger, kb, lookback_days=7):
-        # Query recent failed intents
-        failures = ledger.query_intents(
-            status="failure",
-            since=now() - timedelta(days=lookback_days)
-        )
-        
-        # Group by failure reason
-        failure_groups = self.group_by_failure_reason(failures)
-        
-        # For each group with 3+ members
-        for reason, group in failure_groups.items():
-            if len(group) >= 3:
-                # Analyze root cause
-                root_cause = self.analyze_root_cause(group)
-                
-                # Identify mitigations
-                mitigations = self.identify_mitigations(root_cause, kb)
-                
-                # Propose failure mode entry
-                kb_entry = self.create_failure_mode_entry(reason, root_cause, mitigations, group)
-                kb.propose_entry(kb_entry)
-                
-                ledger.log("kb_entry_proposed",
-                           kb_id=kb_entry.kb_id,
-                           kb_type="failure_mode",
-                           evidence=kb_entry.evidence)
 
 ```
 
@@ -395,66 +407,69 @@ self.trust_level = trust_level
 - **Medium tier:** Complex convergence logic
 
 **Example:**
+
 ```python
 class EvaluatorAgent:
-def __init__(self, agent_id, model, trust_level):
-self.agent_id = agent_id
-self.model = model
-self.trust_level = trust_level
 
-    def evaluate_and_select(self, intent, variants, convergence_policy):
-        # Rank by EV
-        ranked = sorted(variants, key=lambda v: v.predicted.ev, reverse=True)
-        
-        # Check convergence
-        converged, reason = self.check_convergence(ranked, convergence_policy)
-        
-        if converged:
-            winner = ranked[0]
-            
-            ledger.log("planning_converged",
-                       intent_id=intent.intent_id,
-                       variants_considered=[v.plan_id for v in variants],
-                       winner_plan_id=winner.plan_id,
-                       reason=reason)
-            
-            ledger.log("plan_selected",
-                       intent_id=intent.intent_id,
-                       plan_id=winner.plan_id,
-                       predicted=winner.predicted)
-            
-            return winner
-        else:
-            return None  # Keep planning
-    
-    def check_convergence(self, ranked_variants, policy):
-        if len(ranked_variants) < 2:
+
+    def __init__(self, agent_id, model, trust_level):
+        self.agent_id = agent_id
+        self.model = model
+        self.trust_level = trust_level
+
+        def evaluate_and_select(self, intent, variants, convergence_policy):
+            # Rank by EV
+            ranked = sorted(variants, key=lambda v: v.predicted.ev, reverse=True)
+
+            # Check convergence
+            converged, reason = self.check_convergence(ranked, convergence_policy)
+
+            if converged:
+                winner = ranked[0]
+
+                ledger.log("planning_converged",
+                           intent_id=intent.intent_id,
+                           variants_considered=[v.plan_id for v in variants],
+                           winner_plan_id=winner.plan_id,
+                           reason=reason)
+
+                ledger.log("plan_selected",
+                           intent_id=intent.intent_id,
+                           plan_id=winner.plan_id,
+                           predicted=winner.predicted)
+
+                return winner
+            else:
+                return None  # Keep planning
+
+        def check_convergence(self, ranked_variants, policy):
+            if len(ranked_variants) < 2:
+                return False, None
+
+            best = ranked_variants[0]
+            second_best = ranked_variants[1]
+
+            # Dominant plan (EV gap > threshold)
+            ev_gap = best.predicted.ev - second_best.predicted.ev
+            if ev_gap > policy.dominant_plan_threshold:
+                return True, "dominant_plan"
+
+            # EV plateau (diminishing returns)
+            if len(ranked_variants) >= 3:
+                recent_improvement = best.predicted.ev - ranked_variants[-3].predicted.ev
+                if recent_improvement < policy.ev_plateau_threshold:
+                    return True, "ev_plateau"
+
+            # Entropy budget exhausted
+            planning_cost = sum(v.predicted.cost for v in ranked_variants)
+            if planning_cost > policy.planning_budget:
+                return True, "budget_exhausted"
+
+            # Max variants reached
+            if len(ranked_variants) >= policy.max_variants:
+                return True, "max_variants_reached"
+
             return False, None
-        
-        best = ranked_variants[0]
-        second_best = ranked_variants[1]
-        
-        # Dominant plan (EV gap > threshold)
-        ev_gap = best.predicted.ev - second_best.predicted.ev
-        if ev_gap > policy.dominant_plan_threshold:
-            return True, "dominant_plan"
-        
-        # EV plateau (diminishing returns)
-        if len(ranked_variants) >= 3:
-            recent_improvement = best.predicted.ev - ranked_variants[-3].predicted.ev
-            if recent_improvement < policy.ev_plateau_threshold:
-                return True, "ev_plateau"
-        
-        # Entropy budget exhausted
-        planning_cost = sum(v.predicted.cost for v in ranked_variants)
-        if planning_cost > policy.planning_budget:
-            return True, "budget_exhausted"
-        
-        # Max variants reached
-        if len(ranked_variants) >= policy.max_variants:
-            return True, "max_variants_reached"
-        
-        return False, None
 
 ```
 
@@ -496,116 +511,119 @@ self.trust_level = trust_level
 - **Deep tier:** Complex scheduling, conflict resolution
 
 **Example:**
+
 ```python
 class MetaAgent:
-def __init__(self):
-self.intent_queue = IntentQueue()
-self.agent_pool = AgentPool()
 
-    def run(self):
-        while True:
-            # Check for pending intents
-            intent = self.intent_queue.pop_next()
-            
-            if intent is None:
-                time.sleep(1)
-                continue
-            
-            # Dispatch based on intent state
-            if intent.state == "planning":
-                self.dispatch_planning(intent)
-            elif intent.state == "ready":
-                self.dispatch_execution(intent)
-            elif intent.state == "rebasing":
-                self.handle_rebase(intent)
-            elif intent.state == "awaiting_review":
-                self.request_human_review(intent)
-            elif intent.state == "approved":
-                self.merge_to_parent(intent)
-    
-    def dispatch_planning(self, intent):
-        # Select planner agent based on complexity
-        planner = self.agent_pool.select_planner(intent)
-        
-        # Generate plan variants
-        variants = planner.generate_plan_variants(intent, kb, ledger)
-        
-        # Evaluate and select
-        evaluator = self.agent_pool.select_evaluator(intent)
-        selected_plan = evaluator.evaluate_and_select(intent, variants, convergence_policy)
-        
-        if selected_plan:
-            intent.state = "ready"
-            intent.selected_plan = selected_plan
-            self.intent_queue.push(intent)
-        else:
-            # Keep planning (generate more variants)
-            intent.state = "planning"
-            self.intent_queue.push(intent)
-    
-    def dispatch_execution(self, intent):
-        # Rebase from parent before execution
-        self.rebase_from_parent(intent)
-        
-        # Select executor agent
-        executor = self.agent_pool.select_executor(intent)
-        
-        # Execute plan
-        result = executor.execute_plan(intent, intent.selected_plan, sandbox)
-        
-        if result.status == "success":
-            # Rebase from parent after execution
-            self.rebase_from_parent(intent)
-            
-            # Check if parent intent or sub-intent
-            if intent.parent_intent_id is None:
-                # Parent intent → request human review
-                intent.state = "awaiting_review"
+
+    def __init__(self):
+        self.intent_queue = IntentQueue()
+        self.agent_pool = AgentPool()
+
+        def run(self):
+            while True:
+                # Check for pending intents
+                intent = self.intent_queue.pop_next()
+
+                if intent is None:
+                    time.sleep(1)
+                    continue
+
+                # Dispatch based on intent state
+                if intent.state == "planning":
+                    self.dispatch_planning(intent)
+                elif intent.state == "ready":
+                    self.dispatch_execution(intent)
+                elif intent.state == "rebasing":
+                    self.handle_rebase(intent)
+                elif intent.state == "awaiting_review":
+                    self.request_human_review(intent)
+                elif intent.state == "approved":
+                    self.merge_to_parent(intent)
+
+        def dispatch_planning(self, intent):
+            # Select planner agent based on complexity
+            planner = self.agent_pool.select_planner(intent)
+
+            # Generate plan variants
+            variants = planner.generate_plan_variants(intent, kb, ledger)
+
+            # Evaluate and select
+            evaluator = self.agent_pool.select_evaluator(intent)
+            selected_plan = evaluator.evaluate_and_select(intent, variants, convergence_policy)
+
+            if selected_plan:
+                intent.state = "ready"
+                intent.selected_plan = selected_plan
+                self.intent_queue.push(intent)
             else:
-                # Sub-intent → merge to parent automatically
-                intent.state = "ready_to_merge"
-            
-            self.intent_queue.push(intent)
-        else:
-            # Execution failed
-            intent.state = "failed"
-            ledger.log("intent_state_changed",
-                       intent_id=intent.intent_id,
-                       from_state="executing",
-                       to_state="failed",
-                       reason=result.error)
-    
-    def request_human_review(self, intent):
-        review_package = self.generate_review_package(intent)
-        
-        ledger.log("human_review_requested",
-                   intent_id=intent.intent_id,
-                   review_kind="promotion",
-                   summary=review_package.summary)
-        
-        # Wait for human decision (external process)
-        # When decision arrives, update intent state
-    
-    def merge_to_parent(self, intent):
-        parent_branch = self.get_parent_branch(intent)
-        
-        result = git.merge(intent.branch, parent_branch)
-        
-        ledger.log("git_merge_attempted",
-                   intent_id=intent.intent_id,
-                   from_branch=intent.branch,
-                   to_branch=parent_branch,
-                   status="success" if result.success else "failed")
-        
-        if result.success:
-            intent.state = "merged"
-            
-            # If merged to main, mark as promoted
-            if parent_branch == "main":
-                intent.state = "promoted"
-                ledger.log("intent_promoted_to_main",
+                # Keep planning (generate more variants)
+                intent.state = "planning"
+                self.intent_queue.push(intent)
+
+        def dispatch_execution(self, intent):
+            # Rebase from parent before execution
+            self.rebase_from_parent(intent)
+
+            # Select executor agent
+            executor = self.agent_pool.select_executor(intent)
+
+            # Execute plan
+            result = executor.execute_plan(intent, intent.selected_plan, sandbox)
+
+            if result.status == "success":
+                # Rebase from parent after execution
+                self.rebase_from_parent(intent)
+
+                # Check if parent intent or sub-intent
+                if intent.parent_intent_id is None:
+                    # Parent intent → request human review
+                    intent.state = "awaiting_review"
+                else:
+                    # Sub-intent → merge to parent automatically
+                    intent.state = "ready_to_merge"
+
+                self.intent_queue.push(intent)
+            else:
+                # Execution failed
+                intent.state = "failed"
+                ledger.log("intent_state_changed",
                            intent_id=intent.intent_id,
-                           merge_sha=result.merge_sha)
+                           from_state="executing",
+                           to_state="failed",
+                           reason=result.error)
+
+        def request_human_review(self, intent):
+            review_package = self.generate_review_package(intent)
+
+            ledger.log("human_review_requested",
+                       intent_id=intent.intent_id,
+                       review_kind="promotion",
+                       summary=review_package.summary)
+
+            # Wait for human decision (external process)
+            # When decision arrives, update intent state
+
+        def merge_to_parent(self, intent):
+            parent_branch = self.get_parent_branch(intent)
+
+            result = git.merge(intent.branch, parent_branch)
+
+            ledger.log("git_merge_attempted",
+                       intent_id=intent.intent_id,
+                       from_branch=intent.branch,
+                       to_branch=parent_branch,
+                       status="success" if result.success else "failed")
+
+            if result.success:
+                intent.state = "merged"
+
+                # If merged to main, mark as promoted
+                if parent_branch == "main":
+                    intent.state = "promoted"
+                    ledger.log("intent_promoted_to_main",
+                               intent_id=intent.intent_id,
+                               merge_sha=result.merge_sha)
 
 ```
 
@@ -613,7 +631,7 @@ self.agent_pool = AgentPool()
 
 ### 6) **Researcher Agent** (highest trust only)
 
-**Role:** Propose improvements to estimators, routing policies, and core patterns.
+**Role:** Propose improvements to estimators, learning value calibration, routing policies, and core patterns.
 
 **Inputs:**
 
@@ -634,6 +652,7 @@ self.agent_pool = AgentPool()
 - Backtest on historical data
 - Propose routing policy changes
 - Validate ROI improvements
+- Analyze learning value calibration and propose 𝜇 adjustments.
 
 **Trust requirements:**
 
@@ -644,56 +663,60 @@ self.agent_pool = AgentPool()
 - **Deep tier:** Complex analysis, hypothesis generation, backtest validation
 
 **Example:**
+
 ```python
 class ResearcherAgent:
-def __init__(self, agent_id, model, trust_level):
-self.agent_id = agent_id
-self.model = model
-self.trust_level = trust_level
+
+
+    def __init__(self, agent_id, model, trust_level):
+        self.agent_id = agent_id
+        self.model = model
+        self.trust_level = trust_level
 
         if trust_level != "highest":
             raise ValueError("Researcher agent requires highest trust level")
-    
-    def propose_estimator_improvement(self, metric_name, ledger, kb):
-        # Get current estimator
-        current = kb.get_active_estimator(metric_name)
-        
-        # Analyze calibration errors
-        errors = self.analyze_calibration_errors(metric_name, ledger)
-        
-        # Identify systematic biases
-        biases = self.identify_biases(errors)
-        
-        # Generate improved estimator
-        improved = self.generate_improved_estimator(current, biases)
-        
-        # Backtest on historical data
-        backtest_results = self.backtest(improved, ledger, window_days=30)
-        
-        # Check if improvement meets threshold
-        if backtest_results.improvement > 0.10:
-            # Create proposal
-            proposal = self.create_estimator_proposal(
-                metric_name=metric_name,
-                new_version=f"{metric_name}_v{current.version + 1}",
-                based_on=current.kb_id,
-                implementation=improved,
-                backtest_results=backtest_results
-            )
-            
-            # Submit for human approval
-            kb.propose_entry(proposal)
-            
-            ledger.log("estimator_proposed",
-                       estimator_name=metric_name,
-                       new_version=proposal.version,
-                       calibration_improvement=backtest_results.improvement,
-                       human_approval_required=True)
-            
-            return proposal
-        else:
-            # Improvement too small, don't propose
-            return None
+
+
+def propose_estimator_improvement(self, metric_name, ledger, kb):
+    # Get current estimator
+    current = kb.get_active_estimator(metric_name)
+
+    # Analyze calibration errors
+    errors = self.analyze_calibration_errors(metric_name, ledger)
+
+    # Identify systematic biases
+    biases = self.identify_biases(errors)
+
+    # Generate improved estimator
+    improved = self.generate_improved_estimator(current, biases)
+
+    # Backtest on historical data
+    backtest_results = self.backtest(improved, ledger, window_days=30)
+
+    # Check if improvement meets threshold
+    if backtest_results.improvement > 0.10:
+        # Create proposal
+        proposal = self.create_estimator_proposal(
+            metric_name=metric_name,
+            new_version=f"{metric_name}_v{current.version + 1}",
+            based_on=current.kb_id,
+            implementation=improved,
+            backtest_results=backtest_results
+        )
+
+        # Submit for human approval
+        kb.propose_entry(proposal)
+
+        ledger.log("estimator_proposed",
+                   estimator_name=metric_name,
+                   new_version=proposal.version,
+                   calibration_improvement=backtest_results.improvement,
+                   human_approval_required=True)
+
+        return proposal
+    else:
+        # Improvement too small, don't propose
+        return None
 
 ```
 
@@ -705,23 +728,25 @@ self.trust_level = trust_level
 
 ```python
 def create_agent(agent_type, model, trust_level="baseline"):
-agent_id = generate_agent_id(agent_type)
 
-    agent = {
-        "planner": PlannerAgent,
-        "executor": ExecutorAgent,
-        "curator": CuratorAgent,
-        "evaluator": EvaluatorAgent,
-        "researcher": ResearcherAgent
-    }[agent_type](agent_id, model, trust_level)
-    
-    ledger.log("agent_created",
-               agent_id=agent_id,
-               agent_type=agent_type,
-               model=model,
-               trust_level=trust_level)
-    
-    return agent
+
+    agent_id = generate_agent_id(agent_type)
+
+agent = {
+    "planner": PlannerAgent,
+    "executor": ExecutorAgent,
+    "curator": CuratorAgent,
+    "evaluator": EvaluatorAgent,
+    "researcher": ResearcherAgent
+}[agent_type](agent_id, model, trust_level)
+
+ledger.log("agent_created",
+           agent_id=agent_id,
+           agent_type=agent_type,
+           model=model,
+           trust_level=trust_level)
+
+return agent
 
 ```
 
@@ -729,30 +754,32 @@ agent_id = generate_agent_id(agent_type)
 
 ```python
 def execute_agent_task(agent, task):
-ledger.log("agent_task_started",
-agent_id=agent.agent_id,
-task_type=task.type,
-task_id=task.id)
 
-    try:
-        result = agent.execute(task)
-        
-        ledger.log("agent_task_completed",
-                   agent_id=agent.agent_id,
-                   task_id=task.id,
-                   status="success",
-                   result=result)
-        
-        return result
-    
-    except Exception as e:
-        ledger.log("agent_task_completed",
-                   agent_id=agent.agent_id,
-                   task_id=task.id,
-                   status="failure",
-                   error=str(e))
-        
-        raise
+
+    ledger.log("agent_task_started",
+               agent_id=agent.agent_id,
+               task_type=task.type,
+               task_id=task.id)
+
+try:
+    result = agent.execute(task)
+
+    ledger.log("agent_task_completed",
+               agent_id=agent.agent_id,
+               task_id=task.id,
+               status="success",
+               result=result)
+
+    return result
+
+except Exception as e:
+    ledger.log("agent_task_completed",
+               agent_id=agent.agent_id,
+               task_id=task.id,
+               status="failure",
+               error=str(e))
+
+    raise
 
 ```
 
@@ -761,29 +788,30 @@ task_id=task.id)
 ```python
 def update_agent_trust(agent_id, ledger):
 
+
 # Compute trust score
 
 trust_score = compute_trust_score(agent_id, ledger)
 
-    # Get execution count
-    execution_count = ledger.count_executions(agent_id=agent_id)
-    
-    # Assign trust level
-    new_trust_level = assign_trust_level(trust_score, execution_count)
-    
-    # Get current trust level
-    agent = agent_pool.get_agent(agent_id)
-    old_trust_level = agent.trust_level
-    
-    if new_trust_level != old_trust_level:
-        agent.trust_level = new_trust_level
-        
-        ledger.log("agent_trust_changed",
-                   agent_id=agent_id,
-                   from_trust_level=old_trust_level,
-                   to_trust_level=new_trust_level,
-                   trust_score=trust_score,
-                   execution_count=execution_count)
+# Get execution count
+execution_count = ledger.count_executions(agent_id=agent_id)
+
+# Assign trust level
+new_trust_level = assign_trust_level(trust_score, execution_count)
+
+# Get current trust level
+agent = agent_pool.get_agent(agent_id)
+old_trust_level = agent.trust_level
+
+if new_trust_level != old_trust_level:
+    agent.trust_level = new_trust_level
+
+    ledger.log("agent_trust_changed",
+               agent_id=agent_id,
+               from_trust_level=old_trust_level,
+               to_trust_level=new_trust_level,
+               trust_score=trust_score,
+               execution_count=execution_count)
 
 ```
 
@@ -885,7 +913,7 @@ When an agent proposes an intent, the system scores its quality:
 
 ```python
 def score_intent_quality(proposed_intent, agent_id, ledger, kb):
-score = 0.0
+    score = 0.0
 
     # Alignment with system needs
     if addresses_calibration_error(proposed_intent, ledger):
@@ -919,7 +947,7 @@ score = 0.0
 
 ```python
 def approve_intent_proposal(proposed_intent, agent_id, quality_score):
-agent = agent_pool.get_agent(agent_id)
+    agent = agent_pool.get_agent(agent_id)
 
     # Trust level gates
     if agent.trust_level == "high":
@@ -949,7 +977,7 @@ agent = agent_pool.get_agent(agent_id)
 ### Per-agent metrics (tracked in ledger)
 
 - **Success rate:** `successful_executions / total_executions`
-- **Mean calibration error:** `mean(|predicted - actual|)` for P(success), ΔS, Impact
+- **Mean calibration error:** `mean(|predicted - actual|)` for P(success), ΔS, Impact, LearningValue
 - **Mean EV accuracy:** `mean(predicted_ev - actual_ev)`
 - **Rebase conflict rate:** `rebase_conflicts / total_executions`
 - **Sandbox escape attempts:** `count(sandbox_escape_attempted)`

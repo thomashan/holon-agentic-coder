@@ -26,6 +26,7 @@ For each plan execution we store:
     - `entropy_pred ≥ 0`
     - `impact_pred ≥ 0`
     - `cost_pred ≥ 0`
+    - `learning_value_pred ∈ [0, 10]`
     - `ev_pred` derived
 
 - Actual (post-execution):
@@ -33,6 +34,7 @@ For each plan execution we store:
     - `entropy_actual ≥ 0`
     - `impact_actual ≥ 0`
     - `cost_actual ≥ 0`
+    - `learning_value_actual ∈ [0, 10]`
     - `ev_actual` derived (optional; depends on how you price actual cost)
 
 All of these are recorded in the **Ledger** for calibration and selection pressure.
@@ -45,7 +47,7 @@ EV is the selection objective used to compare competing plan variants for the sa
 
 We define:
 
-$$EV = P(success)\cdot Impact - \lambda \cdot Entropy - Cost$$
+$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
 
 Where:
 
@@ -53,11 +55,14 @@ Where:
 - `Impact` is expected benefit if the plan succeeds.
 - `Entropy` is expected disorder / risk introduced by executing the plan.
 - `Cost` is expected resource consumption (time, compute, tokens, etc).
+- `LearningValue` is the epistemic gain delivered to the system, independent of success
 - `λ` is a system-wide entropy penalty coefficient.
+- `μ` is a system-wide learning value coefficient.
 
 **Bootstrap λ (naive):**
 
 - `λ = 0.3`
+- `μ = 0.5`
 
 **Notes:**
 
@@ -97,6 +102,9 @@ Used to improve estimators.
 
 - Entropy calibration error:
     - `entropy_error = |entropy_pred - entropy_actual|`
+
+- Learning Value calibration error:
+    - `learning_value_error = |learning_value_pred - learning_value_actual|`
 
 Aggregate over windows (e.g., last 7 days) to detect drift.
 
@@ -249,15 +257,67 @@ Normalize impact to a typical range like 0–100.
 
 ---
 
-## 5) Cost
+## 5) Learning Value
 
 ### 5.1 Meaning
+
+`learning_value` estimates the **epistemic gain** delivered to the system by executing this intent, **independent of whether the intent succeeds or fails**.
+
+It captures the value of:
+
+* Exploring low-probability or novel approaches.
+* Producing failure modes that improve future P(success) estimators.
+* Generating KB entries (patterns, anti-patterns, constraints) that benefit future agents.
+* Reducing NOV (Novelty) for future similar intents.
+
+Learning value is the primary justification for executing high-`entropy`, low-`p_success` intents. Without it, the EV formula would always penalise exploration and the system would converge prematurely on known-safe
+paths.
+
+---
+
+### 5.2 Bootstrap scoring heuristics (0–10 scale)
+
+| Score | Meaning                                                                   |
+|-------|---------------------------------------------------------------------------|
+| 0–2   | Routine, well-understood work. No new knowledge expected.                 |
+| 3–5   | Moderate novelty. Likely to produce reusable KB patterns.                 |
+| 6–8   | High novelty or deliberate spike. Expected to reduce future entropy.      |
+| 9–10  | Pure exploration. Primary value is failure-mode discovery or calibration. |
+
+### 5.3 Predicted vs Actual
+
+`learning_value_pred`: estimated before execution by the planner.
+`learning_value_actual`: assessed post-execution by the evaluator based on:
+
+* KB entries created or updated.
+* Calibration improvement (reduction in CD(t)).
+* `NOV` reduction for similar future intents.
+* Documented failure modes added to KB.
+
+### 5.4 Calibration error
+
+```
+learning_value_error = |learning_value_pred - learning_value_actual|
+```
+
+Aggregate over windows alongside other calibration errors (see §1.4).
+
+### 5.5 Bootstrap μ rationale
+
+* μ = 0.5 (lower than the implicit weight on Impact) ensures learning value does not dominate over delivering actual results, but is sufficient to justify high-entropy exploratory steps.
+* Agents may propose adjusting μ via a meta-intent once calibration data exists.
+
+---
+
+## 6) Cost
+
+### 6.1 Meaning
 
 Cost estimates the resources consumed to execute the plan.
 
 ---
 
-### 5.2 Bootstrap cost heuristics
+### 6.2 Bootstrap cost heuristics
 
 - predicted tokens / wall time
 - sandbox runtime
@@ -270,9 +330,9 @@ Normalize to a comparable scale (0–200 typical).
 
 ---
 
-## 6) System-Level Entropy (S_system)
+## 7) System-Level Entropy (S_system)
 
-### 6.1 Meaning
+### 7.1 Meaning
 
 **System entropy** measures overall “disorder” / “instability” across the entire repo + agent swarm.
 
@@ -289,7 +349,7 @@ This is distinct from per-intent entropy:
 
 ---
 
-### 6.2 Proposed S_system formula (Bootstrap)
+### 7.2 Proposed S_system formula (Bootstrap)
 
 Define:
 
@@ -357,7 +417,7 @@ $$UC(t) = rebaseConflicts + failedIntentsUnresolved + staleBranches$$
 
 ---
 
-### 6.3 Bootstrap coefficients
+### 7.3 Bootstrap coefficients
 
 Start with equal weights unless you have a reason:
 
@@ -373,11 +433,11 @@ Start with equal weights unless you have a reason:
 
 ---
 
-## 7) Maintenance Triggers from System Entropy
+## 8) Maintenance Triggers from System Entropy
 
 These are policy examples (tune later).
 
-### 7.1 High system entropy
+### 8.1 High system entropy
 
 If `S_system(t) > S_high`:
 
@@ -391,7 +451,7 @@ Example thresholds:
 
 - `S_high = 150`
 
-### 7.2 Calibration drift trigger
+### 8.2 Calibration drift trigger
 
 If `CD(t) > CD_high`:
 
@@ -402,7 +462,7 @@ Example threshold:
 
 - `CD_high = 0.40`
 
-### 7.3 Conflict pressure trigger
+### 8.3 Conflict pressure trigger
 
 If `UC(t) > UC_high`:
 
@@ -415,24 +475,24 @@ Example threshold:
 
 ---
 
-## 8) Ledger Requirements (Minimum)
+## 9) Ledger Requirements (Minimum)
 
 For calibration and measurement, the ledger must store:
 
 - plan selection:
     - `intent_id`, `plan_id`, `variant_id`
-    - predicted: `p_success_pred`, `entropy_pred`, `impact_pred`, `cost_pred`, `ev_pred`
+    - predicted: `p_success_pred`, `entropy_pred`, `impact_pred`, `cost_pred`, `learning_value_pred`, `ev_pred`
     - routing: `model_id`, `routing_reason`
 
 - execution outcome:
     - `success_actual`
-    - actual: `entropy_actual`, `impact_actual`, `cost_actual`
+    - actual: `entropy_actual`, `impact_actual`, `cost_actual`, `learning_value_actual`
     - git: rebases attempted, conflicts, resolved, merge targets
     - sandbox: violations, blocked actions
 
 ---
 
-## 9) Practical Notes (Bootstrapping)
+## 10) Practical Notes (Bootstrapping)
 
 - Keep normalization simple and consistent.
 - Do not overfit early; record data first.
@@ -441,7 +501,7 @@ For calibration and measurement, the ledger must store:
 
 ---
 
-## 10) Quick Reference
+## 11) Quick Reference
 
 ### Per-intent entropy (predicted)
 
@@ -453,10 +513,11 @@ $$S_{system}(t) = \alpha\cdot BD(t) + \beta\cdot KF(t) + \gamma\cdot CD(t) + \de
 
 ### Expected value
 
-$$EV = P(success)\cdot Impact - \lambda \cdot Entropy - Cost$$
+$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
 
 **Bootstrap defaults:**
 
 - `λ = 0.3`
+- `μ = 0.5`
 - `w = [0.30, 0.25, 0.20, 0.15, 0.10]`
 - `α=β=γ=δ=ε=1.0`

@@ -261,13 +261,15 @@ Entropy is a **cost signal**, not "badness". Higher entropy means:
 
 ### Expected value (EV)
 
-Combines impact, success likelihood, entropy, and cost:
+Combines impact, success likelihood, learning value, entropy, and cost:
 
-$$EV = P(success) \cdot Impact - \lambda \cdot \Delta S - Cost$$
+$$EV = P(success) \cdot Impact + \mu \cdot LearningValue - \lambda \cdot \Delta S - Cost$$
 
 Where:
 
 - **Impact:** estimated value delivered if the intent succeeds
+- **LearningValue:** estimated epistemic gain delivered to the system, independent of success
+- **μ (mu):** learning value weight (tunable, typically 0.1–1.0)
 - **λ (lambda):** entropy penalty weight (tunable, typically 0.1–1.0)
 - **Cost:** resource consumption (tokens, time, compute)
 

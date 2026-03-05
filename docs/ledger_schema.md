@@ -157,14 +157,17 @@ Every ledger event MUST contain:
     - `p_success` (number, 0..1)
     - `entropy` (number, >= 0)  — predicted ΔS
     - `impact` (number, >= 0)   — project-specific scale
+    - `learning_value` (number, 0..10)
     - `cost` (number, >= 0)     — normalized cost units
     - `ev` (number)             — computed EV
     - `lambda` (number, >= 0)   — entropy penalty weight
+    - `mu` (number, >= 0)       — learning value weight
     - `estimator_versions` (object)
-        - `p_success` (string) e.g., `"p_success_v1"`
-        - `entropy` (string) e.g., `"entropy_v1"`
-        - `impact` (string) e.g., `"impact_v1"`
-        - `ev` (string) e.g., `"ev_v1"`
+        - `p_success` (string)
+        - `entropy` (string)
+        - `impact` (string)
+        - `learning_value` (string)
+        - `ev` (string)
 
 ### Actual metrics (required after execution)
 
@@ -172,6 +175,7 @@ Every ledger event MUST contain:
     - `p_success` (number, 0..1) — typically 0 or 1
     - `entropy` (number, >= 0)
     - `impact` (number, >= 0)
+    - `learning_value` (number, 0..10)
     - `cost` (number, >= 0)
     - `measurements` (object) — supporting evidence
         - `files_modified` (integer)
@@ -190,6 +194,7 @@ Every ledger event MUST contain:
     - `p_success_error` (number) — abs(pred - actual)
     - `entropy_error` (number)   — normalized or absolute
     - `impact_error` (number)
+    - `learning_value_error` (number)
 
 ---
 
@@ -515,6 +520,7 @@ These are invariants that validators should enforce:
 7. If `execution_completed.status == "success"`, then `actual.p_success` must be `1.0`.
 8. Metric ranges must hold:
     - `0 <= predicted.p_success <= 1`
+    - `0 <= predicted.learning_value <= 10`
     - `predicted.entropy >= 0`
     - `actual.entropy >= 0`
 9. If intent merges into parent, parent branch must match hierarchy (no merges to `main` from sub-intents).
@@ -567,4 +573,4 @@ Common queries:
 - [`metrics.md`](metrics.md) — definitions for predicted/actual metrics
 - [`git_flow.md`](git_flow.md) — rebase + merge constraints reflected in events
 - [`architecture.md`](architecture.md) — how ledger fits into the system
-- [`naming_conventions.md`](naming_conventions.md) — intent_id and plan_id formatsø
+- [`naming_conventions.md`](naming_conventions.md) — intent_id and plan_id formats

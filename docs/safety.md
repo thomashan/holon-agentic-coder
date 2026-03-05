@@ -297,7 +297,7 @@ Human review is **required** for:
     - Sub-intents merge to parent without human review (parent review covers them).
 
 2. **Estimator proposals**
-    - Any change to P(success), ΔS, Impact, or EV estimators.
+    - Any change to P(success), ΔS, Impact, Learning Value, or EV estimators.
     - Requires backtest validation + human approval.
 
 3. **Routing policy changes**
@@ -356,18 +356,21 @@ Human review is **required** for:
     "p_success": 0.75,
     "entropy": 18.5,
     "impact": 85,
+    "learning_value": 6.5,
     "ev": 58.3
   },
   "actual_metrics": {
     "p_success": 1.0,
     "entropy": 22.1,
     "impact": 90,
+    "learning_value": 7.2,
     "ev": 67.2
   },
   "calibration": {
     "p_success_error": 0.25,
     "entropy_error": 3.6,
-    "impact_error": 5.0
+    "impact_error": 5.0,
+    "learning_value_error": 0.7
   },
   "diff_summary": {
     "files_modified": 8,
@@ -444,7 +447,7 @@ Human review is **required** for:
 
 ### Exploration is encouraged (within safety boundaries)
 
-Holon is designed to **explore low-probability actions** for learning value. This is safe because:
+Holon is designed to **explore low-probability actions** for **learning value**. This is safe because:
 
 1. **Git isolation:** Exploration happens in branches that can be discarded.
 2. **Sandboxing:** Exploration cannot escape to host system.

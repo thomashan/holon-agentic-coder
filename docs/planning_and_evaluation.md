@@ -39,7 +39,7 @@ Each plan variant is a first-class artefact with:
 
 - `plan_id` (e.g., `P-{intent_id}-v{variant}-{model_tier}`)
 - `plan_graph` (steps, sub-intents, dependencies)
-- `predicted_metrics` (p_success, entropy, impact, cost, ev)
+- `predicted_metrics` (p_success, entropy, impact, cost, learning_value, ev)
 - `model_id` and `routing_reason`
 - `created_by` (agent_id)
 - `created_at`
@@ -54,7 +54,7 @@ Planner responsibilities:
 #### Variant diversity guidance
 
 - At least one low-risk (low entropy) conservative plan
-- At least one exploratory (higher entropy) plan if exploration budget allows
+- At least one exploration or spike plan optimised for learning_value (even if p_success is lower), if exploration/entropy budget allows
 - At least one short-path / minimal-change plan
 - Use KB to seed templates from proven patterns
 
@@ -70,17 +70,17 @@ All planners and evaluators must use the canonical metric names and estimator in
 - `ΔS` or `entropy`: predicted intent-local entropy increase (see core_concepts)
 - `Impact`: estimated positive benefit if successful (domain units)
 - `Cost`: resource/time/human cost estimate
+- `LearningValue` or `learning_value`: expected epistemic gain (0–10), independent of success
 - `EV`: Expected Value used for ranking
 
 Use these variables in formulas below.
 
 #### Expected Value (conceptual)
 
-$$
-EV = P(success) \times Impact - Cost - \lambda \cdot \Delta S
-$$
+$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
 
 - $\lambda$ is an entropy penalty hyperparameter (system-level constant).
+- $\mu$ is a learning value coefficient (system-level constant)
 - All terms must use consistent units or be normalized by agreed scales.
 
 #### Bootstrap P(success) estimator (recommended initial form)
@@ -129,6 +129,7 @@ Ledger event examples:
       "entropy": 12.3,
       "impact": 40,
       "cost": 2.1,
+      "learning_value": 4.7,
       "ev": 22.6
     }
   }
@@ -145,6 +146,7 @@ Ledger event examples:
       "entropy": 10.9,
       "impact": 38,
       "cost": 2.4,
+      "learning_value": 4.2,
       "ev_actual": 35.6
     }
   }
@@ -289,9 +291,9 @@ Example ledger entry (planning_converged):
 #### Example 1 — Simple plan selection
 
 - Three variants generated:
-    - v1: p=0.6, impact=10, cost=1, entropy=5 → EV = 0.6*10 - 1 - λ*5
-    - v2: p=0.75, impact=8, cost=2, entropy=15 → EV = 0.75*8 - 2 - λ*15
-    - v3: p=0.45, impact=25, cost=3, entropy=30 → EV = 0.45*25 - 3 - λ*30
+    - v1: p=0.6, impact=10, learning=2, cost=1, entropy=5 → EV = 0.6*10 + μ*2 - 1 - λ*5
+    - v2: p=0.75, impact=8, learning=1, cost=2, entropy=15 → EV = 0.75*8 + μ*1 - 2 - λ*15
+    - v3: p=0.45, impact=25, learning=8, cost=3, entropy=30 → EV = 0.45*25 + μ*8 - 3 - λ*30
 - Rank by EV and apply dominant/plateau checks. If v2 dominates, select v2.
 
 #### Example 2 — Exploration allowed

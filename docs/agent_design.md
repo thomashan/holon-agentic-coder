@@ -51,7 +51,7 @@ Agents must adhere to the following immutable contracts unless explicitly overri
 
 - **Sandboxing:** Agents execute only within isolated environments; no sandbox escape allowed.
 - **Git Discipline:** Agents must follow mandatory rebase and merge rules.
-- **Metric-Driven Decisions:** Agents use defined metrics (P(success), Entropy, Impact, Cost, EV) for all planning and execution.
+- **Metric-Driven Decisions:** Agents use defined metrics (P(success), Entropy, Impact, LearningValue, Cost, EV) for all planning and execution.
 - **No Core Invariant Modification:** Agents cannot autonomously change core system invariants or safety policies.
 - **Human Review Boundary:** Root intents require human approval before promotion; sub-intents merge automatically based on evaluation.
 - **Communication via Ledger:** All inter-agent communication and state changes are logged in the ledger; no direct agent-to-agent messaging.

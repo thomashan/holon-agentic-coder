@@ -27,7 +27,7 @@ feedback loops.
 #### 3) Competitive planning variants per intent
 
 - Multiple plan variants compete as hypotheses.
-- Plans are scored using shared “physics” metrics (P(success), ΔS, EV, Cost, Impact).
+- Plans are scored using shared “physics” metrics (P(success), ΔS, EV, Cost, Impact, LearningValue).
 
 #### 4) Strict rebase discipline; parent-only merges
 
@@ -82,7 +82,7 @@ feedback loops.
 - Purpose: auditability and measurement.
 - Stores:
     - intent_id, plan_id, variant_id
-    - predicted metrics (P(success), ΔS, Impact, Cost, EV)
+    - predicted metrics (P(success), ΔS, Impact, Cost, LearningValue, EV)
     - routing decision (model_id, tier, reason)
     - execution logs and outcomes
     - git commit SHAs / diffs
@@ -126,6 +126,7 @@ For each intent, the planner generates plan variants:
     - P(success)
     - ΔS (entropy)
     - Impact
+    - LearningValue
     - Cost
     - EV
 
@@ -172,6 +173,7 @@ After execution:
 - measure actual P(success) (binary success/failure per intent definition)
 - measure actual ΔS from diff + dependency changes + conflicts + coverage deltas
 - measure actual Impact (domain-specific)
+- measure actual LearningValue (epistemic gain)
 - compute calibration error for predictions
 
 All results are appended to the ledger.
@@ -247,7 +249,7 @@ Rationale: executing bounded work in a sandbox is safer than inventing new goals
 #### High trust (autonomous goal-setting)
 
 - Agent can propose **new root intents** (agent-generated intents) that enter the same validation pipeline:
-    - predicted metrics (P(success), ΔS, Impact, Cost, EV)
+    - predicted metrics (P(success), ΔS, Impact, Cost, LearningValue, EV)
     - justification + alignment constraints
     - explicit scope boundaries
 - Root-intent proposals may still require human acceptance depending on configuration.

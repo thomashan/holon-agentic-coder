@@ -102,6 +102,12 @@ A **Sub-Intent** is an intent spawned by another intent to break down complex wo
 - Includes computational cost, human review time, and entropy introduced.
 - Helps balance benefit against expenditure.
 
+### 2.4 Learning Value
+
+- The epistemic gain produced by executing an intent, independent of success or failure.
+- It exists to stop the system from over-penalising exploration, and to justify spikes/failure-mode discovery when bounded by entropy budgets.
+- Learning Value is the expected knowledge gain from running the plan, including new constraints discovered, new failure modes, and reusable KB entries.
+
 ---
 
 ## 3) The Entropy Framework - Disorder, Novelty, and Stability
@@ -168,12 +174,10 @@ By explicitly measuring and budgeting entropy, Holon agents can safely explore n
 
 ### 4.1 Expected Value ($EV$)
 
-- Combines $P(success)$, Impact, Cost, and Entropy into a single metric.
+- Combines $P(success)$, Impact, Cost, Learning Value, and Entropy into a single metric.
 - Formula (conceptual):
 
-$$
-EV = P(success) \times Impact - Cost - \Delta S
-$$
+$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
 
 - Guides autonomous decision-making, planning, and merging.
 
@@ -236,18 +240,19 @@ options. In other words, the planner and evaluator agree that the current best p
 
 ## 7) Summary Table of Core Terms
 
-| Term                  | Definition                                                            | Role in System                                           |
-|-----------------------|-----------------------------------------------------------------------|----------------------------------------------------------|
-| Intent                | Unit of work or goal                                                  | Basic building block                                     |
-| Root Intent           | Top-level intent requiring human review                               | Human review boundary                                    |
-| Parent Intent         | Immediate parent of a sub-intent                                      | Receives automatic merges                                |
-| Sub-Intent            | Intent spawned by another intent                                      | Automatic merging and evaluation                         |
-| $P(success)$          | Probability intent will succeed                                       | Guides planning and merging decisions                    |
-| Impact                | Expected benefit delivered                                            | Prioritization metric                                    |
-| Cost                  | Resources required                                                    | Balances benefit vs expenditure                          |
-| Entropy ($\Delta S$)  | Measure of disorder or risk introduced                                | Controls system stability                                |
-| Expected Value ($EV$) | Combined metric for decision-making                                   | Drives autonomous agent behavior                         |
-| Convergence           | Condition when planning sufficiently explores and selects a best plan | Signals planning termination and readiness for execution |
+| Term                  | Definition                                                              | Role in System                                                                            |
+|-----------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| Intent                | Unit of work or goal                                                    | Basic building block                                                                      |
+| Root Intent           | Top-level intent requiring human review                                 | Human review boundary                                                                     |
+| Parent Intent         | Immediate parent of a sub-intent                                        | Receives automatic merges                                                                 |
+| Sub-Intent            | Intent spawned by another intent                                        | Automatic merging and evaluation                                                          |
+| $P(success)$          | Probability intent will succeed                                         | Guides planning and merging decisions                                                     |
+| Impact                | Expected benefit delivered                                              | Prioritization metric                                                                     |
+| Cost                  | Resources required                                                      | Balances benefit vs expenditure                                                           |
+| Learning Value        | Epistemic gain delivered by executing an intent, independent of success | Encourages bounded exploration, accelerates estimator calibration, and promotes KB growth | 
+| Entropy ($\Delta S$)  | Measure of disorder or risk introduced                                  | Controls system stability                                                                 |
+| Expected Value ($EV$) | Combined metric for decision-making                                     | Drives autonomous agent behavior                                                          |
+| Convergence           | Condition when planning sufficiently explores and selects a best plan   | Signals planning termination and readiness for execution                                  |
 
 ---
 

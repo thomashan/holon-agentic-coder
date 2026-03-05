@@ -121,9 +121,11 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "p_success": 0.75,
     "entropy": 12.0,
     "impact": 80,
+    "learning_value": 4.0,
     "cost": 50,
-    "ev": "0.75 * 80 - 0.3 * 12.0 - 50 = 6.4",
-    "lambda": 0.3
+    "ev": "0.75 * 80 + 0.5 * 4.0 - 0.3 * 12.0 - 50 = 8.4",
+    "lambda": 0.3,
+    "mu": 0.5
   }
 }
 ```
@@ -168,9 +170,11 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "p_success": 0.65,
     "entropy": 8.0,
     "impact": 60,
+    "learning_value": 3.0,
     "cost": 30,
-    "ev": "0.65 * 60 - 0.3 * 8.0 - 30 = 6.6",
-    "lambda": 0.3
+    "ev": "0.65 * 60 + 0.5 * 3.0 - 0.3 * 8.0 - 30 = 8.1",
+    "lambda": 0.3,
+    "mu": 0.5
   }
 }
 ```
@@ -220,9 +224,11 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "p_success": 0.80,
     "entropy": 15.0,
     "impact": 85,
+    "learning_value": 2.0,
     "cost": 60,
-    "ev": "0.80 * 85 - 0.3 * 15.0 - 60 = 3.5",
-    "lambda": 0.3
+    "ev": "0.80 * 85 + 0.5 * 2.0 - 0.3 * 15.0 - 60 = 4.5",
+    "lambda": 0.3,
+    "mu": 0.5
   }
 }
 ```
@@ -284,8 +290,9 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "p_success": 0.60,
     "entropy": 5.0,
     "impact": 50,
+    "learning_value": 8.0,
     "cost": 20,
-    "ev": "0.60 * 50 - 0.3 * 5.0 - 20 = 8.5"
+    "ev": "0.60 * 50 + 0.5 * 8.0 - 0.3 * 5.0 - 20 = 10.5"
   }
 }
 ```
@@ -315,24 +322,26 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "p_success": 0.55,
     "entropy": 3.0,
     "impact": 40,
+    "learning_value": 2.0,
     "cost": 15,
-    "ev": "0.55 * 40 - 0.3 * 3.0 - 15 = 6.1"
+    "ev": "0.55 * 40 + 0.5 * 2.0 - 0.3 * 3.0 - 15 = 7.1"
   }
 }
 ```
 
 **Final rank:**
 
-1. **v4: EV = 8.5 (winner)**
-2. v2: EV = 6.6
-3. v1: EV = 6.4
-4. v3: EV = 3.5
-5. v5: EV = 6.1
+1. v4: EV = 10.5 (winner)
+2. v1: EV = 8.4
+3. v2: EV = 8.1
+4. v5: EV = 7.1
+5. v3: EV = 4.5
 
 **Convergence check:**
 
-- EV improvement from v4 to v5: -2.4 (negative, no improvement)
+- EV improvement from v4 to v5: -3.4 (negative, no improvement)
 - **Convergence reason: EV plateau** (last variant did not improve)
+
 
 **Ledger events:**
 
@@ -362,8 +371,8 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
       "p_success": 0.60,
       "entropy": 5.0,
       "impact": 50,
-      "cost": 20,
-      "ev": 8.5
+      "learning_value": 8.0,
+      "ev": 10.5
     }
   }
 }
@@ -484,12 +493,14 @@ actual_cost = 18  # Measured: 3 minutes execution time
       "p_success": 1.0,
       "entropy": 4.2,
       "impact": 55,
+      "learning_value": 7.5,
       "cost": 18
     },
     "calibration": {
       "p_success_error": 0.40,
       "entropy_error": 0.8,
-      "impact_error": 5.0
+      "impact_error": 5.0,
+      "learning_value_error": 0.5
     },
     "metadata": {
       "note": "Errors calculated as |predicted - actual|. Predicted values were: p_success: 0.60, entropy: 5.0, impact: 50"
@@ -534,18 +545,21 @@ $ git rebase origin/main
     "p_success": 0.60,
     "entropy": 5.0,
     "impact": 50,
-    "ev": 8.5
+    "learning_value": 8.0,
+    "ev": 10.5
   },
   "actual_metrics": {
     "p_success": 1.0,
     "entropy": 4.2,
     "impact": 55,
-    "ev": 11.8
+    "learning_value": 7.5,
+    "ev": 12.5
   },
   "calibration": {
     "p_success_error": 0.40,
     "entropy_error": 0.8,
-    "impact_error": 5.0
+    "impact_error": 5.0,
+    "learning_value_error": 0.5
   },
   "diff_summary": {
     "files_modified": 2,
@@ -710,8 +724,9 @@ $ git checkout -b intent/I-root-002-implement-metrics-module
     "p_success": 0.85,
     "entropy": 45.0,
     "impact": 200,
+    "learning_value": 5.0,
     "cost": 150,
-    "ev": "0.85 * 200 - 0.3 * 45.0 - 150 = 6.5"
+    "ev": "0.85 * 200 + 0.5 * 5.0 - 0.3 * 45.0 - 150 = 9.0"
   }
 }
 ```
