@@ -14,31 +14,38 @@ Agents enable:
 
 ## Core agent principles
 
-### 1) Agents are goal-directed
+### 1) Agents are config-driven
+
+- Agents are initialized with a `config_path` (defaulting to `holon-config/`).
+- Agents load their identity, mission, and persona from `holon-config/prompts/`.
+- Agents load their "physics" (metric weights, EV coefficients) from `holon-config/metrics/`.
+- Agents load their safety and git flow rules from `holon-config/rules/`.
+
+### 2) Agents are goal-directed
 
 - Every agent operates on an **intent** (goal + constraints).
 - Agents plan actions to maximize **Expected Value (EV)**.
 - Agents measure outcomes and update calibration.
 
-### 2) Agents are metric-driven
+### 3) Agents are metric-driven
 
 - Agents use **P(success), ΔS, Impact, Cost, LearningValue** to evaluate plans.
 - Agents select plans with highest EV under constraints.
 - Agents learn from **calibration errors** (predicted vs actual).
 
-### 3) Agents are sandboxed
+### 4) Agents are sandboxed
 
 - Agents execute in **isolated environments** (git branches + sandboxes).
 - Agents cannot escape sandbox boundaries.
 - Agents cannot modify core invariants without human approval.
 
-### 4) Agents are trust-bounded
+### 5) Agents are trust-bounded
 
 - Agents start with **baseline trust** (limited autonomy).
 - Agents earn trust through **demonstrated reliability**.
 - Agents lose trust through **failures or violations**.
 
-### 5) Agents are evolvable
+### 6) Agents are evolvable
 
 - Agents can propose **improvements to themselves** (estimators, tactics, patterns).
 - Agents can spawn **sub-agents** (recursive decomposition).
@@ -57,6 +64,8 @@ Agents enable:
 - Intent (goal, constraints, scope)
 - KB (patterns, tactics, failure modes)
 - Ledger (historical calibration data)
+- `holon-config/prompts/planner.template.md` (mission and persona)
+- `holon-config/metrics/` (EV coefficients)
 
 **Outputs:**
 
@@ -87,10 +96,15 @@ Agents enable:
 
 ```python
 class PlannerAgent:
-    def __init__(self, agent_id, model, trust_level):
+    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
         self.agent_id = agent_id
         self.model = model
         self.trust_level = trust_level
+        self.config = ConfigLoader(config_path)
+        
+        # Load mission and persona from external config
+        self.mission = self.config.load_prompt("planner")
+        self.metrics_config = self.config.load_metrics_config()
 
     def generate_plan_variants(self, intent, kb, ledger, num_variants=3):
         variants = []
@@ -98,10 +112,10 @@ class PlannerAgent:
             # Retrieve similar patterns
             patterns = kb.find_similar_intents(intent.goal, intent.constraints)
 
-            # Generate plan structure
-            plan = self.generate_plan_structure(intent, patterns)
+            # Generate plan structure using config-driven mission
+            plan = self.generate_plan_structure(intent, patterns, self.mission)
 
-            # Estimate metrics
+            # Estimate metrics using EV coefficients from config
             predicted = self.estimate_metrics(plan, ledger)
 
             # Create plan variant
@@ -128,6 +142,10 @@ class PlannerAgent:
         learning_value = learning_value_estimator.estimate(plan, ledger)
         cost = self.estimate_cost(plan)
 
+        # Physics defined in holon-config/metrics/
+        MU = self.metrics_config.mu
+        LAMBDA = self.metrics_config.lambda_coeff
+
         ev = p_success * impact + MU * learning_value - LAMBDA * entropy - cost
 
         return PredictedMetrics(
@@ -153,6 +171,8 @@ class PlannerAgent:
 - Selected plan
 - Sandbox configuration
 - KB (tactics, modules)
+- `holon-config/prompts/executor.template.md` (mission and persona)
+- `holon-config/rules/` (safety rules and git flow policies)
 
 **Outputs:**
 
@@ -185,17 +205,23 @@ class PlannerAgent:
 
 ```python
 class ExecutorAgent:
-
-
-    def __init__(self, agent_id, model, trust_level):
+    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
         self.agent_id = agent_id
         self.model = model
         self.trust_level = trust_level
+        self.config = ConfigLoader(config_path)
+        
+        # Load mission and safety rules from external config
+        self.mission = self.config.load_prompt("executor")
+        self.rules = self.config.load_rules()
 
         def execute_plan(self, intent, plan, sandbox):
             ledger.log("execution_started", intent_id=intent.intent_id, plan_id=plan.plan_id)
 
             try:
+                # Apply config-driven safety rules to sandbox
+                sandbox.apply_rules(self.rules)
+                
                 # Execute each step
                 for step in plan.steps:
                     self.execute_step(step, sandbox)
@@ -279,6 +305,8 @@ class ExecutorAgent:
 
 - Ledger (historical executions)
 - KB (existing entries)
+- `holon-config/prompts/curator.template.md` (mission and persona)
+- `holon-config/schemas/` (KB validation rules)
 
 **Outputs:**
 
@@ -308,12 +336,15 @@ class ExecutorAgent:
 
 ```python
 class CuratorAgent:
-
-
-    def __init__(self, agent_id, model, trust_level):
+    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
         self.agent_id = agent_id
         self.model = model
         self.trust_level = trust_level
+        self.config = ConfigLoader(config_path)
+        
+        # Load mission and schemas from config
+        self.mission = self.config.load_prompt("curator")
+        self.kb_schema = self.config.load_schema("kb_entry")
 
         def extract_patterns(self, ledger, kb, lookback_days=7):
             # Query recent successful intents
@@ -382,7 +413,8 @@ class CuratorAgent:
 
 - Intent
 - Plan variants (with predicted metrics)
-- Convergence policy
+- `holon-config/prompts/evaluator.template.md` (mission and persona)
+- `holon-config/rules/` (convergence policy)
 
 **Outputs:**
 
@@ -410,19 +442,22 @@ class CuratorAgent:
 
 ```python
 class EvaluatorAgent:
-
-
-    def __init__(self, agent_id, model, trust_level):
+    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
         self.agent_id = agent_id
         self.model = model
         self.trust_level = trust_level
+        self.config = ConfigLoader(config_path)
+        
+        # Load mission and convergence rules from config
+        self.mission = self.config.load_prompt("evaluator")
+        self.convergence_policy = self.config.load_rules().convergence
 
-        def evaluate_and_select(self, intent, variants, convergence_policy):
+        def evaluate_and_select(self, intent, variants):
             # Rank by EV
             ranked = sorted(variants, key=lambda v: v.predicted.ev, reverse=True)
 
-            # Check convergence
-            converged, reason = self.check_convergence(ranked, convergence_policy)
+            # Check convergence using config-driven policy
+            converged, reason = self.check_convergence(ranked, self.convergence_policy)
 
             if converged:
                 winner = ranked[0]
@@ -484,6 +519,7 @@ class EvaluatorAgent:
 - Intent queue (pending intents)
 - Agent pool (available planner/executor/curator agents)
 - Ledger and KB
+- `holon-config/` (root configuration path)
 
 **Outputs:**
 
@@ -514,11 +550,14 @@ class EvaluatorAgent:
 
 ```python
 class MetaAgent:
-
-
-    def __init__(self):
+    def __init__(self, config_path="holon-config/"):
+        self.config_path = config_path
+        self.config = ConfigLoader(config_path)
         self.intent_queue = IntentQueue()
-        self.agent_pool = AgentPool()
+        self.agent_pool = AgentPool(config_path=self.config_path)
+        
+        # Load orchestration rules from config
+        self.rules = self.config.load_rules()
 
         def run(self):
             while True:
@@ -542,15 +581,15 @@ class MetaAgent:
                     self.merge_to_parent(intent)
 
         def dispatch_planning(self, intent):
-            # Select planner agent based on complexity
+            # Select planner agent (initialized with config_path)
             planner = self.agent_pool.select_planner(intent)
 
             # Generate plan variants
             variants = planner.generate_plan_variants(intent, kb, ledger)
 
-            # Evaluate and select
+            # Evaluate and select (evaluator also uses config_path)
             evaluator = self.agent_pool.select_evaluator(intent)
-            selected_plan = evaluator.evaluate_and_select(intent, variants, convergence_policy)
+            selected_plan = evaluator.evaluate_and_select(intent, variants)
 
             if selected_plan:
                 intent.state = "ready"
@@ -637,6 +676,7 @@ class MetaAgent:
 
 - Ledger (historical calibration data)
 - KB (current estimators and policies)
+- `holon-config/prompts/researcher.template.md` (mission and persona)
 
 **Outputs:**
 
@@ -666,15 +706,16 @@ class MetaAgent:
 
 ```python
 class ResearcherAgent:
-
-
-    def __init__(self, agent_id, model, trust_level):
+    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
         self.agent_id = agent_id
         self.model = model
         self.trust_level = trust_level
-
+        self.config = ConfigLoader(config_path)
+        
         if trust_level != "highest":
             raise ValueError("Researcher agent requires highest trust level")
+
+        self.mission = self.config.load_prompt("researcher")
 
 
 def propose_estimator_improvement(self, metric_name, ledger, kb):
@@ -727,26 +768,27 @@ def propose_estimator_improvement(self, metric_name, ledger, kb):
 ### 1) Agent creation
 
 ```python
-def create_agent(agent_type, model, trust_level="baseline"):
-
-
+def create_agent(agent_type, model, trust_level="baseline", config_path="holon-config/"):
     agent_id = generate_agent_id(agent_type)
 
-agent = {
-    "planner": PlannerAgent,
-    "executor": ExecutorAgent,
-    "curator": CuratorAgent,
-    "evaluator": EvaluatorAgent,
-    "researcher": ResearcherAgent
-}[agent_type](agent_id, model, trust_level)
+    agent_class = {
+        "planner": PlannerAgent,
+        "executor": ExecutorAgent,
+        "curator": CuratorAgent,
+        "evaluator": EvaluatorAgent,
+        "researcher": ResearcherAgent
+    }[agent_type]
+    
+    agent = agent_class(agent_id, model, trust_level, config_path=config_path)
 
-ledger.log("agent_created",
-           agent_id=agent_id,
-           agent_type=agent_type,
-           model=model,
-           trust_level=trust_level)
+    ledger.log("agent_created",
+               agent_id=agent_id,
+               agent_type=agent_type,
+               model=model,
+               trust_level=trust_level,
+               config_path=config_path)
 
-return agent
+    return agent
 
 ```
 
@@ -754,8 +796,6 @@ return agent
 
 ```python
 def execute_agent_task(agent, task):
-
-
     ledger.log("agent_task_started",
                agent_id=agent.agent_id,
                task_type=task.type,
@@ -787,32 +827,28 @@ except Exception as e:
 
 ```python
 def update_agent_trust(agent_id, ledger):
-
-
-# Compute trust score
-
-trust_score = compute_trust_score(agent_id, ledger)
-
-# Get execution count
-execution_count = ledger.count_executions(agent_id=agent_id)
-
-# Assign trust level
-new_trust_level = assign_trust_level(trust_score, execution_count)
-
-# Get current trust level
-agent = agent_pool.get_agent(agent_id)
-old_trust_level = agent.trust_level
-
-if new_trust_level != old_trust_level:
-    agent.trust_level = new_trust_level
-
-    ledger.log("agent_trust_changed",
-               agent_id=agent_id,
-               from_trust_level=old_trust_level,
-               to_trust_level=new_trust_level,
-               trust_score=trust_score,
-               execution_count=execution_count)
-
+    # Compute trust score
+    trust_score = compute_trust_score(agent_id, ledger)
+    
+    # Get execution count
+    execution_count = ledger.count_executions(agent_id=agent_id)
+    
+    # Assign trust level
+    new_trust_level = assign_trust_level(trust_score, execution_count)
+    
+    # Get current trust level
+    agent = agent_pool.get_agent(agent_id)
+    old_trust_level = agent.trust_level
+    
+    if new_trust_level != old_trust_level:
+        agent.trust_level = new_trust_level
+    
+        ledger.log("agent_trust_changed",
+                   agent_id=agent_id,
+                   from_trust_level=old_trust_level,
+                   to_trust_level=new_trust_level,
+                   trust_score=trust_score,
+                   execution_count=execution_count)
 ```
 
 ---

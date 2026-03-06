@@ -5,13 +5,16 @@ behavior and system operation.
 
 ---
 
-## The Project as a Unique World
+## The Project as a Unique World: The Stateless Engine
 
 Each project is effectively its own **unique world** defined by a specific **rule set** and **constraints** that govern how work is done, how code behaves, and how the system evolves.
 
+In Holon, this is formalized through a **Stateless Engine** architecture. All project-specific domain knowledge, agent personalities, environmental context, and validation rules are consolidated into a single mandatory
+directory: `holon-config/`. This directory acts as the **"External Brain"** for Holon.
+
 ### Rule Set
 
-The rule set includes the "language" of the project — not just programming languages, but also:
+The rule set is managed in `holon-config/world/ruleset.md`. This Markdown file defines the "language" of the project, including:
 
 - Language versions and dialects (e.g., Python 3.9 vs 3.11, TypeScript strictness levels)
 - Coding conventions and style guides
@@ -20,24 +23,25 @@ The rule set includes the "language" of the project — not just programming lan
 - Deployment environments and runtime assumptions
 - Implicit domain-specific protocols and workflows
 
-These rules shape what is valid, safe, and effective within the project world.
-
 ### Constraints
 
-Constraints are the boundaries and policies that must be respected, such as:
+Constraints are the boundaries and policies that must be respected, managed in `holon-config/world/constraints.md`:
 
 - Security policies and access controls
 - Architectural patterns and design principles (e.g., microservices, event-driven)
 - Performance and scalability requirements
 - Compliance and regulatory mandates
-- Team workflows and review processes
+- Team workflows and git flow policies (e.g., rebase/merge rules)
 
 Constraints limit the space of acceptable changes and exploration, ensuring stability and compliance.
 
 ### Why This Matters
 
-Foundational models provide broad priors but cannot fully capture the infinite variety of these project-specific rule sets and constraints. Each project world is unique and dynamic, evolving over time as rules and
+Foundational models provide broad priors but cannot fully capture the project-specific "physics" of these unique worlds. By externalizing these into `holon-config/`, Holon agents become **config-driven**. They are
+initialized with a `config_path` and load their missions, constraints, and "physics" from this External Brain. Each project world is unique and dynamic, evolving over time as rules and
 constraints change.
+
+This ensures agents remain stateless and portable while their behavior is governed by the specific, evolving rules of the project they are currently inhabiting.
 
 Holon’s agents must therefore **learn, adapt, and evolve within the context of these unique worlds**. They do this by generating hypotheses (plans and intents) that test assumptions about the rule set and constraints,
 learning from outcomes, and updating their internal models accordingly.
@@ -175,11 +179,13 @@ By explicitly measuring and budgeting entropy, Holon agents can safely explore n
 ### 4.1 Expected Value ($EV$)
 
 - Combines $P(success)$, Impact, Cost, Learning Value, and Entropy into a single metric.
+- **Config-Driven:** The weights and coefficients used in the formula are loaded from `holon-config/metrics/`.
 - Formula (conceptual):
 
 $$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
 
 - Guides autonomous decision-making, planning, and merging.
+- $\mu$ (Learning Value weight) and $\lambda$ (Entropy weight) are defined in the external config.
 
 ---
 

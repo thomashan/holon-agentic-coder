@@ -11,7 +11,17 @@ The safety model enables:
 
 ---
 
-## Core safety principles
+## Core safety principles: Config-Driven Safety
+
+Safety in Holon is not a static set of hardcoded rules. It is a **governed layer** externalized in `holon-config/rules/`. This allows project-specific safety boundaries, trust thresholds, and sandboxing policies to be
+managed centrally.
+
+- **Trust Level Definitions:** Capabilities and escalation thresholds are loaded from `holon-config/rules/trust_levels.json`.
+- **Sandbox Selection Policy:** Logic for choosing sandbox types based on entropy and trust is loaded from `holon-config/rules/sandbox_policy.json`.
+- **Entropy Budgets:** Default allocations and enforcement rules are loaded from `holon-config/rules/entropy_rules.json`.
+- **Git Flow Constraints:** Mandatory rebase and merge rules are loaded from `holon-config/rules/git_flow_rules.json`.
+
+---
 
 ### 1) Git is the safety boundary
 
@@ -123,13 +133,18 @@ python /workspace/execute.py
 - Snapshot before execution, restore on failure.
 - Monitor syscalls for escape attempts.
 
-### Sandbox selection policy
+### Sandbox selection policy (Config-Driven)
+
+The logic for selecting a sandbox is loaded from `holon-config/rules/sandbox_policy.json`.
 
 ```python
-def select_sandbox(predicted_entropy, novelty, trust_level):
-    if predicted_entropy > 30 or novelty > 0.8:
+def select_sandbox(predicted_entropy, novelty, trust_level, config):
+    # Load thresholds from external rules config
+    policy = config.load_rules().sandbox_policy
+
+    if predicted_entropy > policy.vm_entropy_threshold or novelty > policy.vm_novelty_threshold:
         return "vm_sandbox"
-    elif predicted_entropy > 10 or trust_level == "baseline":
+    elif predicted_entropy > policy.container_entropy_threshold or trust_level == "baseline":
         return "container_sandbox"
     else:
         return "process_sandbox"
@@ -183,26 +198,30 @@ Monitor for:
 - **Cannot:** Modify core invariants directly (always requires human approval).
 - **Escalation:** Manual promotion by human after review.
 
-### Trust scoring formula
+### Trust scoring formula (Config-Driven)
+
+Weights used in trust calculation are loaded from `holon-config/rules/trust_levels.json`.
 
 ```python
-def compute_trust_score(agent_id, ledger):
+def compute_trust_score(agent_id, ledger, config):
+    # Load scoring weights from external trust config
+    weights = config.load_rules().trust_weights
     executions = ledger.get_executions(agent_id=agent_id)
 
     success_rate = sum(e.status == "success" for e in executions) / len(executions)
     mean_calibration_error = mean(abs(e.predicted.p_success - e.actual.p_success) for e in executions)
     mean_entropy_error = mean(abs(e.predicted.entropy - e.actual.entropy) for e in executions)
-    
+
     # Penalties
     sandbox_escapes = ledger.count_events(agent_id=agent_id, event_type="sandbox_escape_attempted")
     rebase_conflicts = sum(e.rebase_conflicts for e in executions)
-    
+
     trust_score = (
-            0.4 * success_rate +
-            0.3 * (1 - min(1.0, mean_calibration_error)) +
-            0.2 * (1 - min(1.0, mean_entropy_error / 50)) +
-            0.1 * (1 - min(1.0, rebase_conflicts / 10))
-            - 0.5 * sandbox_escapes  # severe penalty
+            weights.success_rate * success_rate +
+            weights.calibration * (1 - min(1.0, mean_calibration_error)) +
+            weights.entropy * (1 - min(1.0, mean_entropy_error / 50)) +
+            weights.rebase * (1 - min(1.0, rebase_conflicts / 10))
+            - weights.escape_penalty * sandbox_escapes
     )
 
     return max(0.0, min(1.0, trust_score))
@@ -248,7 +267,7 @@ Every intent has an **entropy budget** that limits its blast radius:
 ```python
 def allocate_entropy_budget(intent_type, parent_budget, trust_level):
     if intent_type == "root":
-    # Root intents get full budget (set by human)
+        # Root intents get full budget (set by human)
         return parent_budget
     else:
         # Sub-intents get fraction of parent budget

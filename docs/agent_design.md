@@ -9,12 +9,19 @@ interaction protocols that guide agent behavior and system integration.
 
 The Holon system consists of multiple autonomous agents collaborating to plan, execute, learn, and evolve. Agents operate within a fractal intent hierarchy and adhere to strict safety, trust, and operational contracts.
 
+### Core Architecture: The Stateless Engine
+
+All agents in Holon are **config-driven**. They are initialized with a `config_path` pointing to the `holon-config/` directory. This directory contains the **"External Brain"** of the system, including agent missions (
+`prompts/`), validation rules (`schemas/`), and project physics (`world/` and `metrics/`).
+
+This approach ensures agents remain stateless and portable while their behavior and governance are centrally managed.
+
 ### Key Components
 
-- **Meta-Agent (Orchestrator):** Coordinates intent lifecycle, agent dispatch, and system state.
-- **Worker Agents:** Specialized agents (Planner, Executor, Curator, Evaluator, Researcher) performing domain-specific tasks.
-- **Knowledge Base (KB):** Shared repository of patterns, tactics, estimators, and failure modes.
-- **Ledger:** Immutable event log capturing all agent actions, decisions, and system state changes.
+- **Meta-Agent (Orchestrator):** Config-driven coordinator that manages the intent lifecycle, agent dispatch, and system state.
+- **Worker Agents:** Specialized, config-driven agents (Planner, Executor, Curator, Evaluator, Researcher) performing domain-specific tasks based on assigned missions.
+- **Knowledge Base (KB):** Shared repository of curated patterns, tactics, and failure modes; validated against config-driven schemas.
+- **Ledger:** Immutable, append-only event log capturing all agent actions and decisions; enforced by config-driven validation rules.
 
 ---
 
@@ -101,12 +108,13 @@ Autonomy escalation enables:
 
 ## 7) Agent Lifecycle
 
-1. **Creation:** Agents are instantiated with assigned trust levels and models.
-2. **Task Assignment:** Meta-Agent dispatches intents and plans based on agent capabilities.
-3. **Execution:** Agents perform tasks, log results, and update metrics.
-4. **Learning:** Agents update internal models and propose KB entries or system improvements.
-5. **Trust Evaluation:** Agent trust is recalculated and autonomy adjusted.
-6. **Retirement:** Agents may be retired or upgraded based on performance and system needs.
+1. **Initialization:** Agents are instantiated with an `agent_id`, `model`, `trust_level`, and `config_path` (defaulting to `holon-config/`).
+2. **Configuration Loading:** Agents use a `ConfigLoader` to fetch their identity/mission (`prompts/`), validation rules (`schemas/`), and metric weights (`metrics/`).
+3. **Task Assignment:** Meta-Agent dispatches intents and plans based on agent capabilities.
+4. **Execution:** Agents perform tasks, log results, and update metrics.
+5. **Learning:** Agents update internal models and propose KB entries or system improvements.
+6. **Trust Evaluation:** Agent trust is recalculated and autonomy adjusted.
+7. **Retirement:** Agents may be retired or upgraded based on performance and system needs.
 
 ---
 

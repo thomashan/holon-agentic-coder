@@ -15,7 +15,17 @@ This document defines the **bootstrap (day-zero) metrics** used by Holon to:
 
 ---
 
-## 1) Core Definitions
+## 1) Core Definitions: Config-Driven Physics
+
+Holon’s "physics" — the weights, coefficients, and constants that drive decision-making — are not hardcoded. They are externalized in `holon-config/metrics/`. This allows the system's behavior to be tuned and evolved
+without changing the underlying engine.
+
+- **`λ` (Entropy penalty):** Loaded from `holon-config/metrics/ev_config.json`.
+- **`μ` (Learning Value weight):** Loaded from `holon-config/metrics/ev_config.json`.
+- **Entropy weights (`w_i`, `u_i`):** Loaded from `holon-config/metrics/entropy_config.json`.
+- **System entropy coefficients (`α, β, γ, δ, ε`):** Loaded from `holon-config/metrics/system_entropy_config.json`.
+
+---
 
 ### 1.1 Predicted vs. Actual Metrics
 

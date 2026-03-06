@@ -566,38 +566,19 @@ Every KB entry MUST contain:
 
 ---
 
-## KB write rules (curation gates)
+## Write-gated curation: Config-Driven Schemas
 
-### Rule 1: Evidence threshold
+KB entries are validated against schemas defined in `holon-config/schemas/kb.json`. This ensures that all proposed and active entries conform to the system’s structural and evidential requirements.
 
-A KB entry requires:
+### KB write rules (curation gates)
 
-- **Patterns:** minimum 3 successful executions with same structure.
-- **Tactics:** minimum 5 successful uses with no failures.
-- **Failure modes:** minimum 3 observed failures with same root cause.
-- **Estimators:** backtest on minimum 30 historical intents, calibration improvement > 0.10.
-- **Routing heuristics:** ROI improvement > 0.15 on minimum 20 routing decisions.
+A curator or system component must:
 
-### Rule 2: Human approval for governance
-
-Changes to estimators, routing heuristics, or core patterns require:
-
-- Human review (trust level "highest" + human approval).
-- Explicit approval recorded in ledger (`estimator_approved`, `policy_changed`).
-
-### Rule 3: Versioning
-
-- KB entries are **never updated in place** (except status changes).
-- New versions create new KB entries with incremented version.
-- Old versions remain accessible (status = `deprecated`).
-
-### Rule 4: Conflict resolution
-
-If two agents propose conflicting KB entries:
-
-- Both are recorded with status = `proposed`.
-- Human review selects winner (or rejects both).
-- Loser is marked status = `rejected` (not deleted).
+- Load the relevant schema from `holon-config/schemas/kb.json`.
+- Enforce evidence thresholds (e.g., minimum successful executions).
+- Validate calibration improvements (for estimator proposals).
+- Check human approval status (for governance changes).
+- Prevent KB poisoning by rejecting non-conforming entries.
 
 ---
 
@@ -607,59 +588,51 @@ If two agents propose conflicting KB entries:
 
 ```python
 def find_similar_intents(goal_text, constraints):
-
-
-# Retrieve patterns with similar tags, complexity, entropy
-patterns = kb.query(
-    kb_type="pattern",
-    tags=extract_tags(goal_text),
-    complexity_range=constraints.complexity_range,
-    entropy_range=constraints.entropy_range
-)
-return patterns
+  # Retrieve patterns with similar tags, complexity, entropy
+  patterns = kb.query(
+      kb_type="pattern",
+      tags=extract_tags(goal_text),
+      complexity_range=constraints.complexity_range,
+      entropy_range=constraints.entropy_range
+  )
+  return patterns
 ```
 
 ### Query 2: Tactics for a step
 
 ```python
 def find_tactics(step_description, language):
-
-
     tactics = kb.query(
         kb_type="tactic",
         tags=extract_tags(step_description),
         language=language,
         status="active"
     )
-return tactics
+    return tactics
 ```
 
 ### Query 3: Failure modes for a module
 
 ```python
 def find_failure_modes(module_path):
-
-
     failures = kb.query(
         kb_type="failure_mode",
         tags=[module_path],
         status="active"
     )
-return failures
+    return failures
 ```
 
 ### Query 4: Active estimator version
 
 ```python
 def get_active_estimator(metric_name):
-
-
     estimator = kb.query_one(
         kb_type="estimator",
         metric_name=metric_name,
         status="active"
     )
-return estimator
+    return estimator
 ```
 
 ---

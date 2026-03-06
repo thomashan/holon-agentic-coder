@@ -544,17 +544,20 @@ Everything else can be layered later.
 
 ---
 
-## Validation and tooling
+## Validation and tooling: Config-Driven Schemas
+
+The ledger is validated against schemas defined in `holon-config/schemas/ledger.json`. This ensures that all events appended to the ledger conform to the required structure and business rules.
 
 ### Ledger validator
 
 A validator should:
 
-- enforce envelope presence
-- enforce schema version compatibility
-- enforce range constraints
-- enforce event relationship constraints (ordering and references)
-- report anomalies as events (`ledger_validation_error`) rather than mutating history
+- Load the current schema from `holon-config/schemas/ledger.json`.
+- Enforce envelope presence.
+- Enforce schema version compatibility.
+- Enforce range constraints (e.g., `p_success` between 0 and 1).
+- Enforce event relationship constraints (ordering and references).
+- Report anomalies as events (`ledger_validation_error`) rather than mutating history.
 
 ### Query patterns
 
