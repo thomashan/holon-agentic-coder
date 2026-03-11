@@ -11,17 +11,19 @@ The Holon system consists of multiple autonomous agents collaborating to plan, e
 
 ### Core Architecture: The Stateless Engine
 
-All agents in Holon are **config-driven**. They are initialized with a `config_path` pointing to the `holon-config/` directory. This directory contains the **"External Brain"** of the system, including agent missions (
-`prompts/`), validation rules (`schemas/`), and project physics (`world/` and `metrics/`).
+All agents in Holon are **config-driven**. They are initialized with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`). This separation ensures that governance (how
+to act) remains distinct from experience (what has been learned).
 
-This approach ensures agents remain stateless and portable while their behavior and governance are centrally managed.
+- **`holon-config/` (Static Priors):** Agent missions (`prompts/`), validation rules (`schemas/`), and project physics (`world/` and `metrics/`).
+- **`holon-knowledge/` (Dynamic Experience):** Memory (`ledger/`), knowledge base (`kb/`), and wisdom base (`wb/`).
 
 ### Key Components
 
 - **Meta-Agent (Orchestrator):** Config-driven coordinator that manages the intent lifecycle, agent dispatch, and system state.
-- **Worker Agents:** Specialized, config-driven agents (Planner, Executor, Curator, Evaluator, Researcher) performing domain-specific tasks based on assigned missions.
-- **Knowledge Base (KB):** Shared repository of curated patterns, tactics, and failure modes; validated against config-driven schemas.
-- **Ledger:** Immutable, append-only event log capturing all agent actions and decisions; enforced by config-driven validation rules.
+- **Worker Agents:** Specialized agents (Planner, Executor, Curator, Evaluator, Researcher) performing tasks based on priors in `holon-config/` and experience in `holon-knowledge/`.
+- **Knowledge Base (KB):** Project-specific repository of curated patterns, tactics, and failure modes stored in `holon-knowledge/kb/`.
+- **Wisdom Base (WB):** Global repository of universal invariants stored in `holon-knowledge/wb/`.
+- **Ledger:** Immutable event log capturing all agent actions and decisions stored in `holon-knowledge/ledger/`.
 
 ---
 
@@ -108,8 +110,8 @@ Autonomy escalation enables:
 
 ## 7) Agent Lifecycle
 
-1. **Initialization:** Agents are instantiated with an `agent_id`, `model`, `trust_level`, and `config_path` (defaulting to `holon-config/`).
-2. **Configuration Loading:** Agents use a `ConfigLoader` to fetch their identity/mission (`prompts/`), validation rules (`schemas/`), and metric weights (`metrics/`).
+1. **Initialization:** Agents are instantiated with an `agent_id`, `model`, `trust_level`, `config_path` (defaulting to `holon-config/`), and `knowledge_path` (defaulting to `holon-knowledge/`).
+2. **Configuration & Knowledge Loading:** Agents use a `ConfigLoader` to fetch their local project priors and a `KnowledgeLoader` to fetch their historical memory and universal wisdom.
 3. **Task Assignment:** Meta-Agent dispatches intents and plans based on agent capabilities.
 4. **Execution:** Agents perform tasks, log results, and update metrics.
 5. **Learning:** Agents update internal models and propose KB entries or system improvements.

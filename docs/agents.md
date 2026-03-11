@@ -16,10 +16,9 @@ Agents enable:
 
 ### 1) Agents are config-driven
 
-- Agents are initialized with a `config_path` (defaulting to `holon-config/`).
-- Agents load their identity, mission, and persona from `holon-config/prompts/`.
-- Agents load their "physics" (metric weights, EV coefficients) from `holon-config/metrics/`.
-- Agents load their safety and git flow rules from `holon-config/rules/`.
+- Agents are initialized with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
+- Agents load their identity, mission, physics (metrics), safety rules, and local project priors from `holon-config/`.
+- Agents load their historical memory (Ledger, KB) and universal wisdom (WB) from `holon-knowledge/`.
 
 ### 2) Agents are goal-directed
 
@@ -62,102 +61,23 @@ Agents enable:
 **Inputs:**
 
 - Intent (goal, constraints, scope)
-- KB (patterns, tactics, failure modes)
-- Ledger (historical calibration data)
-- `holon-config/prompts/planner.template.md` (mission and persona)
-- `holon-config/metrics/` (EV coefficients)
+- KB (project-specific patterns and tactics from `holon-knowledge/kb/`)
+- WB (universal invariants from `holon-knowledge/wb/`)
+- Ledger (historical calibration data from `holon-knowledge/ledger/`)
+- `holon-config/prompts/` (mission and persona)
+- `holon-config/metrics/` (local EV coefficients)
 
 **Outputs:**
 
 - Plan variants (structured steps, sub-intents, predictions)
 - Predicted metrics (P(success), ΔS, Impact, Cost, EV)
 
-**Capabilities:**
+**Operational Logic:**
 
-- Retrieve similar intents from KB
-- Decompose intent into sub-intents
-- Estimate metrics using current estimators
-- Generate multiple plan variants (competitive planning)
-
-**Trust requirements:**
-
-- **Baseline:** Can generate plans for assigned intents
-- **Medium:** Can propose sub-intent decomposition
-- **High:** Can propose novel plan structures
-- **Highest:** Can propose new planning heuristics
-
-**Model routing:**
-
-- **Flash tier:** Low-entropy intents (< 10), familiar patterns
-- **Medium tier:** Moderate-entropy intents (10-30), some novelty
-- **Deep tier:** High-entropy intents (> 30), novel problems, complex decomposition
-
-**Example:**
-
-```python
-class PlannerAgent:
-    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
-        self.agent_id = agent_id
-        self.model = model
-        self.trust_level = trust_level
-        self.config = ConfigLoader(config_path)
-        
-        # Load mission and persona from external config
-        self.mission = self.config.load_prompt("planner")
-        self.metrics_config = self.config.load_metrics_config()
-
-    def generate_plan_variants(self, intent, kb, ledger, num_variants=3):
-        variants = []
-        for i in range(num_variants):
-            # Retrieve similar patterns
-            patterns = kb.find_similar_intents(intent.goal, intent.constraints)
-
-            # Generate plan structure using config-driven mission
-            plan = self.generate_plan_structure(intent, patterns, self.mission)
-
-            # Estimate metrics using EV coefficients from config
-            predicted = self.estimate_metrics(plan, ledger)
-
-            # Create plan variant
-            variant = PlanVariant(
-                plan_id=f"P-{intent.intent_id}-v{i + 1}-{self.model.tier}",
-                plan_graph=plan,
-                predicted=predicted,
-                model=self.model
-            )
-            variants.append(variant)
-
-        return variants
-
-    def estimate_metrics(self, plan, ledger):
-        # Use active estimators from KB
-        p_success_estimator = kb.get_active_estimator("p_success")
-        entropy_estimator = kb.get_active_estimator("entropy")
-        impact_estimator = kb.get_active_estimator("impact")
-        learning_value_estimator = kb.get_active_estimator("learning_value")
-
-        p_success = p_success_estimator.estimate(plan, ledger)
-        entropy = entropy_estimator.estimate(plan, ledger)
-        impact = impact_estimator.estimate(plan, ledger)
-        learning_value = learning_value_estimator.estimate(plan, ledger)
-        cost = self.estimate_cost(plan)
-
-        # Physics defined in holon-config/metrics/
-        MU = self.metrics_config.mu
-        LAMBDA = self.metrics_config.lambda_coeff
-
-        ev = p_success * impact + MU * learning_value - LAMBDA * entropy - cost
-
-        return PredictedMetrics(
-            p_success=p_success,
-            entropy=entropy,
-            impact=impact,
-            cost=cost,
-            learning_value=learning_value,
-            ev=ev
-        )
-
-```
+1. **Context Retrieval:** Queries the KB and WB for similar successful patterns and universal reasoning invariants.
+2. **Plan Generation:** Uses the config-driven mission to produce multiple candidate plan graphs (competitive planning).
+3. **Metric Estimation:** Applies the EV formula using coefficients from `holon-config/metrics/` and calibration data from the Ledger.
+4. **Variant Creation:** Packages each candidate as a Plan Variant with unique IDs and predicted outcomes.
 
 ---
 
@@ -167,145 +87,36 @@ class PlannerAgent:
 
 **Inputs:**
 
-- Intent
-- Selected plan
+- Intent and Selected Plan
 - Sandbox configuration
-- KB (tactics, modules)
-- `holon-config/prompts/executor.template.md` (mission and persona)
+- KB (tactics and modules from `holon-knowledge/kb/`)
+- `holon-config/prompts/` (mission and persona)
 - `holon-config/rules/` (safety rules and git flow policies)
 
 **Outputs:**
 
 - Execution results (success/failure)
 - Artifacts (code, diffs, test results)
-- Actual metrics (measured P(success), ΔS, Impact, Cost, LearningValue)
+- Measured metrics (actual P(success), ΔS, Impact, Cost, LearningValue)
 
-**Capabilities:**
+**Operational Logic:**
 
-- Execute plan steps sequentially
-- Invoke tools (git, pytest, python, bash)
-- Retrieve tactics from KB
-- Handle errors and retries
-- Measure actual metrics post-execution
-
-**Trust requirements:**
-
-- **Baseline:** Can execute in process/container sandbox
-- **Medium:** Can execute with limited network access
-- **High:** Can execute with broader tool access
-- **Highest:** Can execute in production-like environments (still sandboxed)
-
-**Model routing:**
-
-- **Flash tier:** Simple execution (scripted steps, low complexity)
-- **Medium tier:** Moderate complexity (some decision-making required)
-- **Deep tier:** Complex execution (novel problems, error recovery, adaptation)
-
-**Example:**
-
-```python
-class ExecutorAgent:
-    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
-        self.agent_id = agent_id
-        self.model = model
-        self.trust_level = trust_level
-        self.config = ConfigLoader(config_path)
-        
-        # Load mission and safety rules from external config
-        self.mission = self.config.load_prompt("executor")
-        self.rules = self.config.load_rules()
-
-        def execute_plan(self, intent, plan, sandbox):
-            ledger.log("execution_started", intent_id=intent.intent_id, plan_id=plan.plan_id)
-
-            try:
-                # Apply config-driven safety rules to sandbox
-                sandbox.apply_rules(self.rules)
-                
-                # Execute each step
-                for step in plan.steps:
-                    self.execute_step(step, sandbox)
-
-                # Run tests
-                test_results = sandbox.run_tests()
-
-                # Measure actual metrics
-                actual = self.measure_metrics(intent, plan, sandbox)
-
-                # Log completion
-                ledger.log("execution_completed",
-                           intent_id=intent.intent_id,
-                           status="success",
-                           actual=actual,
-                           test_results=test_results)
-
-                return ExecutionResult(status="success", actual=actual)
-
-            except Exception as e:
-                ledger.log("execution_completed",
-                           intent_id=intent.intent_id,
-                           status="failure",
-                           failure_reason=str(e))
-
-                return ExecutionResult(status="failure", error=e)
-
-        def execute_step(self, step, sandbox):
-            # Retrieve tactics from KB
-            tactics = kb.find_tactics(step.description, step.language)
-
-            if tactics:
-                # Use proven tactic
-                tactic = tactics[0]
-                result = sandbox.run_code(tactic.code)
-            else:
-                # Generate new implementation
-                code = self.generate_code(step)
-                result = sandbox.run_code(code)
-
-            ledger.log("tool_call",
-                       tool_name=step.tool,
-                       command=step.command,
-                       exit_code=result.exit_code)
-
-            return result
-
-        def measure_metrics(self, intent, plan, sandbox):
-            # Measure actual P(success) (1.0 if we got here, 0.0 if exception)
-            p_success = 1.0
-
-            # Measure actual entropy
-            entropy = self.measure_entropy(intent, sandbox)
-
-            # Measure actual impact
-            impact = self.measure_impact(intent, sandbox)
-
-            # Measure actual cost
-            cost = self.measure_cost(sandbox)
-
-            # Measure learning value
-            learning_value = self.measure_learning_value(intent, sandbox)
-
-            return ActualMetrics(
-                p_success=p_success,
-                entropy=entropy,
-                impact=impact,
-                cost=cost,
-                learning_value=learning_value
-            )
-
-```
+1. **Sandbox Initialization:** Prepares an isolated environment and applies safety rules defined in `holon-config/rules/`.
+2. **Step Execution:** Runs plan steps sequentially, utilizing proven tactics from the KB or generating new implementations based on the mission.
+3. **Validation:** Executes tests and captures all tool outputs (git, pytest, etc.) to the Ledger.
+4. **Post-Execution Measurement:** Measures actual entropy, impact, and cost to compute calibration errors.
 
 ---
 
 ### 3) **Curator Agent**
 
-**Role:** Extract patterns, tactics, and failure modes from ledger and propose KB entries.
+**Role:** Extract patterns and failure modes from the Ledger and propose KB entries.
 
 **Inputs:**
 
-- Ledger (historical executions)
-- KB (existing entries)
-- `holon-config/prompts/curator.template.md` (mission and persona)
+- Ledger (historical executions from `holon-knowledge/ledger/`)
+- KB (existing entries in `holon-knowledge/kb/`)
+- `holon-config/prompts/` (mission and persona)
 - `holon-config/schemas/` (KB validation rules)
 
 **Outputs:**
@@ -313,107 +124,23 @@ class ExecutorAgent:
 - KB entry proposals (patterns, tactics, failure modes)
 - Evidence (ledger references, success/failure counts)
 
-**Capabilities:**
+**Operational Logic:**
 
-- Scan ledger for recurring patterns
-- Identify successful tactics (5+ uses, 0 failures)
-- Identify failure modes (3+ failures, same root cause)
-- Propose KB entries with evidence
-- Validate against KB write rules
-
-**Trust requirements:**
-
-- **Medium:** Can propose tactics and patterns
-- **High:** Can propose failure modes and modules
-- **Highest:** Can propose estimator improvements
-
-**Model routing:**
-
-- **Medium tier:** Pattern extraction (similarity matching)
-- **Deep tier:** Failure mode analysis (root cause reasoning)
-
-**Example:**
-
-```python
-class CuratorAgent:
-    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
-        self.agent_id = agent_id
-        self.model = model
-        self.trust_level = trust_level
-        self.config = ConfigLoader(config_path)
-        
-        # Load mission and schemas from config
-        self.mission = self.config.load_prompt("curator")
-        self.kb_schema = self.config.load_schema("kb_entry")
-
-        def extract_patterns(self, ledger, kb, lookback_days=7):
-            # Query recent successful intents
-            intents = ledger.query_intents(
-                status="success",
-                since=now() - timedelta(days=lookback_days)
-            )
-
-            # Group by similarity
-            clusters = self.cluster_by_similarity(intents)
-
-            # For each cluster with 3+ members
-            for cluster in clusters:
-                if len(cluster) >= 3:
-                    # Extract common structure
-                    pattern = self.extract_common_structure(cluster)
-
-                    # Validate evidence threshold
-                    if self.validate_evidence(pattern, cluster):
-                        # Propose KB entry
-                        kb_entry = self.create_pattern_entry(pattern, cluster)
-                        kb.propose_entry(kb_entry)
-
-                        ledger.log("kb_entry_proposed",
-                                   kb_id=kb_entry.kb_id,
-                                   kb_type="pattern",
-                                   evidence=kb_entry.evidence)
-
-        def extract_failure_modes(self, ledger, kb, lookback_days=7):
-            # Query recent failed intents
-            failures = ledger.query_intents(
-                status="failure",
-                since=now() - timedelta(days=lookback_days)
-            )
-
-            # Group by failure reason
-            failure_groups = self.group_by_failure_reason(failures)
-
-            # For each group with 3+ members
-            for reason, group in failure_groups.items():
-                if len(group) >= 3:
-                    # Analyze root cause
-                    root_cause = self.analyze_root_cause(group)
-
-                    # Identify mitigations
-                    mitigations = self.identify_mitigations(root_cause, kb)
-
-                    # Propose failure mode entry
-                    kb_entry = self.create_failure_mode_entry(reason, root_cause, mitigations, group)
-                    kb.propose_entry(kb_entry)
-
-                    ledger.log("kb_entry_proposed",
-                               kb_id=kb_entry.kb_id,
-                               kb_type="failure_mode",
-                               evidence=kb_entry.evidence)
-
-```
+1. **Pattern Extraction:** Scans the Ledger for recurring successful intent structures and extracts them as reusable patterns.
+2. **Failure Analysis:** Groups failed intents by reason to identify root causes and propose mitigations.
+3. **Validation:** Ensures all proposals meet the evidence thresholds and schema requirements defined in `holon-config/`.
+4. **Ledger Logging:** Records all proposals and evidence to the Ledger for human or higher-trust agent review.
 
 ---
 
 ### 4) **Evaluator Agent**
 
-**Role:** Evaluate plan variants and select the best by EV.
+**Role:** Evaluate plan variants and select the best by Expected Value (EV).
 
 **Inputs:**
 
-- Intent
-- Plan variants (with predicted metrics)
-- `holon-config/prompts/evaluator.template.md` (mission and persona)
+- Intent and Plan variants (with predicted metrics)
+- `holon-config/prompts/` (mission and persona)
 - `holon-config/rules/` (convergence policy)
 
 **Outputs:**
@@ -421,92 +148,11 @@ class CuratorAgent:
 - Selected plan
 - Convergence reason (EV plateau, dominant plan, budget exhausted)
 
-**Capabilities:**
+**Operational Logic:**
 
-- Rank plans by EV
-- Check convergence criteria
-- Decide when to stop planning
-- Log planning convergence
-
-**Trust requirements:**
-
-- **Baseline:** Can evaluate plans using standard EV formula
-- **High:** Can propose convergence policy changes
-
-**Model routing:**
-
-- **Flash tier:** Simple EV comparison
-- **Medium tier:** Complex convergence logic
-
-**Example:**
-
-```python
-class EvaluatorAgent:
-    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
-        self.agent_id = agent_id
-        self.model = model
-        self.trust_level = trust_level
-        self.config = ConfigLoader(config_path)
-        
-        # Load mission and convergence rules from config
-        self.mission = self.config.load_prompt("evaluator")
-        self.convergence_policy = self.config.load_rules().convergence
-
-        def evaluate_and_select(self, intent, variants):
-            # Rank by EV
-            ranked = sorted(variants, key=lambda v: v.predicted.ev, reverse=True)
-
-            # Check convergence using config-driven policy
-            converged, reason = self.check_convergence(ranked, self.convergence_policy)
-
-            if converged:
-                winner = ranked[0]
-
-                ledger.log("planning_converged",
-                           intent_id=intent.intent_id,
-                           variants_considered=[v.plan_id for v in variants],
-                           winner_plan_id=winner.plan_id,
-                           reason=reason)
-
-                ledger.log("plan_selected",
-                           intent_id=intent.intent_id,
-                           plan_id=winner.plan_id,
-                           predicted=winner.predicted)
-
-                return winner
-            else:
-                return None  # Keep planning
-
-        def check_convergence(self, ranked_variants, policy):
-            if len(ranked_variants) < 2:
-                return False, None
-
-            best = ranked_variants[0]
-            second_best = ranked_variants[1]
-
-            # Dominant plan (EV gap > threshold)
-            ev_gap = best.predicted.ev - second_best.predicted.ev
-            if ev_gap > policy.dominant_plan_threshold:
-                return True, "dominant_plan"
-
-            # EV plateau (diminishing returns)
-            if len(ranked_variants) >= 3:
-                recent_improvement = best.predicted.ev - ranked_variants[-3].predicted.ev
-                if recent_improvement < policy.ev_plateau_threshold:
-                    return True, "ev_plateau"
-
-            # Entropy budget exhausted
-            planning_cost = sum(v.predicted.cost for v in ranked_variants)
-            if planning_cost > policy.planning_budget:
-                return True, "budget_exhausted"
-
-            # Max variants reached
-            if len(ranked_variants) >= policy.max_variants:
-                return True, "max_variants_reached"
-
-            return False, None
-
-```
+1. **Ranking:** Sorts variants by EV based on the "physics" defined in the configuration.
+2. **Convergence Check:** Evaluates the variant set against the convergence policy (e.g., is the EV gap between the top two variants wide enough?).
+3. **Decision:** Signals whether to proceed with the best plan or continue generating more variants to reduce uncertainty.
 
 ---
 
@@ -516,250 +162,44 @@ class EvaluatorAgent:
 
 **Inputs:**
 
-- Intent queue (pending intents)
-- Agent pool (available planner/executor/curator agents)
-- Ledger and KB
-- `holon-config/` (root configuration path)
+- Intent queue (pending work)
+- Agent pool (available specialized agents)
+- Ledger and KB (`holon-knowledge/`)
+- `holon-config/` (root configuration and rules)
 
 **Outputs:**
 
-- Work assignments (dispatch intents to agents)
-- Intent state transitions
-- Human review requests
+- Work assignments and Intent state transitions
+- Human review packages
 
-**Capabilities:**
+**Operational Logic:**
 
-- Create intents (root or sub-intents)
-- Dispatch planning work to planner agents
-- Dispatch execution work to executor agents
-- Manage git flow (rebase, merge)
-- Request human review
-- Monitor agent performance
-- Adjust trust levels
-
-**Trust requirements:**
-
-- **N/A** (meta-agent is a system component, not a trust-bounded agent)
-
-**Model routing:**
-
-- **Medium tier:** Standard orchestration logic
-- **Deep tier:** Complex scheduling, conflict resolution
-
-**Example:**
-
-```python
-class MetaAgent:
-    def __init__(self, config_path="holon-config/"):
-        self.config_path = config_path
-        self.config = ConfigLoader(config_path)
-        self.intent_queue = IntentQueue()
-        self.agent_pool = AgentPool(config_path=self.config_path)
-        
-        # Load orchestration rules from config
-        self.rules = self.config.load_rules()
-
-        def run(self):
-            while True:
-                # Check for pending intents
-                intent = self.intent_queue.pop_next()
-
-                if intent is None:
-                    time.sleep(1)
-                    continue
-
-                # Dispatch based on intent state
-                if intent.state == "planning":
-                    self.dispatch_planning(intent)
-                elif intent.state == "ready":
-                    self.dispatch_execution(intent)
-                elif intent.state == "rebasing":
-                    self.handle_rebase(intent)
-                elif intent.state == "awaiting_review":
-                    self.request_human_review(intent)
-                elif intent.state == "approved":
-                    self.merge_to_parent(intent)
-
-        def dispatch_planning(self, intent):
-            # Select planner agent (initialized with config_path)
-            planner = self.agent_pool.select_planner(intent)
-
-            # Generate plan variants
-            variants = planner.generate_plan_variants(intent, kb, ledger)
-
-            # Evaluate and select (evaluator also uses config_path)
-            evaluator = self.agent_pool.select_evaluator(intent)
-            selected_plan = evaluator.evaluate_and_select(intent, variants)
-
-            if selected_plan:
-                intent.state = "ready"
-                intent.selected_plan = selected_plan
-                self.intent_queue.push(intent)
-            else:
-                # Keep planning (generate more variants)
-                intent.state = "planning"
-                self.intent_queue.push(intent)
-
-        def dispatch_execution(self, intent):
-            # Rebase from parent before execution
-            self.rebase_from_parent(intent)
-
-            # Select executor agent
-            executor = self.agent_pool.select_executor(intent)
-
-            # Execute plan
-            result = executor.execute_plan(intent, intent.selected_plan, sandbox)
-
-            if result.status == "success":
-                # Rebase from parent after execution
-                self.rebase_from_parent(intent)
-
-                # Check if parent intent or sub-intent
-                if intent.parent_intent_id is None:
-                    # Parent intent → request human review
-                    intent.state = "awaiting_review"
-                else:
-                    # Sub-intent → merge to parent automatically
-                    intent.state = "ready_to_merge"
-
-                self.intent_queue.push(intent)
-            else:
-                # Execution failed
-                intent.state = "failed"
-                ledger.log("intent_state_changed",
-                           intent_id=intent.intent_id,
-                           from_state="executing",
-                           to_state="failed",
-                           reason=result.error)
-
-        def request_human_review(self, intent):
-            review_package = self.generate_review_package(intent)
-
-            ledger.log("human_review_requested",
-                       intent_id=intent.intent_id,
-                       review_kind="promotion",
-                       summary=review_package.summary)
-
-            # Wait for human decision (external process)
-            # When decision arrives, update intent state
-
-        def merge_to_parent(self, intent):
-            parent_branch = self.get_parent_branch(intent)
-
-            result = git.merge(intent.branch, parent_branch)
-
-            ledger.log("git_merge_attempted",
-                       intent_id=intent.intent_id,
-                       from_branch=intent.branch,
-                       to_branch=parent_branch,
-                       status="success" if result.success else "failed")
-
-            if result.success:
-                intent.state = "merged"
-
-                # If merged to main, mark as promoted
-                if parent_branch == "main":
-                    intent.state = "promoted"
-                    ledger.log("intent_promoted_to_main",
-                               intent_id=intent.intent_id,
-                               merge_sha=result.merge_sha)
-
-```
+1. **Dispatch:** Assigns planning and execution tasks to specialized agents based on their capabilities and trust levels.
+2. **State Management:** Tracks intents through their lifecycle (Proposed → Planning → Executing → Merged).
+3. **Git Flow Coordination:** Enforces mandatory rebase/merge rules defined in `holon-config/world/constraints.md`.
+4. **Escalation:** Generates review packages for humans when intents reach promotion boundaries or safety triggers.
 
 ---
 
-### 6) **Researcher Agent** (highest trust only)
+### 6) **Researcher Agent** (Highest trust only)
 
-**Role:** Propose improvements to estimators, learning value calibration, routing policies, and core patterns.
+**Role:** Propose improvements to estimators, metrics, and core engine heuristics.
 
 **Inputs:**
 
 - Ledger (historical calibration data)
-- KB (current estimators and policies)
-- `holon-config/prompts/researcher.template.md` (mission and persona)
+- KB and WB (`holon-knowledge/`)
+- `holon-config/prompts/` (researcher mission)
 
 **Outputs:**
 
-- Estimator proposals (with backtest validation)
-- Routing policy proposals (with ROI validation)
-- Pattern proposals (with evidence)
+- Estimator and Policy proposals (with backtest validation)
 
-**Capabilities:**
+**Operational Logic:**
 
-- Analyze calibration errors
-- Identify systematic biases in estimators
-- Propose improved estimator formulas
-- Backtest on historical data
-- Propose routing policy changes
-- Validate ROI improvements
-- Analyze learning value calibration and propose 𝜇 adjustments.
-
-**Trust requirements:**
-
-- **Highest:** Required (with human approval for all proposals)
-
-**Model routing:**
-
-- **Deep tier:** Complex analysis, hypothesis generation, backtest validation
-
-**Example:**
-
-```python
-class ResearcherAgent:
-    def __init__(self, agent_id, model, trust_level, config_path="holon-config/"):
-        self.agent_id = agent_id
-        self.model = model
-        self.trust_level = trust_level
-        self.config = ConfigLoader(config_path)
-        
-        if trust_level != "highest":
-            raise ValueError("Researcher agent requires highest trust level")
-
-        self.mission = self.config.load_prompt("researcher")
-
-
-def propose_estimator_improvement(self, metric_name, ledger, kb):
-    # Get current estimator
-    current = kb.get_active_estimator(metric_name)
-
-    # Analyze calibration errors
-    errors = self.analyze_calibration_errors(metric_name, ledger)
-
-    # Identify systematic biases
-    biases = self.identify_biases(errors)
-
-    # Generate improved estimator
-    improved = self.generate_improved_estimator(current, biases)
-
-    # Backtest on historical data
-    backtest_results = self.backtest(improved, ledger, window_days=30)
-
-    # Check if improvement meets threshold
-    if backtest_results.improvement > 0.10:
-        # Create proposal
-        proposal = self.create_estimator_proposal(
-            metric_name=metric_name,
-            new_version=f"{metric_name}_v{current.version + 1}",
-            based_on=current.kb_id,
-            implementation=improved,
-            backtest_results=backtest_results
-        )
-
-        # Submit for human approval
-        kb.propose_entry(proposal)
-
-        ledger.log("estimator_proposed",
-                   estimator_name=metric_name,
-                   new_version=proposal.version,
-                   calibration_improvement=backtest_results.improvement,
-                   human_approval_required=True)
-
-        return proposal
-    else:
-        # Improvement too small, don't propose
-        return None
-
-```
+1. **Bias Detection:** Analyzes calibration errors in the Ledger to find systematic inaccuracies in the engine's "physics."
+2. **Hypothesis Testing:** Generates improved estimator formulas and backtests them against historical project data.
+3. **Wisdom Ascension:** Identifies project-specific patterns in the KB that are successful across multiple projects and proposes them for promotion to the Wisdom Base.
 
 ---
 
@@ -767,89 +207,16 @@ def propose_estimator_improvement(self, metric_name, ledger, kb):
 
 ### 1) Agent creation
 
-```python
-def create_agent(agent_type, model, trust_level="baseline", config_path="holon-config/"):
-    agent_id = generate_agent_id(agent_type)
-
-    agent_class = {
-        "planner": PlannerAgent,
-        "executor": ExecutorAgent,
-        "curator": CuratorAgent,
-        "evaluator": EvaluatorAgent,
-        "researcher": ResearcherAgent
-    }[agent_type]
-    
-    agent = agent_class(agent_id, model, trust_level, config_path=config_path)
-
-    ledger.log("agent_created",
-               agent_id=agent_id,
-               agent_type=agent_type,
-               model=model,
-               trust_level=trust_level,
-               config_path=config_path)
-
-    return agent
-
-```
+Agents are instantiated with a unique ID, a specific model tier, and a trust level. They are linked to `config_path` and `knowledge_path` to ensure they "wake up" with the correct priors and memory.
 
 ### 2) Agent execution
 
-```python
-def execute_agent_task(agent, task):
-    ledger.log("agent_task_started",
-               agent_id=agent.agent_id,
-               task_type=task.type,
-               task_id=task.id)
-
-try:
-    result = agent.execute(task)
-
-    ledger.log("agent_task_completed",
-               agent_id=agent.agent_id,
-               task_id=task.id,
-               status="success",
-               result=result)
-
-    return result
-
-except Exception as e:
-    ledger.log("agent_task_completed",
-               agent_id=agent.agent_id,
-               task_id=task.id,
-               status="failure",
-               error=str(e))
-
-    raise
-
-```
+Every task execution is wrapped in a logging envelope. The system records the start, any tool calls made during execution, and the final outcome (success/failure) to the immutable Ledger.
 
 ### 3) Agent trust update
 
-```python
-def update_agent_trust(agent_id, ledger):
-    # Compute trust score
-    trust_score = compute_trust_score(agent_id, ledger)
-    
-    # Get execution count
-    execution_count = ledger.count_executions(agent_id=agent_id)
-    
-    # Assign trust level
-    new_trust_level = assign_trust_level(trust_score, execution_count)
-    
-    # Get current trust level
-    agent = agent_pool.get_agent(agent_id)
-    old_trust_level = agent.trust_level
-    
-    if new_trust_level != old_trust_level:
-        agent.trust_level = new_trust_level
-    
-        ledger.log("agent_trust_changed",
-                   agent_id=agent_id,
-                   from_trust_level=old_trust_level,
-                   to_trust_level=new_trust_level,
-                   trust_score=trust_score,
-                   execution_count=execution_count)
-```
+The system periodically recalculates agent trust scores based on successful executions, calibration accuracy, and adherence to safety invariants. Level transitions (e.g., Baseline to Medium) are governed by rules in
+`holon-config/rules/trust_levels.json`.
 
 ---
 
@@ -958,23 +325,23 @@ def score_intent_quality(proposed_intent, agent_id, ledger, kb):
         score += 0.2
     if responds_to_failure(proposed_intent, ledger):
         score += 0.3
-    
+
     # Novelty vs redundancy
     similar_intents = kb.find_similar_intents(proposed_intent.goal)
     if len(similar_intents) == 0:
         score += 0.2  # Novel
     else:
         score -= 0.1  # Redundant
-    
+
     # Agent track record
     agent_trust_score = compute_trust_score(agent_id, ledger)
     score += 0.2 * agent_trust_score
-    
+
     # Predicted EV
     predicted_ev = estimate_intent_ev(proposed_intent, kb, ledger)
     if predicted_ev > 50:
         score += 0.2
-    
+
     return max(0.0, min(1.0, score))
 
 ```
@@ -992,14 +359,14 @@ def approve_intent_proposal(proposed_intent, agent_id, quality_score):
             return "auto_approved"
         else:
             return "human_review_required"
-    
+
     elif agent.trust_level == "highest":
         # Highest trust: auto-approve if quality > 0.5
         if quality_score > 0.5:
             return "auto_approved"
         else:
             return "human_review_required"
-    
+
     else:
         # Lower trust: always require human review
         return "human_review_required"

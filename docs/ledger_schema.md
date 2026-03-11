@@ -60,7 +60,8 @@ Ledger entries refer to stable IDs:
 
 ### Recommended format: JSON Lines
 
-- File: `ledger/events.jsonl`
+- Directory: `holon-knowledge/ledger/`
+- Primary File: `holon-knowledge/ledger/events.jsonl`
 - Encoding: UTF-8
 - Each line: one JSON object (one event)
 - Ordering: strictly increasing by `ts` then by `seq`

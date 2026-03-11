@@ -50,19 +50,27 @@ feedback loops.
 
 ### Core architecture: The Stateless Engine
 
-Holon operates as a **Stateless Engine**. All project-specific domain knowledge, agent personalities, environmental context, and validation rules are consolidated into a single mandatory directory: `holon-config/`. This directory acts as the "External Brain" for Holon.
+Holon operates as a **Stateless Engine**. It separates project-specific **Governance** (Priors) from **Experience** (Memory) using two mandatory directories.
 
-Agents and system components are **config-driven**; they are initialized with a `config_path` (defaulting to `holon-config/`) and load their constraints, prompts, and "physics" from there.
+#### 1) `holon-config/` (The Static Priors)
 
-#### The `holon-config/` Structure
+Consolidates human-authored rules, agent identities, and project "physics".
 
 - `prompts/`: Agent identities, missions, and persona templates.
-- `schemas/`: Validation rules for the Ledger, Knowledge Base, and Wisdom Base.
-- `world/`: The project "Physics" and environmental context.
-    - `ruleset.md`: Language versions, coding conventions, and API contracts.
-    - `constraints.md`: Security policies, architectural patterns, and git flow rules.
-- `rules/`: Programmatic enforcement of safety and autonomy boundaries.
+- `schemas/`: Validation rules for the Ledger, KB, and Wisdom Base.
+- `world/`: The project "Physics" context (`ruleset.md` and `constraints.md`).
+- `rules/`: Programmatic safety and autonomy boundaries.
 - `metrics/`: EV weights, coefficients, and estimator constants.
+
+#### 2) `holon-knowledge/` (The Dynamic Experience)
+
+Consolidates machine-authored history and the intelligence evolved from it.
+
+- `ledger/`: The append-only, forensic event log of every action.
+- `kb/`: (Knowledge Base) Project-specific patterns, tactics, and failure modes.
+- `wb/`: (Wisdom Base) Universal invariants and cross-project heuristics.
+
+Agents and system components are **config-driven**; they are initialized with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
 
 ---
 
@@ -71,31 +79,38 @@ Agents and system components are **config-driven**; they are initialized with a 
 #### Component map
 
 - **Config Loader**
-    - The entry point for the "External Brain". Provides a unified API to access prompts, schemas, and the world definition (`ruleset.md`, `constraints.md`) from `holon-config/`.
+    - The entry point for the "Static Priors". Provides a unified API to access prompts, schemas, and the world definition from `holon-config/`.
+- **Knowledge Loader**
+    - The entry point for the "Dynamic Experience". Provides agents with the Ledger, KB, and WB from `holon-knowledge/`.
 - **Intent Registry**
     - Stores intent metadata: IDs, parent/child links, state, constraints, trust requirements.
 - **Planner (Variant Generator)**
-    - Config-driven: Loads mission-specific prompts from `holon-config/prompts/` and project context from `holon-config/world/`.
+    - Config-driven: Loads missions and project context from `holon-config/`.
+    - Knowledge-driven: Utilizes local patterns (KB) and universal reasoning (WB) from `holon-knowledge/`.
     - Produces multiple candidate **Plan Graphs** for the same intent.
 - **Plan Evaluator**
-    - Config-driven: Loads metric weights and coefficients from `holon-config/metrics/`.
-    - Scores plan variants using metrics + constraints defined in `holon-config/world/constraints.md`.
+    - Config-driven: Loads metric weights from `holon-config/metrics/`.
+    - Scores plan variants using metrics + constraints defined in `holon-config/world/`.
 - **Convergence Policy**
-    - Config-driven: Loads convergence thresholds from `holon-config/rules/`.
-    - Decides when to stop generating new plan variants (EV plateau, entropy budget, dominant winner).
+    - Config-driven: Loads thresholds from `holon-config/rules/`.
+    - Decides when to stop generating new plan variants.
 - **Router**
-    - Selects model tiers per task (fast/cheap vs deep/careful), recorded as metadata.
+    - Selects model tiers per task, recorded as metadata.
 - **Executor (Sandbox Runner)**
-    - Config-driven: Loads safety rules from `holon-config/rules/` and enforces the `ruleset.md` and `constraints.md` defined in `holon-config/world/`.
-    - Runs a chosen plan variant in an isolated environment, producing artifacts + measurements.
+    - Config-driven: Loads safety rules from `holon-config/rules/`.
+    - Knowledge-driven: Adheres to universal safety invariants from `holon-knowledge/wb/`.
+    - Runs a chosen plan variant in an isolated environment.
 - **Evolution Ledger (Write-once log)**
-    - Config-driven: Validates events against `holon-config/schemas/`.
-    - Append-only record of: predictions, actions, diffs, model routing decisions, outcomes, measured metrics.
+    - Knowledge-driven: Stores events in `holon-knowledge/ledger/`.
+    - Validates events against `holon-config/schemas/`.
 - **Knowledge Base (Read/write store)**
-    - Config-driven: Validates entries against `holon-config/schemas/`.
-    - Curated knowledge extracted from the ledger: patterns, reusable modules, known pitfalls, estimator proposals.
+    - Knowledge-driven: Stores patterns and tactics in `holon-knowledge/kb/`.
+    - Validates entries against `holon-config/schemas/`.
+- **Wisdom Base (Global Store)**
+    - Knowledge-driven: Stores universal axioms in `holon-knowledge/wb/`.
+    - Meta-evolving: Universal knowledge that "ascends" from local KBs.
 - **Meta-Agent / Orchestrator**
-    - Config-driven: Initialized with `config_path`.
+    - Initialized with `config_path` and `knowledge_path`.
     - Watches for new work, dispatches planner/executor jobs, enforces git discipline and budgets.
 - **Human Review Boundary**
     - Where humans approve promotions (typically parent intent → `main`).

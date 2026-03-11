@@ -52,7 +52,7 @@ The KB enables:
 ### Recommended format: Structured JSON files + index
 
 ```
-kb/
+holon-knowledge/kb/
 ├── patterns/
 │   ├── pattern_001.json
 │   ├── pattern_002.json

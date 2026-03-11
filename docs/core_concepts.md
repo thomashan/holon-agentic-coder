@@ -7,41 +7,33 @@ behavior and system operation.
 
 ## The Project as a Unique World: The Stateless Engine
 
-Each project is effectively its own **unique world** defined by a specific **rule set** and **constraints** that govern how work is done, how code behaves, and how the system evolves.
+Each project is effectively its own **unique world** defined by its **Governance** (how it should act) and its **Experience** (what it has learned).
 
-In Holon, this is formalized through a **Stateless Engine** architecture. All project-specific domain knowledge, agent personalities, environmental context, and validation rules are consolidated into a single mandatory
-directory: `holon-config/`. This directory acts as the **"External Brain"** for Holon.
+In Holon, this is formalized through a **Stateless Engine** architecture using two mandatory directories:
 
-### Rule Set
+### 1) `holon-config/` (Static Priors)
 
-The rule set is managed in `holon-config/world/ruleset.md`. This Markdown file defines the "language" of the project, including:
+This directory acts as the **"Constitutional Brain"** for Holon, containing human-authored rules and physics:
 
-- Language versions and dialects (e.g., Python 3.9 vs 3.11, TypeScript strictness levels)
-- Coding conventions and style guides
-- API contracts and data schemas
-- Testing frameworks and coverage requirements
-- Deployment environments and runtime assumptions
-- Implicit domain-specific protocols and workflows
+- **Rule Set:** Language versions, coding conventions, and API contracts (in `world/ruleset.md`).
+- **Constraints:** Security policies and git flow rules (in `world/constraints.md`).
+- **Physics Constants:** EV weights and estimator parameters (in `metrics/`).
 
-### Constraints
+### 2) `holon-knowledge/` (Dynamic Experience)
 
-Constraints are the boundaries and policies that must be respected, managed in `holon-config/world/constraints.md`:
+This directory acts as the **"Evolving Memory"** for Holon, containing machine-authored intelligence:
 
-- Security policies and access controls
-- Architectural patterns and design principles (e.g., microservices, event-driven)
-- Performance and scalability requirements
-- Compliance and regulatory mandates
-- Team workflows and git flow policies (e.g., rebase/merge rules)
-
-Constraints limit the space of acceptable changes and exploration, ensuring stability and compliance.
+- **Ledger:** The append-only event log of every action.
+- **Knowledge Base (KB):** Project-specific patterns, tactics, and failure modes.
+- **Wisdom Base (WB):** Universal invariants and cross-project heuristics that meta-evolve over time.
 
 ### Why This Matters
 
-Foundational models provide broad priors but cannot fully capture the project-specific "physics" of these unique worlds. By externalizing these into `holon-config/`, Holon agents become **config-driven**. They are
-initialized with a `config_path` and load their missions, constraints, and "physics" from this External Brain. Each project world is unique and dynamic, evolving over time as rules and
-constraints change.
+Foundational models provide broad priors but cannot fully capture the project-specific "physics" of these unique worlds. By externalizing these into `holon-config/` and `holon-knowledge/`, Holon agents become *
+*config-driven**. They are initialized with a `config_path` and a `knowledge_path` and load their missions, constraints, and "physics" from these external brains. Each project world is unique and dynamic, evolving over
+time as rules and constraints change.
 
-This ensures agents remain stateless and portable while their behavior is governed by the specific, evolving rules of the project they are currently inhabiting.
+This ensures agents remain stateless and portable while their behavior is governed by both the specific, evolving rules of the project and the universal wisdom of the engine.
 
 Holon’s agents must therefore **learn, adapt, and evolve within the context of these unique worlds**. They do this by generating hypotheses (plans and intents) that test assumptions about the rule set and constraints,
 learning from outcomes, and updating their internal models accordingly.
