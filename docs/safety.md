@@ -176,7 +176,7 @@ Monitor for:
 
 #### **Baseline** (default for new agents)
 
-- **Can:** Plan, execute in sandbox, read ledger/KB.
+- **Can:** Plan, execute in sandbox, read Ledger and KB.
 - **Cannot:** Spawn sub-intents, propose root intents, propose estimators, modify KB.
 - **Escalation:** After 10 successful executions with calibration error < 0.3.
 

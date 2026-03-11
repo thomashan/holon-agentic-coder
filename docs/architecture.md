@@ -327,10 +327,12 @@ Trust level is influenced by:
     - sandbox runner, tool adapters, rebase enforcer
 - `metrics/`
     - estimators, post-measurement, calibration
-- `ledger/`
+- `holon-knowledge/ledger/`
     - append-only event logging, schemas
-- `kb/`
+- `holon-knowledge/kb/`
     - curated knowledge, retrieval APIs, write rules
+- `holon-knowledge/wb/`
+    - universal invariants, cross-project heuristics
 - `orchestrator/`
     - meta-agent loop, scheduling, work queue
 
@@ -342,7 +344,7 @@ Trust level is influenced by:
 
 - intent_id
 - goal + constraints
-- context pointers (KB refs + ledger summaries)
+- context pointers (KB/WB refs + ledger summaries)
 - allowed tool/model set
 
 #### Planner → Evaluator
@@ -364,9 +366,9 @@ Trust level is influenced by:
 - predicted vs actual metrics
 - outcomes and errors
 
-#### Ledger/K.B. → Planner
+#### Ledger/K.B./W.B. → Planner
 
-- retrieved patterns
+- retrieved patterns and universal invariants
 - prior similar intents + outcomes
 - estimator versions and calibration stats
 

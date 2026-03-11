@@ -171,6 +171,7 @@ By explicitly measuring and budgeting entropy, Holon agents can safely explore n
 ### 4.1 Expected Value ($EV$)
 
 - Combines $P(success)$, Impact, Cost, Learning Value, and Entropy into a single metric.
+- **Wisdom-Guided:** The fundamental formula logic and "meta-physics" are defined in the Wisdom Base (`holon-knowledge/wb/`).
 - **Config-Driven:** The weights and coefficients used in the formula are loaded from `holon-config/metrics/`.
 - Formula (conceptual):
 

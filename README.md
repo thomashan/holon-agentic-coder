@@ -125,10 +125,10 @@ Agents should eventually propose their own intents and spawn sub-intents recursi
 
 ## Quick mental model
 
-Holon has two durable stores:
+Holon operates as a **Stateless Engine** using two durable stores:
 
-- **Evolution Ledger (append-only):** the ground truth record of what was attempted and what happened.
-- **Knowledge Base (curated, versioned):** distilled patterns and rules promoted from the ledger via a controlled workflow.
+- **`holon-config/` (Static Priors):** the human-authored "Constitutional Brain" (prompts, world context, safety rules, metric weights).
+- **`holon-knowledge/` (Dynamic Experience):** the machine-authored "Evolving Memory" (append-only ledger, curated knowledge base, universal wisdom base).
 
 ---
 
@@ -639,6 +639,7 @@ Current focus (recommended build order):
 - [`docs/examples.md`](docs/examples.md) — end-to-end walkthroughs
 - [`docs/git_flow.md`](docs/git_flow.md) — strict branching/rebase/merge rules
 - [`docs/knowledgebase_schema.md`](docs/knowledgebase_schema.md) — propose/validate/promote workflow
+- [`docs/wisdombase_schema.md`](docs/wisdombase_schema.md) — universal invariants and meta-evolution
 - [`docs/ledger_schema.md`](docs/ledger_schema.md) — record types, JSON schemas
 - [`docs/metrics.md`](docs/metrics.md) — formal definitions of P(success), ΔS, EV, calibration
 - [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — planning lifecycle, variant evaluation, convergence policies
