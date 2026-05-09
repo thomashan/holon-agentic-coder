@@ -70,7 +70,7 @@ Consolidates machine-authored history and the intelligence evolved from it.
 - `kb/`: (Knowledge Base) Project-specific patterns, tactics, and failure modes.
 - `wb/`: (Wisdom Base) Universal invariants and cross-project heuristics.
 
-Agents and system components are **config-driven**; they are initialized with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
+Agents and system components are **config-driven**; they are initialised with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
 
 ---
 
@@ -86,7 +86,7 @@ Agents and system components are **config-driven**; they are initialized with a 
     - Stores intent metadata: IDs, parent/child links, state, constraints, trust requirements.
 - **Planner (Variant Generator)**
     - Config-driven: Loads missions and project context from `holon-config/`.
-    - Knowledge-driven: Utilizes local patterns (KB) and universal reasoning (WB) from `holon-knowledge/`.
+    - Knowledge-driven: Utilises local patterns (KB) and universal reasoning (WB) from `holon-knowledge/`.
     - Produces multiple candidate **Plan Graphs** for the same intent.
 - **Plan Evaluator**
     - Config-driven: Loads metric weights from `holon-config/metrics/`.
@@ -110,7 +110,7 @@ Agents and system components are **config-driven**; they are initialized with a 
     - Knowledge-driven: Stores universal axioms in `holon-knowledge/wb/`.
     - Meta-evolving: Universal knowledge that "ascends" from local KBs.
 - **Meta-Agent / Orchestrator**
-    - Initialized with `config_path` and `knowledge_path`.
+    - Initialised with `config_path` and `knowledge_path`.
     - Watches for new work, dispatches planner/executor jobs, enforces git discipline and budgets.
 - **Human Review Boundary**
     - Where humans approve promotions (typically parent intent → `main`).
@@ -139,6 +139,10 @@ Agents and system components are **config-driven**; they are initialized with a 
     - reusable code snippets/modules
     - estimator proposals, comparisons, and approvals
     - routing heuristics and observed ROI
+
+#### Instrumentation for Selection Pressure
+
+The system treats the `model` metadata as an evolvable trait. By recording architectural attributes (e.g., `tuning_type`, `parameter_class`, `reasoning_mode`), the **Researcher Agent** can extract "Wisdom" that generalises across model providers. This ensures that the system evolves toward the most efficient **Architecture + Tactic** pairings, rather than just chasing specific model IDs. Detailed instrumentation of modalities and runtime configurations enables the system to penalise inefficient resource usage (e.g., using vision for text-only tasks) and reward high-fitness pairings.
 
 ---
 
@@ -190,13 +194,14 @@ The router selects model tier per role/task:
 - Low-entropy, low-novelty tasks → fast/cheap model (e.g., “Flash” class)
 - High-entropy, high-novelty, high-impact tasks → deeper model (e.g., “DeepThink” class)
 
-Routing decisions are logged:
+Routing decisions are logged with full "DNA" metadata:
 
-- model_id, tier
-- routing_reason
-- expected benefit vs cost
+- model architecture, tuning type, and parameter class
+- active modalities and reasoning modes
+- routing_reason and expected_roi
+- selection_method (e.g., `autonomous_router` or `explicit_manual`)
 
-Routing becomes a **selection pressure**: better routing improves ROI.
+Routing becomes a **selection pressure**: better routing improves ROI. The system learns to associate specific task characteristics with the architectural traits that yield the highest EV.
 
 #### 5) Execution (sandboxed)
 
@@ -382,7 +387,7 @@ This architecture is intentionally modular:
 
 ---
 
-### What this architecture optimizes for
+### What this architecture optimises for
 
 - auditability (every action has a trace)
 - safety through containment (sandbox + branch discipline)

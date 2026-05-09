@@ -1,7 +1,7 @@
 # agent_design.md
 
-This document provides a high-level architectural overview and behavioral design principles for the autonomous agents within the Holon system. It defines the governance framework, trust and autonomy models, and
-interaction protocols that guide agent behavior and system integration.
+This document provides a high-level architectural overview and behavioural design principles for the autonomous agents within the Holon system. It defines the governance framework, trust and autonomy models, and
+interaction protocols that guide agent behaviour and system integration.
 
 ---
 
@@ -11,8 +11,8 @@ The Holon system consists of multiple autonomous agents collaborating to plan, e
 
 ### Core Architecture: The Stateless Engine
 
-All agents in Holon are **config-driven**. They are initialized with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`). This separation ensures that governance (how
-to act) remains distinct from experience (what has been learned).
+All agents in Holon are **config-driven**. They are initialised with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`). This separation ensures that governance (how
+to act) remains distinct from experience (what has been learnt).
 
 - **`holon-config/` (Static Priors):** Agent missions (`prompts/`), validation rules (`schemas/`), and project physics (`world/` and `metrics/`).
 - **`holon-knowledge/` (Dynamic Experience):** Memory (`ledger/`), knowledge base (`kb/`), and wisdom base (`wb/`).
@@ -20,7 +20,7 @@ to act) remains distinct from experience (what has been learned).
 ### Key Components
 
 - **Meta-Agent (Orchestrator):** Config-driven coordinator that manages the intent lifecycle, agent dispatch, and system state.
-- **Worker Agents:** Specialized agents (Planner, Executor, Curator, Evaluator, Researcher) performing tasks based on priors in `holon-config/` and experience in `holon-knowledge/`.
+- **Worker Agents:** Specialised agents (Planner, Executor, Curator, Evaluator, Researcher) performing tasks based on priors in `holon-config/` and experience in `holon-knowledge/`.
 - **Knowledge Base (KB):** Project-specific repository of curated patterns, tactics, and failure modes stored in `holon-knowledge/kb/`.
 - **Wisdom Base (WB):** Global repository of universal invariants stored in `holon-knowledge/wb/`.
 - **Ledger:** Immutable event log capturing all agent actions and decisions stored in `holon-knowledge/ledger/`.
@@ -54,7 +54,7 @@ Agents operate under a **trust-bounded autonomy** framework, where capabilities 
 
 ---
 
-## 4) Behavioral Contracts and Safety
+## 4) Behavioural Contracts and Safety
 
 Agents must adhere to the following immutable contracts unless explicitly overridden by human review:
 
@@ -110,7 +110,7 @@ Autonomy escalation enables:
 
 ## 7) Agent Lifecycle
 
-1. **Initialization:** Agents are instantiated with an `agent_id`, `model`, `trust_level`, `config_path` (defaulting to `holon-config/`), and `knowledge_path` (defaulting to `holon-knowledge/`).
+1. **Initialisation:** Agents are instantiated with an `agent_id`, `model`, `trust_level`, `config_path` (defaulting to `holon-config/`), and `knowledge_path` (defaulting to `holon-knowledge/`).
 2. **Configuration & Knowledge Loading:** Agents use a `ConfigLoader` to fetch their local project priors and a `KnowledgeLoader` to fetch their historical memory and universal wisdom.
 3. **Task Assignment:** Meta-Agent dispatches intents and plans based on agent capabilities.
 4. **Execution:** Agents perform tasks, log results, and update metrics.
@@ -122,8 +122,8 @@ Autonomy escalation enables:
 
 ## 8) Summary
 
-This design framework ensures that Holon’s agents operate safely, efficiently, and collaboratively within a governed ecosystem. Trust-bounded autonomy and rigorous behavioral contracts enable scalable, recursive, and
-self-improving AI agent behavior while maintaining human oversight where necessary.
+This design framework ensures that Holon’s agents operate safely, efficiently, and collaboratively within a governed ecosystem. Trust-bounded autonomy and rigorous behavioural contracts enable scalable, recursive, and
+self-improving AI agent behaviour while maintaining human oversight where necessary.
 
 ---
 

@@ -17,7 +17,7 @@ This document defines the **bootstrap (day-zero) metrics** used by Holon to:
 
 ## 1) Core Definitions: Config-Driven Physics
 
-Holon’s "physics" — the weights, coefficients, and constants that drive decision-making — are not hardcoded. They are externalized in `holon-config/metrics/`. This allows the system's behavior to be tuned and evolved
+Holon’s "physics" — the weights, coefficients, and constants that drive decision-making — are not hardcoded. They are externalised in `holon-config/metrics/`. This allows the system's behaviour to be tuned and evolved
 without changing the underlying engine.
 
 - **`λ` (Entropy penalty):** Loaded from `holon-config/metrics/ev_config.json`.
@@ -140,7 +140,7 @@ Define:
 
 $$\Delta S_{intent,pred} = w_1\cdot SSA + w_2\cdot IRR + w_3\cdot CL + w_4\cdot SER + w_5\cdot NOV$$
 
-Where each term is normalized onto a comparable scale (recommended 0–10 for bootstrap).
+Where each term is normalised onto a comparable scale (recommended 0–10 for bootstrap).
 
 #### Terms
 
@@ -183,30 +183,30 @@ $$\Delta S_{intent,actual} = u_1\cdot SSA_{obs} + u_2\cdot IRR_{obs} + u_3\cdot 
     - `files_changed`
     - `lines_added + lines_deleted`
     - `config_files_touched` (e.g., CI, build, dependency manifests)
-    - (normalize to 0–10)
+    - (normalise to 0–10)
 
 - `IRR_obs`:
     - touched migration files? destructive scripts? schema diffs?
     - if none, low
-    - (normalize to 0–10)
+    - (normalise to 0–10)
 
 - `CL_obs`:
     - rebase conflict occurred? (`0/1`)
     - number of conflict hunks
     - number of “hot files” touched
-    - (normalize to 0–10)
+    - (normalise to 0–10)
 
 - `SER_obs`:
     - any sandbox policy violation? (`0/1`)
     - blocked syscalls/network attempts count
-    - (normalize to 0–10)
+    - (normalise to 0–10)
 
 - `NOV_obs`:
     - novelty cannot be measured perfectly; bootstrap uses:
         - “new dependency added?” (0/1)
         - “new module path created?” (0/1)
         - “KB has matching pattern?” (yes/no)
-    - (normalize to 0–10)
+    - (normalise to 0–10)
 
 **Bootstrap simplification:**
 
@@ -234,12 +234,13 @@ Example features:
 - `f_dep_conf`: dependency confidence (known stable libs vs unknown)
 - `f_plan_depth`: number of steps / sub-intents
 - `f_novelty`: novelty score (higher novelty reduces probability)
-- `f_model_fit`: model capability match (deep model for deep task)
+- `f_model_fit`: model capability match (e.g., using a `reasoning_mode` model for complex refactors).
 
 You can keep the exact coefficients in code; what matters here is the semantic meaning:
 
 - Higher novelty and deeper plans tend to reduce success probability.
 - Better coverage and dependency confidence increase it.
+- Correct architectural alignment (model fit) provides a positive coefficient.
 
 ---
 
@@ -263,7 +264,7 @@ Bootstrap scoring sources (examples):
 - `kb_value` (adds a reusable pattern or failure mode)
 - `bug_severity` (if intent fixes a production issue)
 
-Normalize impact to a typical range like 0–100.
+Normalise impact to a typical range like 0–100.
 
 ---
 
@@ -327,16 +328,16 @@ Cost estimates the resources consumed to execute the plan.
 
 ---
 
-### 6.2 Bootstrap cost heuristics
+### 6.2 Model-Aware Cost Estimation (Bootstrap)
 
-- predicted tokens / wall time
-- sandbox runtime
-- number of steps
-- model tier:
-    - flash/fast cheaper
-    - deep/opus more expensive
+The `cost_pred` estimator is influenced by the model's architectural traits and modalities.
 
-Normalize to a comparable scale (0–200 typical).
+- **Base Token Cost:** Predicted tokens / wall time.
+- **Modality Premium:** If `active_in_session` includes non-text modalities (e.g., image, audio), a `sensory_premium` multiplier is applied to the base cost.
+- **Architecture Weight:** `moe` or `dense` frontier models are priced with higher normalised units than `distilled` or `quantised` models.
+- **Reasoning Surcharge:** Models in `reasoning_mode` are weighted with a higher "latency cost" (compensating for longer wall-times during the internal thinking phase).
+
+Normalise to a comparable scale (0–200 typical).
 
 ---
 
@@ -504,7 +505,7 @@ For calibration and measurement, the ledger must store:
 
 ## 10) Practical Notes (Bootstrapping)
 
-- Keep normalization simple and consistent.
+- Keep normalisation simple and consistent.
 - Do not overfit early; record data first.
 - “Entropy” here is a **risk proxy**; later you can add more principled components,
   but do not change its meaning without a human-approved meta-change.

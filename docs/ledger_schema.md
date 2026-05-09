@@ -143,10 +143,51 @@ Every ledger event MUST contain:
 - `sandbox_id` (string)  
   Example: `"S-20260210-0315-2f93"`
 - `model` (object)
-    - `provider` (string) — e.g., `"gemini"`, `"claude"`
-    - `model_id` (string) — exact model name
-    - `tier` (string) — e.g., `"flash"`, `"deep"`
-    - `routing_reason` (string)
+  Full "DNA" of the execution engine to enable high-resolution evolutionary analysis.
+
+```json
+{
+  "identity": {
+    "provider": "anthropic",
+    "model_id": "claude-3-7-sonnet",
+    "version": "2025-02-24",
+    "tier": "deep"
+  },
+  "architecture": {
+    "type": "moe",               // moe, dense, ssm, hybrid, dit
+    "quantisation": "fp16",      // null, 4-bit, fp8, etc.
+    "parameter_class": "frontier", // small, medium, large, frontier
+    "tuning_type": "rlhf"        // rlhf, dpo, sft, distilled
+  },
+  "capabilities": {
+    "primary_specialisation": "coding", // coding, reasoning, creative, tool-use
+    "reasoning_mode": true,             // true if using specific "thinking" / CoT paths
+    "long_context_ready": true,          // supports 1M+ tokens
+    "structured_output": "strict_json",  // regex, strict_json, constrained, none
+    "safety_governance": "censored"      // censored, uncensored, custom_guard
+  },
+  "modalities": {
+    "supported": ["text", "image", "audio", "video"],
+    "active_in_session": ["text", "image"], // Which "senses" were used in this turn
+    "sensory_premium": 1.25                 // Cost multiplier for multimodal use
+  },
+  "runtime_config": {
+    "hosting": "api",           // api, local, edge, private_cluster
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "deterministic": true,      // true if greedy search/seed used
+    "context_window_used": 15000,
+    "max_tokens_budget": 4096
+  },
+  "routing": {
+    "routing_reason": "high_novelty_ui_debug", // Why the choice was made
+    "routing_policy_version": "v2.1",
+    "expected_roi": 0.85,                      // Predicted value gain vs token cost
+    "selection_method": "explicit_manual",     // explicit_manual, autonomous_router, human_override
+    "assigned_by": "human@user.com"            // User or Agent ID who made the choice
+  }
+}
+```
 
 ---
 
@@ -159,7 +200,7 @@ Every ledger event MUST contain:
     - `entropy` (number, >= 0)  — predicted ΔS
     - `impact` (number, >= 0)   — project-specific scale
     - `learning_value` (number, 0..10)
-    - `cost` (number, >= 0)     — normalized cost units
+    - `cost` (number, >= 0)     — normalised cost units
     - `ev` (number)             — computed EV
     - `lambda` (number, >= 0)   — entropy penalty weight
     - `mu` (number, >= 0)       — learning value weight
@@ -193,7 +234,7 @@ Every ledger event MUST contain:
 
 - `calibration` (object)
     - `p_success_error` (number) — abs(pred - actual)
-    - `entropy_error` (number)   — normalized or absolute
+    - `entropy_error` (number)   — normalised or absolute
     - `impact_error` (number)
     - `learning_value_error` (number)
 

@@ -314,7 +314,7 @@ def sequential_merge(sub_intents, parent_branch):
             handle_conflict(sub)
 ```
 
-### 6.2 Parallel Merge (Optimized)
+### 6.2 Parallel Merge (Optimised)
 
 ```python
 def parallel_merge(sub_intents, parent_branch):

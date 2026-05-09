@@ -76,7 +76,7 @@ Every WB entry MUST contain:
 
 ### 1) Invariant (The Constitutional Layer)
 
-**Definition:** Immutable laws governing behavior, safety, and reasoning.
+**Definition:** Immutable laws governing behaviour, safety, and reasoning.
 
 **Schema Example:**
 ```json

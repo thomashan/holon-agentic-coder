@@ -34,7 +34,7 @@ The KB enables:
     - Human approval (for governance changes).
 - Prevents KB poisoning from bad agent proposals.
 
-### 4) Retrieval-optimized
+### 4) Retrieval-optimised
 
 - KB is indexed for fast retrieval during planning.
 - Queries: "similar intents", "tactics for goal X", "failure modes in module Y".
@@ -337,12 +337,12 @@ Every KB entry MUST contain:
       {
         "strategy": "Sequential merges",
         "description": "Merge sub-intents one at a time, forcing rebase after each merge.",
-        "cost": "Slower (serialized work)",
+        "cost": "Slower (serialised work)",
         "effectiveness": 0.95
       },
       {
         "strategy": "Finer-grained decomposition",
-        "description": "Split intents to minimize file overlap.",
+        "description": "Split intents to minimise file overlap.",
         "cost": "More planning overhead",
         "effectiveness": 0.85
       },
@@ -729,7 +729,7 @@ Each KB subdirectory has an `index.json` for fast lookup:
 **Rule of thumb:**
 
 - **Ledger** = "what happened" (forensic, immutable).
-- **KB** = "what we learned" (curated, actionable).
+- **KB** = "what we learnt" (curated, actionable).
 
 ---
 

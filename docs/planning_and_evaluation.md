@@ -81,7 +81,7 @@ $$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy -
 
 - $\lambda$ is an entropy penalty hyperparameter (system-level constant).
 - $\mu$ is a learning value coefficient (system-level constant)
-- All terms must use consistent units or be normalized by agreed scales.
+- All terms must use consistent units or be normalised by agreed scales.
 
 #### Bootstrap P(success) estimator (recommended initial form)
 
@@ -93,7 +93,7 @@ $$
 
 where `σ` is a sigmoid or calibrated link, and features `f_i` include:
 
-- `coverage`: fraction of required API/behavior covered by plan
+- `coverage`: fraction of required API/behaviour covered by plan
 - `dependency_confidence`: probability dependencies are satisfiable
 - `novelty_penalty`: penalty for unseen patterns
 - `depth_penalty`: penalty for deep decomposition
@@ -264,7 +264,7 @@ Plan artifacts and planning events must be recorded in the ledger and correspond
     - `intent/{intent_branch}/plan/{plan_id}` or use integrated branch `intent/{intent_branch}/{plan_id}` depending on repo layout.
 - Ledger must capture:
     - `plan_created`, `plan_predicted_metrics`, `planning_converged`, `plan_selected`, `plan_execution_started/ended`, `planner_agent_id`, `model_id`, `routing_reason`.
-- Include diffs, plan_graph serializations, and review packages (for root intents).
+- Include diffs, plan_graph serialisations, and review packages (for root intents).
 
 Example ledger entry (planning_converged):
 
@@ -304,7 +304,7 @@ Example ledger entry (planning_converged):
 
 ### Best Practices
 
-- Normalize metric scales across domains to keep EV meaningful.
+- Normalise metric scales across domains to keep EV meaningful.
 - Start with conservative `λ` and exploration budgets; increase as calibration improves.
 - Ensure planners produce confidence/variance with `P(success)` predictions.
 - Prefer smaller, focused sub-intents to reduce entropy and conflict risk.

@@ -16,14 +16,14 @@ Agents enable:
 
 ### 1) Agents are config-driven
 
-- Agents are initialized with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
+- Agents are initialised with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
 - Agents load their identity, mission, physics (metrics), safety rules, and local project priors from `holon-config/`.
 - Agents load their historical memory (Ledger, KB) and universal wisdom (WB) from `holon-knowledge/`.
 
 ### 2) Agents are goal-directed
 
 - Every agent operates on an **intent** (goal + constraints).
-- Agents plan actions to maximize **Expected Value (EV)**.
+- Agents plan actions to maximise **Expected Value (EV)**.
 - Agents measure outcomes and update calibration.
 
 ### 3) Agents are metric-driven
@@ -101,8 +101,8 @@ Agents enable:
 
 **Operational Logic:**
 
-1. **Sandbox Initialization:** Prepares an isolated environment and applies safety rules defined in `holon-config/rules/`.
-2. **Step Execution:** Runs plan steps sequentially, utilizing proven tactics from the KB or generating new implementations based on the mission.
+1. **Sandbox Initialisation:** Prepares an isolated environment and applies safety rules defined in `holon-config/rules/`.
+2. **Step Execution:** Runs plan steps sequentially, utilising proven tactics from the KB or generating new implementations based on the mission.
 3. **Validation:** Executes tests and captures all tool outputs (git, pytest, etc.) to the Ledger.
 4. **Post-Execution Measurement:** Measures actual entropy, impact, and cost to compute calibration errors.
 
@@ -163,7 +163,7 @@ Agents enable:
 **Inputs:**
 
 - Intent queue (pending work)
-- Agent pool (available specialized agents)
+- Agent pool (available specialised agents)
 - Ledger and KB (`holon-knowledge/`)
 - `holon-config/` (root configuration and rules)
 
@@ -174,7 +174,7 @@ Agents enable:
 
 **Operational Logic:**
 
-1. **Dispatch:** Assigns planning and execution tasks to specialized agents based on their capabilities and trust levels.
+1. **Dispatch:** Assigns planning and execution tasks to specialised agents based on their capabilities and trust levels.
 2. **State Management:** Tracks intents through their lifecycle (Proposed → Planning → Executing → Merged).
 3. **Git Flow Coordination:** Enforces mandatory rebase/merge rules defined in `holon-config/world/constraints.md`.
 4. **Escalation:** Generates review packages for humans when intents reach promotion boundaries or safety triggers.
@@ -197,7 +197,7 @@ Agents enable:
 
 **Operational Logic:**
 
-1. **Bias Detection:** Analyzes calibration errors in the Ledger to find systematic inaccuracies in the engine's "physics."
+1. **Bias Detection:** Analyses calibration errors in the Ledger to find systematic inaccuracies in the engine's "physics."
 2. **Hypothesis Testing:** Generates improved estimator formulas and backtests them against historical project data.
 3. **Wisdom Ascension:** Identifies project-specific patterns in the KB that are successful across multiple projects and proposes them for promotion to the Wisdom Base.
 
@@ -297,7 +297,7 @@ Agents with **high or highest trust** can generate intents in these scenarios:
 
 - Calibration error increasing → propose "Improve P(success) estimator"
 - KB missing patterns for common intent type → propose "Extract pattern for X"
-- Routing ROI declining → propose "Analyze routing policy effectiveness"
+- Routing ROI declining → propose "Analyse routing policy effectiveness"
 
 #### 2) **Failure response** (reactive)
 
@@ -393,25 +393,25 @@ def approve_intent_proposal(proposed_intent, agent_id, quality_score):
 
 - **Mean agent trust score:** Across all agents
 - **Trust level distribution:** Histogram of trust levels
-- **Agent specialization:** Which agents excel at which intent types
+- **Agent specialisation:** Which agents excel at which intent types
 - **Model routing ROI:** By agent and model tier
 - **Calibration improvement over time:** System-wide learning curve
 
 ---
 
-## Agent specialization (future evolution)
+## Agent specialisation (future evolution)
 
-Over time, agents may specialize:
+Over time, agents may specialise:
 
 - **Planning specialists:** Excel at generating high-EV plans for specific domains
 - **Execution specialists:** Excel at reliable execution with low entropy
 - **Curation specialists:** Excel at extracting patterns and failure modes
 - **Research specialists:** Excel at proposing estimator improvements
 
-Specialization emerges naturally through:
+Specialisation emerges naturally through:
 
 - **Routing:** Meta-agent routes intents to agents with best track record for that intent type
-- **Trust:** Specialized agents earn higher trust in their domain
+- **Trust:** Specialised agents earn higher trust in their domain
 - **KB:** Agents learn from their own successes and failures
 
 ---

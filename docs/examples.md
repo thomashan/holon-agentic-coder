@@ -1412,10 +1412,10 @@ conflict_failures = [f for f in failures if "rebase_conflict" in f.failure_reaso
 
 ---
 
-#### 2) Analyze root cause
+#### 2) Analyse root cause
 
 ```python
-root_cause = analyze_root_cause(conflict_failures)
+root_cause = analyse_root_cause(conflict_failures)
 # Root cause: "Concurrent sub-intents modifying same file (holon/metrics/p_success.py)"
 ```
 

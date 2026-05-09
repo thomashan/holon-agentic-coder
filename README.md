@@ -34,7 +34,7 @@ Most agentic coding systems fail in predictable ways:
 1. **State contamination:** exploration corrupts the working tree, environments drift, and "it worked once" can't be reproduced.
 2. **Planning amnesia:** plans are ephemeral; the system cannot learn which planning strategies work.
 3. **No causal trace:** actions are taken without a durable "why/how/what happened" record.
-4. **Human review overload:** humans are asked to review noisy micro-changes rather than synthesized parent-level outcomes.
+4. **Human review overload:** humans are asked to review noisy micro-changes rather than synthesised parent-level outcomes.
 5. **No comparable variants:** there's no fair way to compare plan A vs plan B vs model choice A vs model choice B.
 6. **Hidden routing:** switching between models (fast/cheap vs deep/reasoning) is treated as invisible magic instead of a measurable decision.
 
@@ -466,7 +466,7 @@ This is the most powerful—and most dangerous—capability in the system. It mu
 In a fully autonomous system, agents should be able to:
 
 - observe the codebase, ledger, and K.B.
-- identify improvement opportunities (refactoring, tech debt, optimization, new features)
+- identify improvement opportunities (refactoring, tech debt, optimisation, new features)
 - propose intents with justification and predicted metrics
 - decompose those intents into sub-intents recursively
 - execute and learn from outcomes
@@ -478,7 +478,7 @@ This closes the loop: agents evolve the system **and** evolve themselves.
 Unconstrained autonomous intent generation can lead to:
 
 - **runaway recursion:** agents spawn infinite sub-intents
-- **misaligned goals:** agents optimize for the wrong objectives
+- **misaligned goals:** agents optimise for the wrong objectives
 - **resource exhaustion:** entropy budgets blown on low-value work
 - **sandbox escape attempts:** agents propose intents to modify validation rules
 - **chaotic exploration:** high-entropy changes with no learning value
@@ -632,7 +632,7 @@ Current focus (recommended build order):
 
 ## Documentation map
 
-- [`docs/agent_design.md`](docs/agent_design.md) — high-level agent architecture and behavioral contracts
+- [`docs/agent_design.md`](docs/agent_design.md) — high-level agent architecture and behavioural contracts
 - [`docs/agents.md`](docs/agents.md) — how to plug in agents (Claude Code, Gemini CLI, others)
 - [`docs/architecture.md`](docs/architecture.md) — full technical design
 - [`docs/core_concepts.md`](docs/core_concepts.md) — fundamental terminology and metrics

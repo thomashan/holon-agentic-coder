@@ -13,7 +13,7 @@ The safety model enables:
 
 ## Core safety principles: Config-Driven Safety
 
-Safety in Holon is not a static set of hardcoded rules. It is a **governed layer** externalized in `holon-config/rules/`. This allows project-specific safety boundaries, trust thresholds, and sandboxing policies to be
+Safety in Holon is not a static set of hardcoded rules. It is a **governed layer** externalised in `holon-config/rules/`. This allows project-specific safety boundaries, trust thresholds, and sandboxing policies to be
 managed centrally.
 
 - **Trust Level Definitions:** Capabilities and escalation thresholds are loaded from `holon-config/rules/trust_levels.json`.

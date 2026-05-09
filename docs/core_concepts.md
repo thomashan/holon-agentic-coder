@@ -1,15 +1,15 @@
 # core_concepts.md
 
-This document defines the fundamental concepts, terminology, and core metrics used throughout the Holon self-evolving AI agent system. It establishes a shared vocabulary and formalizes the contracts that govern agent
-behavior and system operation.
+This document defines the fundamental concepts, terminology, and core metrics used throughout the Holon self-evolving AI agent system. It establishes a shared vocabulary and formalises the contracts that govern agent
+behaviour and system operation.
 
 ---
 
 ## The Project as a Unique World: The Stateless Engine
 
-Each project is effectively its own **unique world** defined by its **Governance** (how it should act) and its **Experience** (what it has learned).
+Each project is effectively its own **unique world** defined by its **Governance** (how it should act) and its **Experience** (what it has learnt).
 
-In Holon, this is formalized through a **Stateless Engine** architecture using two mandatory directories:
+In Holon, this is formalised through a **Stateless Engine** architecture using two mandatory directories:
 
 ### 1) `holon-config/` (Static Priors)
 
@@ -29,11 +29,11 @@ This directory acts as the **"Evolving Memory"** for Holon, containing machine-a
 
 ### Why This Matters
 
-Foundational models provide broad priors but cannot fully capture the project-specific "physics" of these unique worlds. By externalizing these into `holon-config/` and `holon-knowledge/`, Holon agents become *
-*config-driven**. They are initialized with a `config_path` and a `knowledge_path` and load their missions, constraints, and "physics" from these external brains. Each project world is unique and dynamic, evolving over
+Foundational models provide broad priors but cannot fully capture the project-specific "physics" of these unique worlds. By externalising these into `holon-config/` and `holon-knowledge/`, Holon agents become *
+*config-driven**. They are initialised with a `config_path` and a `knowledge_path` and load their missions, constraints, and "physics" from these external brains. Each project world is unique and dynamic, evolving over
 time as rules and constraints change.
 
-This ensures agents remain stateless and portable while their behavior is governed by both the specific, evolving rules of the project and the universal wisdom of the engine.
+This ensures agents remain stateless and portable while their behaviour is governed by both the specific, evolving rules of the project and the universal wisdom of the engine.
 
 Holon’s agents must therefore **learn, adapt, and evolve within the context of these unique worlds**. They do this by generating hypotheses (plans and intents) that test assumptions about the rule set and constraints,
 learning from outcomes, and updating their internal models accordingly.
@@ -90,7 +90,7 @@ A **Sub-Intent** is an intent spawned by another intent to break down complex wo
 
 - The expected positive effect or benefit delivered by completing the intent.
 - Measured in domain-specific units (e.g., performance gain, cost savings).
-- Used to prioritize intents with higher value.
+- Used to prioritise intents with higher value.
 
 ### 2.3 Cost
 
@@ -217,7 +217,7 @@ options. In other words, the planner and evaluator agree that the current best p
   clearly dominates others by a significant margin, the system considers the plan converged.
 
 - **Entropy and Budget Constraints:**  
-  Convergence also occurs if the planning process risks exceeding entropy or resource budgets, preventing runaway exploration that could destabilize the system.
+  Convergence also occurs if the planning process risks exceeding entropy or resource budgets, preventing runaway exploration that could destabilise the system.
 
 - **Types of Convergence Triggers:**
     - **Dominant Plan:** One plan’s EV is sufficiently higher than all others.
@@ -245,11 +245,11 @@ options. In other words, the planner and evaluator agree that the current best p
 | Parent Intent         | Immediate parent of a sub-intent                                        | Receives automatic merges                                                                 |
 | Sub-Intent            | Intent spawned by another intent                                        | Automatic merging and evaluation                                                          |
 | $P(success)$          | Probability intent will succeed                                         | Guides planning and merging decisions                                                     |
-| Impact                | Expected benefit delivered                                              | Prioritization metric                                                                     |
+| Impact                | Expected benefit delivered                                              | Prioritisation metric                                                                     |
 | Cost                  | Resources required                                                      | Balances benefit vs expenditure                                                           |
 | Learning Value        | Epistemic gain delivered by executing an intent, independent of success | Encourages bounded exploration, accelerates estimator calibration, and promotes KB growth | 
 | Entropy ($\Delta S$)  | Measure of disorder or risk introduced                                  | Controls system stability                                                                 |
-| Expected Value ($EV$) | Combined metric for decision-making                                     | Drives autonomous agent behavior                                                          |
+| Expected Value ($EV$) | Combined metric for decision-making                                     | Drives autonomous agent behaviour                                                          |
 | Convergence           | Condition when planning sufficiently explores and selects a best plan   | Signals planning termination and readiness for execution                                  |
 
 ---
