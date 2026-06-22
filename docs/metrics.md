@@ -11,13 +11,15 @@ This document defines the **bootstrap (day-zero) metrics** used by Holon to:
 **Design constraints (bootstrapping):**
 
 - Metrics must be **weak but stable**: simple, deterministic, available from Git + ledger data.
-- Definitions are **semantic lock-ins**: agents may improve estimators later, but not change meanings without explicit human-approved meta-change.
+- Definitions are **semantic lock-ins**: agents may improve estimators later, but not change meanings without explicit
+  human-approved meta-change.
 
 ---
 
 ## 1) Core Definitions: Config-Driven Physics
 
-Holon’s "physics" — the weights, coefficients, and constants that drive decision-making — are not hardcoded. They are externalised in `holon-config/metrics/`. This allows the system's behaviour to be tuned and evolved
+Holon’s "physics" — the weights, coefficients, and constants that drive decision-making — are not hardcoded. They are
+externalised in `holon-config/metrics/`. This allows the system's behaviour to be tuned and evolved
 without changing the underlying engine.
 
 - **`λ` (Entropy penalty):** Loaded from `holon-config/metrics/ev_config.json`.
@@ -272,7 +274,8 @@ Normalise impact to a typical range like 0–100.
 
 ### 5.1 Meaning
 
-`learning_value` estimates the **epistemic gain** delivered to the system by executing this intent, **independent of whether the intent succeeds or fails**.
+`learning_value` estimates the **epistemic gain** delivered to the system by executing this intent, **independent of
+whether the intent succeeds or fails**.
 
 It captures the value of:
 
@@ -281,7 +284,8 @@ It captures the value of:
 * Generating KB entries (patterns, anti-patterns, constraints) that benefit future agents.
 * Reducing NOV (Novelty) for future similar intents.
 
-Learning value is the primary justification for executing high-`entropy`, low-`p_success` intents. Without it, the EV formula would always penalise exploration and the system would converge prematurely on known-safe
+Learning value is the primary justification for executing high-`entropy`, low-`p_success` intents. Without it, the EV
+formula would always penalise exploration and the system would converge prematurely on known-safe
 paths.
 
 ---
@@ -297,8 +301,8 @@ paths.
 
 ### 5.3 Predicted vs Actual
 
-`learning_value_pred`: estimated before execution by the planner.
-`learning_value_actual`: assessed post-execution by the evaluator based on:
+* `learning_value_pred`: estimated before execution by the planner.
+* `learning_value_actual`: assessed post-execution by the evaluator based on:
 
 * KB entries created or updated.
 * Calibration improvement (reduction in CD(t)).
@@ -315,7 +319,8 @@ Aggregate over windows alongside other calibration errors (see §1.4).
 
 ### 5.5 Bootstrap μ rationale
 
-* μ = 0.5 (lower than the implicit weight on Impact) ensures learning value does not dominate over delivering actual results, but is sufficient to justify high-entropy exploratory steps.
+* `μ = 0.5` (lower than the implicit weight on Impact) ensures learning value does not dominate over delivering actual
+  results, but is sufficient to justify high-entropy exploratory steps.
 * Agents may propose adjusting μ via a meta-intent once calibration data exists.
 
 ---
@@ -333,9 +338,12 @@ Cost estimates the resources consumed to execute the plan.
 The `cost_pred` estimator is influenced by the model's architectural traits and modalities.
 
 - **Base Token Cost:** Predicted tokens / wall time.
-- **Modality Premium:** If `active_in_session` includes non-text modalities (e.g., image, audio), a `sensory_premium` multiplier is applied to the base cost.
-- **Architecture Weight:** `moe` or `dense` frontier models are priced with higher normalised units than `distilled` or `quantised` models.
-- **Reasoning Surcharge:** Models in `reasoning_mode` are weighted with a higher "latency cost" (compensating for longer wall-times during the internal thinking phase).
+- **Modality Premium:** If `active_in_session` includes non-text modalities (e.g., image, audio), a `sensory_premium`
+  multiplier is applied to the base cost.
+- **Architecture Weight:** `moe` or `dense` frontier models are priced with higher normalised units than `distilled` or
+  `quantised` models.
+- **Reasoning Surcharge:** Models in `reasoning_mode` are weighted with a higher "latency cost" (compensating for longer
+  wall-times during the internal thinking phase).
 
 Normalise to a comparable scale (0–200 typical).
 

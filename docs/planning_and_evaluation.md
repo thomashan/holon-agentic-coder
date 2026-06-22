@@ -1,14 +1,17 @@
 ### planning_and_evaluation.md
 
-This document specifies the Planning and Evaluation subsystem: how plans are generated, scored, compared, and converged. It defines the planners' contracts, evaluation metrics, convergence/termination policies, failure
+This document specifies the Planning and Evaluation subsystem: how plans are generated, scored, compared, and converged.
+It defines the planners' contracts, evaluation metrics, convergence/termination policies, failure
 handling, and how the results integrate with the ledger and git flow.
 
 ---
 
 ### Overview
 
-Planning is the process of converting an Intent (goal + constraints) into one or more actionable Plan Variants. Evaluation ranks these variants and decides when to stop planning and move to execution. Planning is
-competitive: multiple hypotheses (variants) are created, scored, and compared using stable metrics. All planning activity is logged to the ledger and materialised as plan artefacts (plan graph + metadata + branch).
+Planning is the process of converting an Intent (goal + constraints) into one or more actionable Plan Variants.
+Evaluation ranks these variants and decides when to stop planning and move to execution. Planning is
+competitive: multiple hypotheses (variants) are created, scored, and compared using stable metrics. All planning
+activity is logged to the ledger and materialised as plan artefacts (plan graph + metadata + branch).
 
 Key goals:
 
@@ -54,7 +57,8 @@ Planner responsibilities:
 #### Variant diversity guidance
 
 - At least one low-risk (low entropy) conservative plan
-- At least one exploration or spike plan optimised for learning_value (even if p_success is lower), if exploration/entropy budget allows
+- At least one exploration or spike plan optimised for learning_value (even if p_success is lower), if
+  exploration/entropy budget allows
 - At least one short-path / minimal-change plan
 - Use KB to seed templates from proven patterns
 
@@ -180,7 +184,8 @@ def rank_plans(plans, entropy_budget, cost_budget):
 
 ### Convergence & Termination Policies
 
-Planning must terminate when one or more of the convergence conditions are met. The system uses a configurable Convergence Policy; a recommended default is the three-tier policy:
+Planning must terminate when one or more of the convergence conditions are met. The system uses a configurable
+Convergence Policy; a recommended default is the three-tier policy:
 
 #### Convergence triggers (recommended defaults)
 
@@ -189,7 +194,8 @@ Planning must terminate when one or more of the convergence conditions are met. 
 2. EV Plateau (diminishing returns)
     - If recent improvements across generated variants < `ev_plateau_threshold` for `k` iterations, then converge.
 3. Entropy / Cost Budget Exhaustion
-    - If cumulative planning cost > `planning_budget` OR selecting the best plan would cause `S_system` to exceed `entropy_budget`, then converge (select best safe plan or delay).
+    - If cumulative planning cost > `planning_budget` OR selecting the best plan would cause `S_system` to exceed
+      `entropy_budget`, then converge (select best safe plan or delay).
 
 Additional triggers:
 
@@ -228,9 +234,11 @@ Where thresholds `T_*` and budgets `B_*` are system-configurable.
 
 #### Immediate responses
 
-- On execution failure: record actual metrics, spawn a diagnostic reactive intent (if meaningful), propose KB failure-mode entries.
+- On execution failure: record actual metrics, spawn a diagnostic reactive intent (if meaningful), propose KB
+  failure-mode entries.
 - On rebase failure: create a reactive intent to resolve conflicts and retry merge workflow per `git_flow.md`.
-- On entropy overshoot: abort promotion, roll back artifacts where possible, and schedule maintenance intents to reduce `S_system`.
+- On entropy overshoot: abort promotion, roll back artifacts where possible, and schedule maintenance intents to reduce
+  `S_system`.
 
 #### Retry policy
 
@@ -243,9 +251,11 @@ Where thresholds `T_*` and budgets `B_*` are system-configurable.
 
 ### Integration with Agents
 
-- Planner agents: responsible for variant creation and predicted metrics. Must follow estimator interface from `knowledgebase_schema.md`.
+- Planner agents: responsible for variant creation and predicted metrics. Must follow estimator interface from
+  `knowledgebase_schema.md`.
 - Evaluator agents: apply convergence policy and select plan(s).
-- Meta-Agent: orchestrates rebase checks, records ledger events, enforces entropy budgets, schedules execution and merges.
+- Meta-Agent: orchestrates rebase checks, records ledger events, enforces entropy budgets, schedules execution and
+  merges.
 - Executor agents: perform execution and measure actuals.
 
 All agents must:
@@ -261,9 +271,11 @@ All agents must:
 Plan artifacts and planning events must be recorded in the ledger and correspond to git branches:
 
 - Plan artifact branch naming: branch for work derived from a plan should follow:
-    - `intent/{intent_branch}/plan/{plan_id}` or use integrated branch `intent/{intent_branch}/{plan_id}` depending on repo layout.
+    - `intent/{intent_branch}/plan/{plan_id}` or use integrated branch `intent/{intent_branch}/{plan_id}` depending on
+      repo layout.
 - Ledger must capture:
-    - `plan_created`, `plan_predicted_metrics`, `planning_converged`, `plan_selected`, `plan_execution_started/ended`, `planner_agent_id`, `model_id`, `routing_reason`.
+    - `plan_created`, `plan_predicted_metrics`, `planning_converged`, `plan_selected`, `plan_execution_started/ended`,
+      `planner_agent_id`, `model_id`, `routing_reason`.
 - Include diffs, plan_graph serialisations, and review packages (for root intents).
 
 Example ledger entry (planning_converged):
@@ -298,7 +310,8 @@ Example ledger entry (planning_converged):
 
 #### Example 2 — Exploration allowed
 
-- If exploration budget permits, even a higher-entropy v3 may be selected for the learning value; record exploration flag in ledger.
+- If exploration budget permits, even a higher-entropy v3 may be selected for the learning value; record exploration
+  flag in ledger.
 
 ---
 

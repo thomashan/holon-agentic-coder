@@ -1,13 +1,15 @@
 # core_concepts.md
 
-This document defines the fundamental concepts, terminology, and core metrics used throughout the Holon self-evolving AI agent system. It establishes a shared vocabulary and formalises the contracts that govern agent
-behaviour and system operation.
+This document defines the fundamental concepts, terminology, and core metrics used throughout the Holon self-evolving AI
+agent system. It establishes a shared vocabulary and formalises the contracts that govern agent behaviour and system
+operation.
 
 ---
 
 ## The Project as a Unique World: The Stateless Engine
 
-Each project is effectively its own **unique world** defined by its **Governance** (how it should act) and its **Experience** (what it has learnt).
+Each project is effectively its own **unique world** defined by its **Governance** (how it should act) and its
+**Experience** (what it has learnt).
 
 In Holon, this is formalised through a **Stateless Engine** architecture using two mandatory directories:
 
@@ -29,16 +31,21 @@ This directory acts as the **"Evolving Memory"** for Holon, containing machine-a
 
 ### Why This Matters
 
-Foundational models provide broad priors but cannot fully capture the project-specific "physics" of these unique worlds. By externalising these into `holon-config/` and `holon-knowledge/`, Holon agents become *
-*config-driven**. They are initialised with a `config_path` and a `knowledge_path` and load their missions, constraints, and "physics" from these external brains. Each project world is unique and dynamic, evolving over
+Foundational models provide broad priors but cannot fully capture the project-specific "physics" of these unique worlds.
+By externalising these into `holon-config/` and `holon-knowledge/`, Holon agents become **config-driven**. They are
+initialised with a `config_path` and a `knowledge_path` and load their missions, constraints,
+and "physics" from these external brains. Each project world is unique and dynamic, evolving over
 time as rules and constraints change.
 
-This ensures agents remain stateless and portable while their behaviour is governed by both the specific, evolving rules of the project and the universal wisdom of the engine.
+This ensures agents remain stateless and portable while their behaviour is governed by both the specific, evolving rules
+of the project and the universal wisdom of the engine.
 
-Holon’s agents must therefore **learn, adapt, and evolve within the context of these unique worlds**. They do this by generating hypotheses (plans and intents) that test assumptions about the rule set and constraints,
+Holon’s agents must therefore **learn, adapt, and evolve within the context of these unique worlds**. They do this by
+generating hypotheses (plans and intents) that test assumptions about the rule set and constraints,
 learning from outcomes, and updating their internal models accordingly.
 
-This recursive, fractal-like exploration and adaptation is the core mechanism that enables Holon to bridge the gap between general foundational knowledge and project-specific expertise, delivering solutions tailored to
+This recursive, fractal-like exploration and adaptation is the core mechanism that enables Holon to bridge the gap
+between general foundational knowledge and project-specific expertise, delivering solutions tailored to
 the unique physics of each project world.
 
 ---
@@ -47,7 +54,8 @@ the unique physics of each project world.
 
 ### 1.1 Intent
 
-An **Intent** is a discrete unit of work or goal that an agent or the system aims to accomplish. It encapsulates a specific task, objective, or problem to solve.
+An **Intent** is a discrete unit of work or goal that an agent or the system aims to accomplish. It encapsulates a
+specific task, objective, or problem to solve.
 
 - Each intent has a unique identifier.
 - Each intent corresponds to a dedicated Git branch.
@@ -101,17 +109,21 @@ A **Sub-Intent** is an intent spawned by another intent to break down complex wo
 ### 2.4 Learning Value
 
 - The epistemic gain produced by executing an intent, independent of success or failure.
-- It exists to stop the system from over-penalising exploration, and to justify spikes/failure-mode discovery when bounded by entropy budgets.
-- Learning Value is the expected knowledge gain from running the plan, including new constraints discovered, new failure modes, and reusable KB entries.
+- It exists to stop the system from over-penalising exploration, and to justify spikes/failure-mode discovery when
+  bounded by entropy budgets.
+- Learning Value is the expected knowledge gain from running the plan, including new constraints discovered, new failure
+  modes, and reusable KB entries.
 
 ---
 
 ## 3) The Entropy Framework - Disorder, Novelty, and Stability
 
-At its core, entropy measures the **degree of disorder, uncertainty, and novelty** introduced by an intent or plan within the unique project world. It quantifies how much a plan disrupts the current stable state —
+At its core, entropy measures the **degree of disorder, uncertainty, and novelty** introduced by an intent or plan
+within the unique project world. It quantifies how much a plan disrupts the current stable state —
 introducing complexity, unpredictability, or divergence from known patterns.
 
-Think of entropy as the "amount of surprise or disruption" a plan causes. Just as physical entropy measures disorder in a thermodynamic system, Holon's entropy measures disorder in the informational and operational state
+Think of entropy as the "amount of surprise or disruption" a plan causes. Just as physical entropy measures disorder in
+a thermodynamic system, Holon's entropy measures disorder in the informational and operational state
 of the project.
 
 Managing entropy is crucial:
@@ -119,10 +131,12 @@ Managing entropy is crucial:
 - **Too much entropy** leads to chaos, instability, and risk of failure.
 - **Too little entropy** leads to stagnation, lack of innovation, and missed opportunities for improvement.
 
-Entropy is distinct from a simple risk score or probability of failure. It captures both known risks and the unknown unknowns — the hidden complexities and emergent behaviours that can arise in a complex project
+Entropy is distinct from a simple risk score or probability of failure. It captures both known risks and the unknown
+unknowns — the hidden complexities and emergent behaviours that can arise in a complex project
 environment.
 
-By explicitly measuring and budgeting entropy, Holon agents can safely explore novel strategies while maintaining overall system stability, enabling a balanced evolution of the project world.
+By explicitly measuring and budgeting entropy, Holon agents can safely explore novel strategies while maintaining
+overall system stability, enabling a balanced evolution of the project world.
 
 ### 3.1 Intent Entropy ($\Delta S_{intent}$)
 
@@ -148,21 +162,28 @@ By explicitly measuring and budgeting entropy, Holon agents can safely explore n
 
 ### 3.3 Relationship Between Intent and System Entropy
 
-- System entropy is the **sum or aggregation** of all individual intent entropies plus additional systemic factors (e.g., unresolved conflicts, stale branches).
+- System entropy is the **sum or aggregation** of all individual intent entropies plus additional systemic factors (
+  e.g., unresolved conflicts, stale branches).
 - Controlling system entropy requires managing the entropy of individual intents and their interactions.
-- Agents must balance exploration (which increases intent entropy) with system stability (which requires keeping system entropy within bounds).
+- Agents must balance exploration (which increases intent entropy) with system stability (which requires keeping system
+  entropy within bounds).
 
 ### 3.4 Entropy Budget and Recursive Recalculation
 
-- **System Stability Limit:** A predefined limit on allowable system entropy that ensures the project world remains stable, navigable, and manageable.
-- **Branch Pruning and Maintenance:** System entropy accounts for the proliferation of old, stale, or merged branches. When the budget is exceeded, the system triggers automated pruning of the branch namespace to reduce
+- **System Stability Limit:** A predefined limit on allowable system entropy that ensures the project world remains
+  stable, navigable, and manageable.
+- **Branch Pruning and Maintenance:** System entropy accounts for the proliferation of old, stale, or merged branches.
+  When the budget is exceeded, the system triggers automated pruning of the branch namespace to reduce
   disorder.
 - **Constraint-Driven Actions:** Intents or plans that would cause system entropy to exceed the budget are subject to:
     - **Pruning or Discarding:** High-entropy or low-value branches are abandoned and deleted.
     - **Execution Delay:** Work is paused until system maintenance (e.g., merging or pruning) reduces entropy.
-    - **Fractal Decomposition:** Complex intents are broken down into smaller, lower-entropy sub-intents to distribute risk.
-- **Recursive Upward Propagation:** Entropy is not static. Each time a child intent's entropy is merged or updated, the parent intent's entropy and the entropy of all ancestors up to the root intent is automatically
-  recalculated. This ensures that the "blast radius" of changes is accurately reflected throughout the entire intent hierarchy in real-time.
+    - **Fractal Decomposition:** Complex intents are broken down into smaller, lower-entropy sub-intents to distribute
+      risk.
+- **Recursive Upward Propagation:** Entropy is not static. Each time a child intent's entropy is merged or updated, the
+  parent intent's entropy and the entropy of all ancestors up to the root intent is automatically
+  recalculated. This ensures that the "blast radius" of changes is accurately reflected throughout the entire intent
+  hierarchy in real-time.
 
 ---
 
@@ -171,7 +192,8 @@ By explicitly measuring and budgeting entropy, Holon agents can safely explore n
 ### 4.1 Expected Value ($EV$)
 
 - Combines $P(success)$, Impact, Cost, Learning Value, and Entropy into a single metric.
-- **Wisdom-Guided:** The fundamental formula logic and "meta-physics" are defined in the Wisdom Base (`holon-knowledge/wb/`).
+- **Wisdom-Guided:** The fundamental formula logic and "meta-physics" are defined in the Wisdom Base (
+  `holon-knowledge/wb/`).
 - **Config-Driven:** The weights and coefficients used in the formula are loaded from `holon-config/metrics/`.
 - Formula (conceptual):
 
@@ -205,20 +227,25 @@ $$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy -
 
 ## 6) Convergence
 
-In this system, **convergence** of a plan or intent means that the planning process has reached a point where further generation and evaluation of new plan variants is no longer expected to yield significantly better
-options. In other words, the planner and evaluator agree that the current best plan(s) are good enough to proceed to execution.
+In this system, **convergence** of a plan or intent means that the planning process has reached a point where further
+generation and evaluation of new plan variants is no longer expected to yield significantly better
+options. In other words, the planner and evaluator agree that the current best plan(s) are good enough to proceed to
+execution.
 
 ### Key points about convergence:
 
 - **Stopping Criterion:**  
-  Convergence is a formal stopping condition for the planning phase. It signals that the system should stop exploring new plan variants and select the best candidate for execution.
+  Convergence is a formal stopping condition for the planning phase. It signals that the system should stop exploring
+  new plan variants and select the best candidate for execution.
 
 - **Based on Metrics:**  
-  Convergence decisions rely on metrics like Expected Value (EV), entropy, planning cost, and improvement trends. For example, if the EV improvements between new variants become negligible (an EV plateau), or if one plan
+  Convergence decisions rely on metrics like Expected Value (EV), entropy, planning cost, and improvement trends. For
+  example, if the EV improvements between new variants become negligible (an EV plateau), or if one plan
   clearly dominates others by a significant margin, the system considers the plan converged.
 
 - **Entropy and Budget Constraints:**  
-  Convergence also occurs if the planning process risks exceeding entropy or resource budgets, preventing runaway exploration that could destabilise the system.
+  Convergence also occurs if the planning process risks exceeding entropy or resource budgets, preventing runaway
+  exploration that could destabilise the system.
 
 - **Types of Convergence Triggers:**
     - **Dominant Plan:** One plan’s EV is sufficiently higher than all others.
@@ -250,11 +277,12 @@ options. In other words, the planner and evaluator agree that the current best p
 | Cost                  | Resources required                                                      | Balances benefit vs expenditure                                                           |
 | Learning Value        | Epistemic gain delivered by executing an intent, independent of success | Encourages bounded exploration, accelerates estimator calibration, and promotes KB growth | 
 | Entropy ($\Delta S$)  | Measure of disorder or risk introduced                                  | Controls system stability                                                                 |
-| Expected Value ($EV$) | Combined metric for decision-making                                     | Drives autonomous agent behaviour                                                          |
+| Expected Value ($EV$) | Combined metric for decision-making                                     | Drives autonomous agent behaviour                                                         |
 | Convergence           | Condition when planning sufficiently explores and selects a best plan   | Signals planning termination and readiness for execution                                  |
 
 ---
 
-This document forms the semantic foundation for the Holon system. All agents and humans should refer to it to ensure consistent understanding and operation.
+This document forms the semantic foundation for the Holon system. All agents and humans should refer to it to ensure
+consistent understanding and operation.
 
 ---
