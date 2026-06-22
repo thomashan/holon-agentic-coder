@@ -59,13 +59,13 @@ EV is the selection objective used to compare competing plan variants for the sa
 
 We define:
 
-$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
+$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_{intent} - Cost$$
 
 Where:
 
 - `P(success)` is predicted success probability.
 - `Impact` is expected benefit if the plan succeeds.
-- `Entropy` is expected disorder / risk introduced by executing the plan.
+- `ΔS_intent` (or `Entropy`) is expected disorder / risk introduced by executing the plan.
 - `Cost` is expected resource consumption (time, compute, tokens, etc).
 - `LearningValue` is the epistemic gain delivered to the system, independent of success
 - `λ` is a system-wide entropy penalty coefficient.
@@ -133,6 +133,8 @@ It is intentionally not “Shannon entropy”; it’s a **risk/complexity proxy*
 - computable before execution (prediction),
 - measurable after execution (actual),
 - comparable across plans.
+
+For detailed definitions of the constituent factors (SSA, IRR, CL, SER, NOV), see the [Appendix](appendix.md).
 
 ---
 
@@ -532,7 +534,7 @@ $$S_{system}(t) = \alpha\cdot BD(t) + \beta\cdot KF(t) + \gamma\cdot CD(t) + \de
 
 ### Expected value
 
-$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
+$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_{intent} - Cost$$
 
 **Bootstrap defaults:**
 

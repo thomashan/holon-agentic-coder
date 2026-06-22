@@ -138,14 +138,17 @@ environment.
 By explicitly measuring and budgeting entropy, Holon agents can safely explore novel strategies while maintaining
 overall system stability, enabling a balanced evolution of the project world.
 
-### 3.1 Intent Entropy ($\Delta S_{intent}$)
+### 3.1 Intent Entropy ($\Delta S_{intent}$ or $\Delta S$)
 
 - A measure of disorder, uncertainty, or risk **introduced by a single intent or action**.
 - Quantifies how much an intent’s changes increase unpredictability or instability locally.
-- Examples include:
-    - Code complexity added by the intent
-    - Risk of conflicts or rebase failures caused by the intent
-    - Novelty or unpredictability of the changes
+- Modeled as a weighted sum of five key components:
+    - **SSA** (State Surface Area)
+    - **IRR** (Irreversibility)
+    - **CL** (Conflict Likelihood)
+    - **SER** (Sandbox Escape Risk)
+    - **NOV** (Novelty)
+- For detailed definitions of these factors, see the [Appendix](appendix.md).
 - Used to evaluate and rank intents during planning and merging.
 
 ### 3.2 System Entropy ($S_{system}$)
@@ -191,13 +194,14 @@ overall system stability, enabling a balanced evolution of the project world.
 
 ### 4.1 Expected Value ($EV$)
 
-- Combines $P(success)$, Impact, Cost, Learning Value, and Entropy into a single metric.
+- Combines $P(success)$, Impact, Cost, Learning Value, and Per-Intent Entropy ($\Delta S_{intent}$) into a single
+  metric.
 - **Wisdom-Guided:** The fundamental formula logic and "meta-physics" are defined in the Wisdom Base (
   `holon-knowledge/wb/`).
 - **Config-Driven:** The weights and coefficients used in the formula are loaded from `holon-config/metrics/`.
 - Formula (conceptual):
 
-$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
+$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_{intent} - Cost$$
 
 - Guides autonomous decision-making, planning, and merging.
 - $\mu$ (Learning Value weight) and $\lambda$ (Entropy weight) are defined in the external config.
@@ -266,19 +270,19 @@ execution.
 
 ## 7) Summary Table of Core Terms
 
-| Term                  | Definition                                                              | Role in System                                                                            |
-|-----------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| Intent                | Unit of work or goal                                                    | Basic building block                                                                      |
-| Root Intent           | Top-level intent requiring human review                                 | Human review boundary                                                                     |
-| Parent Intent         | Immediate parent of a sub-intent                                        | Receives automatic merges                                                                 |
-| Sub-Intent            | Intent spawned by another intent                                        | Automatic merging and evaluation                                                          |
-| $P(success)$          | Probability intent will succeed                                         | Guides planning and merging decisions                                                     |
-| Impact                | Expected benefit delivered                                              | Prioritisation metric                                                                     |
-| Cost                  | Resources required                                                      | Balances benefit vs expenditure                                                           |
-| Learning Value        | Epistemic gain delivered by executing an intent, independent of success | Encourages bounded exploration, accelerates estimator calibration, and promotes KB growth | 
-| Entropy ($\Delta S$)  | Measure of disorder or risk introduced                                  | Controls system stability                                                                 |
-| Expected Value ($EV$) | Combined metric for decision-making                                     | Drives autonomous agent behaviour                                                         |
-| Convergence           | Condition when planning sufficiently explores and selects a best plan   | Signals planning termination and readiness for execution                                  |
+| Term                                     | Definition                                                              | Role in System                                                                            |
+|------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| Intent                                   | Unit of work or goal                                                    | Basic building block                                                                      |
+| Root Intent                              | Top-level intent requiring human review                                 | Human review boundary                                                                     |
+| Parent Intent                            | Immediate parent of a sub-intent                                        | Receives automatic merges                                                                 |
+| Sub-Intent                               | Intent spawned by another intent                                        | Automatic merging and evaluation                                                          |
+| $P(success)$                             | Probability intent will succeed                                         | Guides planning and merging decisions                                                     |
+| Impact                                   | Expected benefit delivered                                              | Prioritisation metric                                                                     |
+| Cost                                     | Resources required                                                      | Balances benefit vs expenditure                                                           |
+| Learning Value                           | Epistemic gain delivered by executing an intent, independent of success | Encourages bounded exploration, accelerates estimator calibration, and promotes KB growth | 
+| Per-Intent Entropy ($\Delta S_{intent}$) | Measure of local disorder or risk introduced by a specific plan         | Evaluates planning risk and ranks plan variants                                           |
+| Expected Value ($EV$)                    | Combined metric for decision-making and selection                       | Drives autonomous agent behaviour                                                         |
+| Convergence                              | Condition when planning sufficiently explores and selects a best plan   | Signals planning termination and readiness for execution                                  |
 
 ---
 

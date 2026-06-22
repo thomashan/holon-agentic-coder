@@ -81,7 +81,7 @@ Use these variables in formulas below.
 
 #### Expected Value (conceptual)
 
-$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot Entropy - Cost$$
+$$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_{intent} - Cost$$
 
 - $\lambda$ is an entropy penalty hyperparameter (system-level constant).
 - $\mu$ is a learning value coefficient (system-level constant)
@@ -107,7 +107,8 @@ Estimators must return a confidence or variance when possible.
 
 #### Entropy definitions (recap)
 
-- `ΔS_intent`: entropy introduced by this plan (local)
+- `ΔS_intent` (or `ΔS`): entropy introduced by this plan (local). For detailed definitions of its constituent factors (
+  SSA, IRR, CL, SER, NOV), see the [Appendix](appendix.md).
 - `S_system`: global system entropy (aggregated)
   Planners must produce `ΔS_intent`. The Meta-Agent maintains `S_system`.
 
