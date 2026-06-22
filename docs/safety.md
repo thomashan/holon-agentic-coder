@@ -179,29 +179,17 @@ Monitor for:
 
 ### Trust levels
 
-#### **Baseline** (default for new agents)
+The system defines four distinct trust tiers for agents, representing an escalation of capabilities earned through
+historical performance and calibration reliability.
 
-- **Can:** Plan, execute in sandbox, read Ledger and KB.
-- **Cannot:** Spawn sub-intents, propose root intents, propose estimators, modify KB.
-- **Escalation:** After 10 successful executions with calibration error < 0.3.
+| Trust Level                                 | Capabilities (Can)                                                                                      | Restrictions (Cannot)                                                                                         | Promotion/Escalation Criteria                                                                             |
+|:--------------------------------------------|:--------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------|
+| **Baseline** <br>*(Default for new agents)* | <ul><li>Plan actions</li><li>Execute in isolated sandbox</li><li>Read Ledger and KB</li></ul>           | <ul><li>Spawn sub-intents</li><li>Propose root intents</li><li>Propose estimators</li><li>Modify KB</li></ul> | Initial baseline state upon agent registration                                                            |
+| **Medium** <br>*(Earned)*                   | <ul><li>All Baseline capabilities</li><li>Spawn sub-intents (up to depth 3)</li></ul>                   | <ul><li>Propose root intents</li><li>Propose estimators</li><li>Modify KB directly</li></ul>                  | $\ge 10$ successful executions with average success calibration error $< 0.30$                            |
+| **High** <br>*(Earned)*                     | <ul><li>All Medium capabilities</li><li>Propose root intents (requires human approval)</li></ul>        | <ul><li>Propose estimators</li><li>Modify core invariants</li></ul>                                           | $\ge 30$ successful executions with average success calibration error $< 0.20$                            |
+| **Highest** <br>*(Earned)*                  | <ul><li>All High capabilities</li><li>Propose estimators (requires human approval & backtest)</li></ul> | <ul><li>Modify core invariants directly (always requires human gating)</li></ul>                              | $\ge 100$ successful executions with average success calibration error $< 0.15$ (manual promotion review) |
 
-#### **Medium** (earned through reliability)
-
-- **Can:** All baseline + spawn sub-intents (up to depth 3).
-- **Cannot:** Propose root intents, propose estimators, modify KB directly.
-- **Escalation:** After 30 successful executions with calibration error < 0.2.
-
-#### **High** (earned through consistent performance)
-
-- **Can:** All medium + propose root intents (subject to human approval).
-- **Cannot:** Propose estimators, modify core invariants.
-- **Escalation:** After 100 successful executions with calibration error < 0.15.
-
-#### **Highest** (earned through exceptional performance)
-
-- **Can:** All high + propose estimators (subject to human approval and backtest validation).
-- **Cannot:** Modify core invariants directly (always requires human approval).
-- **Escalation:** Manual promotion by human after review.
+---
 
 ### Trust scoring formula (Config-Driven)
 

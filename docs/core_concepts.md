@@ -84,6 +84,23 @@ A **Sub-Intent** is an intent spawned by another intent to break down complex wo
 - Merges automatically into its parent intent based on evaluation.
 - Can have its own sub-intents, forming a fractal hierarchy.
 
+### 1.5 Understanding Fractal Recursion (Why it matters)
+
+**What it means:**
+Fractal recursion in Holon means that tasks look and behave the same way regardless of size or depth. A massive,
+high-level feature request (e.g., "Implement OAuth") and a tiny refactoring task (e.g., "Add test for helper") are both
+modeled as **Intents**. Each has a git branch, competitive planning phase, execution sandbox, and performance metrics.
+
+**Why we use it (Motivation):**
+
+1. **Dynamic Scaling:** A single centralized planner cannot predict details for a large project without hallucinating or
+   making errors. Under fractal recursion, agents plan one level down at a time, recursively decomposing complex intents
+   into smaller sub-intents only as they are discovered.
+2. **Blast Radius Control:** By isolating sub-intents to their own branches and sandboxes, bugs or failed approaches
+   only affect that local branch. The parent or sibling intents remain untouched and safe.
+3. **Calibrated Delegation:** Higher-trust agents can propose and manage root intents, while baseline-trust agents are
+   restricted to executing simple leaf-node sub-intents.
+
 ---
 
 ## 2) The Value Calculus
@@ -157,6 +174,19 @@ overall system stability, enabling a balanced evolution of the project world.
 - Aggregates entropy contributions from all active intents, branches, and unresolved conflicts.
 - Reflects the overall health and stability of the system.
 - High system entropy indicates a fragmented, unstable, or risky state that requires maintenance.
+
+#### 3.2.1 Why System Entropy is Needed (Motivation)
+
+While Per-Intent Entropy ($\Delta S_{intent}$) measures the local risk of running a *single* plan, System
+Entropy ($S_{system}$) tracks the *systemic debt* of the repository:
+
+1. **Branch Divergence:** If many agents work on separate branches simultaneously, they diverge from the main codebase.
+   System Entropy aggregates this drift; as branches age or proliferate, $S_{system}$ rises, signaling that the system
+   is growing unstable.
+2. **Coordinated Focus (Circuit Breaking):** If system entropy exceeds the project's budget, the orchestrator triggers a
+   circuit breaker that blocks starting new feature work, forcing agents to clean up stale branches, resolve merge
+   conflicts, and rebase, bringing the repository back to a stable state.
+
 - Managed by:
     - Pruning or discarding high-entropy intents
     - Merging completed intents to reduce branch divergence

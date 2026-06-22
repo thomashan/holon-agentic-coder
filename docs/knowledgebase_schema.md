@@ -691,11 +691,67 @@ Each KB subdirectory has an `index.json` for fast lookup:
 
 ### Curation process
 
-1. **Extraction:** Agent scans ledger for patterns (e.g., 3+ successful intents with similar structure).
-2. **Proposal:** Agent creates KB entry with status = `proposed`.
-3. **Validation:** Automated checks (evidence threshold, calibration improvement).
-4. **Review:** Human approval (if required).
-5. **Activation:** Status changed to `active`, entry becomes retrievable.
+The curation process transforms raw history in the Evolution Ledger into structured, actionable intelligence in the
+Knowledge Base. Curation is run periodically by a specialized background **Curator Agent** or triggered manually by a
+developer.
+
+```mermaid
+flowchart TD
+    Ledger[(Evolution Ledger)] --> Ext[1. Extraction: Scan Ledger]
+    Ext --> Prop[2. Proposal: Write KB Entry with status=proposed]
+    Prop --> Val{3. Validation Gate}
+    Val -- Fails --> Rejected[Status = rejected]
+    Val -- Passes --> Rev{4. Trust / Review Tier}
+    Rev -- Requires Review / Lower Trust --> Human[Human Approval Required]
+    Rev -- Direct Commit / Highest Trust --> Act[5. Activation: Status = active]
+    Human -- Approved --> Act
+    Human -- Rejected --> Rejected
+    Act --> Index[Index Entry for Agent Retrieval]
+```
+
+#### 1. Extraction (Triggers & Scans)
+
+The Curator Agent scans the Ledger looking for the following triggers:
+
+- **Pattern Learning:** Identifies $N \ge 3$ consecutive successful intents that modify similar components, extracting
+  their plan graphs as reusable templates.
+- **Failure Mode Discovery:** Detects repeating failure patterns (e.g., rebase conflicts on specific files, common test
+  suite timeouts) to create mitigation rules.
+- **Calibration Drift:** Monitors where predicted $P(success)$ or predicted entropy deviates significantly from actual
+  outcomes, signaling that estimators need updating.
+
+#### 2. Proposal
+
+The Curator Agent generates a structured KB entry (schema matching its type, e.g., `pattern` or `failure_mode`) with
+`status = "proposed"`. It must link to the specific ledger sequence IDs (`evidence`) for auditability.
+
+#### 3. Validation Gate
+
+Automated checks are run on the proposal:
+
+- **JSON Schema Validation:** Ensures the entry conforms to the schema definitions in `knowledgebase_schema.md`.
+- **Evidence Verification:** Verifies the referenced ledger entries exist and support the claim.
+- **Backtesting (Estimators only):** If proposing a modification to a planning estimator or weight, the curator runs a
+  simulation against the last 50 ledger executions to verify it reduces average calibration error.
+
+#### 4. Review & Approval Tiers
+
+Curation capability depends on the agent's Trust Level:
+
+- **Baseline / Medium Agents:** Can only submit proposals that *must* be approved by a human.
+- **High / Highest Agents:** Can commit standard code patterns and failure mode entries directly (`active`). However,
+  modifications to estimators, configuration weights, or core guidelines always require human approval.
+
+#### 5. Activation & Feedback Loop
+
+Once approved/validated:
+
+- The entry's status becomes `active`.
+- The orchestrator indexes the new entry for semantic search.
+- Future planning agents are structurally required to query the active KB at the beginning of their planning phase to
+  seed plan graphs and adjust metrics predictions.
+
+---
 
 ### Deprecation process
 

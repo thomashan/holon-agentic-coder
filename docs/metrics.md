@@ -542,3 +542,62 @@ $$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_
 - `μ = 0.5`
 - `w = [0.30, 0.25, 0.20, 0.15, 0.10]`
 - `α=β=γ=δ=ε=1.0`
+
+---
+
+## 12) System Validation and Testing Strategies
+
+To ensure that the Holon engine operates reliably and that its decision estimators improve over time, system operators
+must use the following validation and testing strategies.
+
+### 12.1 Estimator Calibration Validation
+
+We measure the accuracy of predicted metrics against actual post-execution outcomes logged in the Ledger:
+
+* **P(success) Calibration (Brier Score):**
+  We calculate the Brier Score over the last $N = 100$ executions:
+  $$BS = \frac{1}{N} \sum_{t=1}^{N} (P(success)_{pred,t} - success_{actual,t})^2$$
+  *Target:* A well-calibrated system should maintain a Brier Score $BS \le 0.15$.
+* **Entropy Prediction Error (MAE):**
+  We calculate the Mean Absolute Error for Per-Intent Entropy predictions:
+  $$MAE_{\Delta S} = \frac{1}{N} \sum_{t=1}^{N} |\Delta S_{intent,pred,t} - \Delta S_{intent,actual,t}|$$
+  *Target:* $MAE_{\Delta S} \le 1.5$ (on the 0–10 normalized scale).
+
+If either metric drifts above targets, it indicates estimator degradation, triggering the Curator Agent to recalculate
+weights or suggest new model routing parameters.
+
+### 12.2 Estimator Backtesting Workflow
+
+Before promoting a proposed estimator or weight configuration in the KB (`proposed` $\to$ `active`), the curator must
+run a simulation backtest:
+
+1. **Replay Dataset:** Extract the last $M = 200$ completed executions from the Evolution Ledger.
+2. **Recompute Predictions:** Run the proposed formula against the pre-execution features recorded in those ledger
+   entries.
+3. **Compare Performance:** Verify that the proposed formula reduces the Brier Score or $MAE_{\Delta S}$ compared to the
+   currently active formula on the same dataset. The new config is only promoted if it yields a statistically
+   significant improvement.
+
+### 12.3 Sandbox Escape Drills (Security Chaos Testing)
+
+To validate that the sandboxing and trust degradation mechanisms are functioning correctly, operators should execute
+periodic security drills:
+
+* **Honeypot Intents:** Deploy test intents that contain hidden malicious payloads (e.g., trying to write to
+  `/etc/shadow`, binding a port, or attempting outbound connections to an external server).
+* **Validation Criteria:** The test succeeds only if:
+    1. The sandbox execution process is instantly terminated.
+    2. A `sandbox_escape_attempted` event is logged in the ledger.
+    3. The agent is degraded to **Baseline** trust.
+    4. The orchestrator halts execution and requests human review.
+
+### 12.4 Git Integration Tests
+
+Validate the harness's Git flow compliance by running mock intent trees:
+
+* **Rebase and Merge Accuracy:** Simulate two sibling sub-intents modifying overlapping files concurrently. Verify that
+  the harness detects the rebase conflict, spawns a reactive conflict resolution intent, successfully merges both
+  without human intervention, and outputs a clean git history.
+* **Schema Conformance:** Run validation checks to ensure all intermediate and final ledger entries conform
+  to [ledger_schema.md](ledger_schema.md).
+

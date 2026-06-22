@@ -58,8 +58,17 @@ Before diving deep into this README, we **strongly urge** all readers to first r
 [`core_concepts.md`](docs/core_concepts.md) document. It contains essential foundational information, terminology, and
 principles that are critical for fully understanding the architecture, workflows, and design decisions described here.
 
-The concepts in `core_concepts.md` provide the semantic backbone of this project and will help you make sense of the
-details and rationale presented throughout this README and the rest of the documentation.
+Specifically, it introduces:
+
+- **Fractal Intents:** Recursive task decomposition representing work as a tree of intents (goals) and sub-intents down
+  to atomic actions.
+- **Competitive Planning:** Generating and comparing multiple distinct plan hypotheses (variants) for a single intent.
+- **Expected Value ($EV$):** The core decision metric used to rank plans, balancing success probability ($P(success)$),
+  value, cost, and risk.
+- **The Entropy Framework:** Measuring local plan complexity and risk ($\Delta S_{intent}$) and global system
+  disorder ($S_{system}$) to enforce safety limits.
+- **The Intent Lifecycle State Machine:** Tracking intents from proposed to executing, completed, failed, merged, or
+  discarded states.
 
 Please take the time to review `core_concepts.md` carefully to get the most out of this project.
 
@@ -654,19 +663,69 @@ Current focus (recommended build order):
 
 ## Documentation map
 
-- [`docs/agent_design.md`](docs/agent_design.md) — high-level agent architecture and behavioural contracts
-- [`docs/agents.md`](docs/agents.md) — how to plug in agents (Claude Code, Gemini CLI, others)
-- [`docs/architecture.md`](docs/architecture.md) — full technical design
-- [`docs/core_concepts.md`](docs/core_concepts.md) — fundamental terminology and metrics
-- [`docs/examples.md`](docs/examples.md) — end-to-end walkthroughs
-- [`docs/git_flow.md`](docs/git_flow.md) — strict branching/rebase/merge rules
-- [`docs/knowledgebase_schema.md`](docs/knowledgebase_schema.md) — propose/validate/promote workflow
-- [`docs/wisdombase_schema.md`](docs/wisdombase_schema.md) — universal invariants and meta-evolution
-- [`docs/ledger_schema.md`](docs/ledger_schema.md) — record types, JSON schemas
-- [`docs/metrics.md`](docs/metrics.md) — formal definitions of P(success), ΔS, EV, calibration
-- [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — planning lifecycle, variant evaluation,
-  convergence policies
-- [`docs/safety.md`](docs/safety.md) — budgets, trust ladder, immutable rules, auditability
+The documents in this repository are structured hierarchically, building from basic concepts and architecture down to
+specific operational subsystems:
+
+```mermaid
+flowchart TD
+    CC["core_concepts.md (Foundational Principles & Terms)"]
+    APP["appendix.md (Glossary of Metrics & Terms)"]
+    ARCH["architecture.md (Technical Design Blueprint)"]
+    
+    CC --> ARCH
+    CC -.-> APP
+    
+    subgraph OperationalPillars [Operational Pillars]
+        GF["git_flow.md (Git-Native Isolation Rules)"]
+        PE["planning_and_evaluation.md (Variant Evaluation)"]
+        MET["metrics.md (Mathematical Estimators & Formulas)"]
+        SF["safety.md (Trust Levels & Budgets)"]
+    end
+    
+    subgraph KnowledgeAndLedger [Knowledge & Ledgers]
+        KB["knowledgebase_schema.md (Curation Workflow)"]
+        WB["wisdombase_schema.md (Meta-Evolution)"]
+        LD["ledger_schema.md (Audit Logs & Records)"]
+    end
+    
+    subgraph AgentImplementation [Agent Implementation]
+        AD["agent_design.md (Agent Contracts)"]
+        AGS["agents.md (Execution CLI Adapters)"]
+    end
+    
+    ARCH --> OperationalPillars
+    ARCH --> KnowledgeAndLedger
+    ARCH --> AgentImplementation
+    
+    PE <--> MET
+    AD --> AGS
+    
+    EX["examples.md (Practical Scenarios & Workflows)"]
+    OperationalPillars --> EX
+    AgentImplementation --> EX
+```
+
+### Document Directory
+
+* **Foundations & Core Blueprint:**
+    * [`docs/core_concepts.md`](docs/core_concepts.md) — Conceptual definitions and principles.
+    * [`docs/architecture.md`](docs/architecture.md) — Full technical architecture design.
+    * [`docs/appendix.md`](docs/appendix.md) — Glossary of mathematical symbols and terms.
+* **Operational Rules & Evaluation:**
+    * [`docs/git_flow.md`](docs/git_flow.md) — Git-native branch, rebase, and merge invariants.
+    * [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — Planning lifecycle, variants, and
+      convergence policies.
+    * [`docs/metrics.md`](docs/metrics.md) — Detailed formulation of estimators ($P(success)$, $\Delta S$, $EV$, and
+      calibration).
+    * [`docs/safety.md`](docs/safety.md) — Resource limits, budgets, sandboxing, and trust ladders.
+* **Knowledge & Ledgers:**
+    * [`docs/knowledgebase_schema.md`](docs/knowledgebase_schema.md) — Propose/validate/promote schemas.
+    * [`docs/wisdombase_schema.md`](docs/wisdombase_schema.md) — Universal code invariants and meta-principles.
+    * [`docs/ledger_schema.md`](docs/ledger_schema.md) — JSON schemas for the evolution ledger.
+* **Execution & Integrations:**
+    * [`docs/agent_design.md`](docs/agent_design.md) — High-level agent architecture and behavioral contracts.
+    * [`docs/agents.md`](docs/agents.md) — Instructions for integrating specific agents (Gemini, Claude, etc.).
+    * [`docs/examples.md`](docs/examples.md) — End-to-end practical walkthroughs.
 
 ---
 

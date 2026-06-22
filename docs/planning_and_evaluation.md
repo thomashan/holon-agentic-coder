@@ -36,6 +36,19 @@ Key goals:
 
 ### Plan Variant Generation
 
+#### Plan Variant vs. Plan Graph
+
+To prevent boundary ambiguity, the system distinguishes these concepts:
+
+- **Plan Graph:** The logical dependency graph of the plan. It specifies the step nodes, sequence constraints, execution
+  actions, and any child sub-intents. It is purely structural.
+- **Plan Variant:** A competitive candidate proposal wrapped in an evaluation envelope. It contains a specific
+  `plan_graph` along with its prediction metrics ($P(success)$, $\Delta S_{intent}$, $EV$), cost estimates, routing
+  decisions, and metadata (creator agent, generation model, timestamps).
+
+For any single intent, multiple competing **Plan Variants** (each housing a different **Plan Graph**) are generated and
+evaluated.
+
 #### Plan Variant (artifact)
 
 Each plan variant is a first-class artefact with:
@@ -184,6 +197,41 @@ def rank_plans(plans, entropy_budget, cost_budget):
 ---
 
 ### Convergence & Termination Policies
+
+#### Integration in the Orchestrator Lifecycle
+
+The convergence policy acts as a key state gate run by the **Orchestrator Harness** after each planning iteration:
+
+```mermaid
+sequenceDiagram
+    participant O as Orchestrator Harness
+    participant P as Planner Agent
+    participant L as Evolution Ledger
+    participant E as Evaluator (Convergence Policy)
+    
+    rect rgb(240, 240, 245)
+        Note over O, L: Loop until Convergence
+        O->>P: 1. Generate plan variant
+        P-->>O: Return Plan Variant (containing Plan Graph)
+        O->>L: 2. Log variant (plan_generated)
+        O->>E: 3. Run evaluation & check convergence
+        E-->>O: Return Decision (not_converged / converged)
+    end
+    
+    Note over O, L: Upon Convergence
+    O->>L: 4. Log selection (plan_selected)
+    O->>O: 5. Transition to Execution branch
+```
+
+1. **Generation:** The orchestrator invokes the **Planner Agent** (model chosen by the router) to generate a new
+   candidate `Plan Variant`.
+2. **Logging:** The orchestrator registers the variant in the append-only `Evolution Ledger`.
+3. **Evaluation:** The orchestrator runs the **Evaluator Agent** (or a local policy evaluator) to rank all active
+   variants by Expected Value and apply the convergence triggers.
+4. **Decision:**
+    - If *not converged*, the planning cycle repeats (or spawns child intents if the root is too complex).
+    - If *converged*, the orchestrator logs the chosen variant (`plan_selected`), locks the plan graph, and switches the
+      git branch environment to execution mode.
 
 Planning must terminate when one or more of the convergence conditions are met. The system uses a configurable
 Convergence Policy; a recommended default is the three-tier policy:

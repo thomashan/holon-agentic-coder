@@ -137,8 +137,48 @@ management.
 
 ---
 
+## Governance and Change Management
+
+The stability of the Holon engine relies on strict boundaries between agent-driven execution and human-driven
+governance. Changes to the core "physics", schemas, or system invariants follow a formal change management process.
+
+### 1) Core Principles & "Physics" Updates
+
+The coefficients ($\lambda$, $\mu$, weights) and formulas (Expected Value, Entropy) are defined globally in
+`holon-config/metrics/` and the Wisdom Base.
+
+- **Who can propose:** Only agents with **Highest** trust or human operators can propose changes to these parameters.
+- **Backtest Validation:** Any proposed change must be accompanied by a backtest report run against historical Ledger
+  data (minimum 200 runs) showing a measurable increase in global utility or a decrease in average calibration error.
+- **Human Approval Gate:** System-wide config changes cannot be automatically committed. They are proposed as a standard
+  git PR against the canonical repository, requiring mandatory human review and manual activation.
+
+### 2) Schema Evolution and Versioning
+
+The structure of the data products (Ledger event schemas, KB/WB schemas) is versioned in `meta.json`:
+
+- **Minor Changes:** Non-breaking schema additions (e.g. adding metadata fields) are versioned via minor bumps (e.g.
+  `1.1` to `1.2`) and automatically propagated to sandboxes.
+- **Major Changes:** Breaking changes (e.g. removing fields, renaming metrics, restructuring the git flow) bump the
+  major version. Agents and orchestrators must be updated to support the new major version before it can be activated in
+  the workspace.
+
+### 3) Handling Legacy Work and Deprecation
+
+When breaking changes or core parameter updates are merged into the canonical repository:
+
+- **Legacy Sandboxes:** Active running sub-intents running on legacy branches continue their execution in containers
+  pre-loaded with the older compatible schema and metric weights.
+- **Stale Branches:** If a branch cannot be rebased due to incompatible schema version differences, it is marked as
+  `discarded` or `deprecated` in the Ledger. The orchestrator prunes the branch and prompts the operator or high-trust
+  agent to re-propose the intent using the new system standards.
+
+---
+
 ## Related documents
 
 - [`knowledgebase_schema.md`](knowledgebase_schema.md) — Local project memory
 - [`ledger_schema.md`](ledger_schema.md) — Source of evidence for ascension
 - [`architecture.md`](architecture.md) — How the WB fits into the Stateless Engine
+- [`appendix.md`](appendix.md) — Reference Glossary for formulas and metrics
+

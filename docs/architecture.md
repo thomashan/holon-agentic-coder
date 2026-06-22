@@ -79,6 +79,52 @@ Agents and system components are **config-driven**; they are initialised with a 
 
 ### High-level architecture
 
+The components of the Holon engine are organized around the Orchestrator (Meta-Agent), which coordinates the flow of
+information between static configurations, dynamic data products, and execution runtimes.
+
+```mermaid
+flowchart TD
+    subgraph ConfigAndKnowledge [Configs & Knowledge Stores]
+        HC["holon-config/ (Static Priors)"]
+        Ledger[("Evolution Ledger (JSONL)")]
+        KB[("Knowledge Base (KB)")]
+        WB[("Wisdom Base (WB)")]
+    end
+
+    subgraph SystemCore [Core Holon Engine]
+        MA["Orchestrator (Meta-Agent)"]
+        IR["Intent Registry"]
+        PL["Planner Agent"]
+        EV["Plan Evaluator (with Convergence)"]
+        RT["Model Router"]
+        EX["Sandbox Executor"]
+        CU["Curator Agent"]
+    end
+
+    %% Seeding configuration & knowledge
+    HC --> MA
+    Ledger -.-> MA
+    KB -.-> MA
+    WB -.-> MA
+
+    %% Orchestration Flow
+    MA -->|"1. Register Intent"| IR
+    MA -->|"2. Request Plans"| PL
+    PL -->|"3. Query KB/WB"| KB & WB
+    PL -->|"4. Return Plan Variants"| MA
+    MA -->|"5. Evaluate & Converge"| EV
+    EV -->|"6. Rank & Select Plan"| MA
+    MA -->|"7. Select Model"| RT
+    MA -->|"8. Execute Plan"| EX
+    EX -->|"9. Isolate Container"| SB["Sandbox (Docker/gVisor)"]
+    EX -->|"10. Log Events"| Ledger
+
+    %% Curation Loop
+    CU -->|"11. Scan & Extract"| Ledger
+    CU -->|"12. Propose & Validate"| KB
+    KB -->|"13. Ascend Axioms"| WB
+```
+
 #### Component map
 
 - **Config Loader**
@@ -266,7 +312,9 @@ Human review occurs at:
 
 ### Planning convergence policy (architecture role)
 
-Convergence prevents infinite planning loops.
+Convergence prevents infinite planning loops. For a detailed breakdown of convergence triggers, mathematical
+definitions, and termination thresholds, see the
+[Convergence & Termination Policies in planning_and_evaluation.md](planning_and_evaluation.md#L186).
 
 Convergence triggers may include:
 

