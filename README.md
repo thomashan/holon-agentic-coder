@@ -1,6 +1,7 @@
 # Holon: Agentic Coder
 
-**Git-native, sandbox-isolated, self-evolving agentic coding architecture** built around **fractal (recursive) intents**, **competitive planning variants**, **append-only learning**,
+**Git-native, sandbox-isolated, self-evolving agentic coding architecture** built around **fractal (recursive) intents
+**, **competitive planning variants**, **append-only learning**,
 and **entropy-aware decision-making**.
 
 Repository: [https://github.com/thomashan/holon-agentic-coder](https://github.com/thomashan/holon-agentic-coder)
@@ -31,12 +32,15 @@ A **holon** is something that is simultaneously a **whole** and a **part**. In t
 
 Most agentic coding systems fail in predictable ways:
 
-1. **State contamination:** exploration corrupts the working tree, environments drift, and "it worked once" can't be reproduced.
+1. **State contamination:** exploration corrupts the working tree, environments drift, and "it worked once" can't be
+   reproduced.
 2. **Planning amnesia:** plans are ephemeral; the system cannot learn which planning strategies work.
 3. **No causal trace:** actions are taken without a durable "why/how/what happened" record.
-4. **Human review overload:** humans are asked to review noisy micro-changes rather than synthesised parent-level outcomes.
+4. **Human review overload:** humans are asked to review noisy micro-changes rather than synthesised parent-level
+   outcomes.
 5. **No comparable variants:** there's no fair way to compare plan A vs plan B vs model choice A vs model choice B.
-6. **Hidden routing:** switching between models (fast/cheap vs deep/reasoning) is treated as invisible magic instead of a measurable decision.
+6. **Hidden routing:** switching between models (fast/cheap vs deep/reasoning) is treated as invisible magic instead of
+   a measurable decision.
 
 Holon is designed to make these failure modes structurally difficult by:
 
@@ -50,10 +54,12 @@ Holon is designed to make these failure modes structurally difficult by:
 
 ## Important Notice
 
-Before diving deep into this README, we **strongly urge** all readers to first read the [`core_concepts.md`](docs/core_concepts.md) document. It contains essential foundational information, terminology, and principles
-that are critical for fully understanding the architecture, workflows, and design decisions described here.
+Before diving deep into this README, we **strongly urge** all readers to first read the
+[`core_concepts.md`](docs/core_concepts.md) document. It contains essential foundational information, terminology, and
+principles that are critical for fully understanding the architecture, workflows, and design decisions described here.
 
-The concepts in `core_concepts.md` provide the semantic backbone of this project and will help you make sense of the details and rationale presented throughout this README and the rest of the documentation.
+The concepts in `core_concepts.md` provide the semantic backbone of this project and will help you make sense of the
+details and rationale presented throughout this README and the rest of the documentation.
 
 Please take the time to review `core_concepts.md` carefully to get the most out of this project.
 
@@ -63,15 +69,18 @@ Please take the time to review `core_concepts.md` carefully to get the most out 
 
 ### 1) Intent is fractal (recursive, unbounded depth)
 
-There is no fixed number of levels. Any intent may spawn sub-intents, which may spawn sub-sub-intents, until leaf nodes become **atomic intents** (direct actions).
+There is no fixed number of levels. Any intent may spawn sub-intents, which may spawn sub-sub-intents, until leaf nodes
+become **atomic intents** (direct actions).
 
 ### 2) Planning is first-class and competitive
 
-For the same intent, multiple **planning variants** exist simultaneously (v1, v2, v3...). They are competing hypotheses, not edits.
+For the same intent, multiple **planning variants** exist simultaneously (v1, v2, v3...). They are competing hypotheses,
+not edits.
 
 ### 3) Exploration is allowed because it's isolated
 
-Low-probability and risky exploration is permitted because branches and sandboxes can be discarded. The system learns from outcomes without polluting the mainline.
+Low-probability and risky exploration is permitted because branches and sandboxes can be discarded. The system learns
+from outcomes without polluting the mainline.
 
 ### 4) Git is the universal state machine
 
@@ -110,16 +119,20 @@ Agents may route tasks to different models (e.g., Gemini Flash vs DeepThink). Ro
 
 ### 9) Unique project worlds require autonomous evolution
 
-Each project is effectively its own **unique world** with distinct rules, constraints, and dynamics. Foundational models provide powerful priors but cannot fully capture the infinite variety of possible project worlds.
+Each project is effectively its own **unique world** with distinct rules, constraints, and dynamics. Foundational models
+provide powerful priors but cannot fully capture the infinite variety of possible project worlds.
 
-True progress arises from **autonomous exploration and evolution within these unique rules**. Agents use foundational models as starting hypotheses but actively experiment, learn from failures, and evolve domain-specific
+True progress arises from **autonomous exploration and evolution within these unique rules**. Agents use foundational
+models as starting hypotheses but actively experiment, learn from failures, and evolve domain-specific
 strategies tailored to the project’s context.
 
-This recursive, fractal-like learning process is the core of Holon’s value proposition, shifting the focus from scaling models alone to building self-improving agentic systems that adapt within their own environments.
+This recursive, fractal-like learning process is the core of Holon’s value proposition, shifting the focus from scaling
+models alone to building self-improving agentic systems that adapt within their own environments.
 
 ### 10) Earned autonomy (long-term)
 
-Agents should eventually propose their own intents and spawn sub-intents recursively—but autonomy is **earned** through demonstrated intent quality and calibration.
+Agents should eventually propose their own intents and spawn sub-intents recursively—but autonomy is **earned** through
+demonstrated intent quality and calibration.
 
 ---
 
@@ -127,8 +140,10 @@ Agents should eventually propose their own intents and spawn sub-intents recursi
 
 Holon operates as a **Stateless Engine** using two durable stores:
 
-- **`holon-config/` (Static Priors):** the human-authored "Constitutional Brain" (prompts, world context, safety rules, metric weights).
-- **`holon-knowledge/` (Dynamic Experience):** the machine-authored "Evolving Memory" (append-only ledger, curated knowledge base, universal wisdom base).
+- **`holon-config/` (Static Priors):** the human-authored "Constitutional Brain" (prompts, world context, safety rules,
+  metric weights).
+- **`holon-knowledge/` (Dynamic Experience):** the machine-authored "Evolving Memory" (append-only ledger, curated
+  knowledge base, universal wisdom base).
 
 ---
 
@@ -194,7 +209,8 @@ A plan is a versioned variant tied to an intent and the model tier used to produ
 
 ### Branch naming (Fractal Nesting)
 
-Holon uses a filesystem-like branch structure to represent the intent hierarchy. Sub-intents are nested under their parent's path.
+Holon uses a filesystem-like branch structure to represent the intent hierarchy. Sub-intents are nested under their
+parent's path.
 
 #### Root Intent Branch
 
@@ -295,7 +311,8 @@ Poor calibration reduces an agent's trust level and influences future routing de
 
 ## Planning variants & convergence (when to stop planning)
 
-Planning is not allowed to loop forever. For any given intent, the system may generate multiple **planning variants** (v1, v2, v3...), but must eventually **converge** and select a plan to execute.
+Planning is not allowed to loop forever. For any given intent, the system may generate multiple **planning variants**
+(v1, v2, v3...), but must eventually **converge** and select a plan to execute.
 
 ### Why multiple variants?
 
@@ -371,13 +388,15 @@ Different models may generate plans for the same intent concurrently:
 
 This enables **model routing selection pressure**: which model produces better plans for which types of intents?
 
-**For detailed convergence policy implementation**, see [`docs/architecture.md`](docs/architecture.md) and [`docs/metrics.md`](docs/metrics.md).
+**For detailed convergence policy implementation**, see [`docs/architecture.md`](docs/architecture.md) and
+[`docs/metrics.md`](docs/metrics.md).
 
 ---
 
 ## Dynamic model routing (captured + evolved)
 
-Holon treats **model selection as a first-class decision** with measurable outcomes. Different LLMs (and tiers of the same LLM) may be used for different stages, including:
+Holon treats **model selection as a first-class decision** with measurable outcomes. Different LLMs (and tiers of the
+same LLM) may be used for different stages, including:
 
 - intent proposal (including competing intent proposals from multiple models)
 - plan generation (multiple planning variants per intent, potentially multi-model)
@@ -451,13 +470,15 @@ Over time, the system learns:
 - when escalation is justified,
 - and when cheap/fast planning is sufficient.
 
-**For detailed routing policy and scoring**, see [`docs/architecture.md`](docs/architecture.md) and [`docs/metrics.md`](docs/metrics.md).
+**For detailed routing policy and scoring**, see [`docs/architecture.md`](docs/architecture.md) and
+[`docs/metrics.md`](docs/metrics.md).
 
 ---
 
 ## Autonomous intent generation (long-term)
 
-Holon aims for agents that can **propose their own intents** and (eventually) **spawn recursive sub-intent trees** without human initiation.
+Holon aims for agents that can **propose their own intents** and (eventually) **spawn recursive sub-intent trees**
+without human initiation.
 
 This is the most powerful—and most dangerous—capability in the system. It must be **earned**, not granted by default.
 
@@ -610,7 +631,8 @@ Autonomous intent generation is introduced gradually:
 **Phase 4:** Agents propose multi-level trees (Level 3-4)  
 **Phase 5:** Exceptional agents propose meta-changes (Level 5, human-gated)
 
-**For complete trust ladder, validation rules, and scoring formulas**, see [`docs/safety.md`](docs/safety.md) and [`docs/architecture.md`](docs/architecture.md).
+**For complete trust ladder, validation rules, and scoring formulas**, see [`docs/safety.md`](docs/safety.md) and
+[`docs/architecture.md`](docs/architecture.md).
 
 ---
 
@@ -642,14 +664,16 @@ Current focus (recommended build order):
 - [`docs/wisdombase_schema.md`](docs/wisdombase_schema.md) — universal invariants and meta-evolution
 - [`docs/ledger_schema.md`](docs/ledger_schema.md) — record types, JSON schemas
 - [`docs/metrics.md`](docs/metrics.md) — formal definitions of P(success), ΔS, EV, calibration
-- [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — planning lifecycle, variant evaluation, convergence policies
+- [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — planning lifecycle, variant evaluation,
+  convergence policies
 - [`docs/safety.md`](docs/safety.md) — budgets, trust ladder, immutable rules, auditability
 
 ---
 
 ## Contributing
 
-This project is currently in the **ideation and planning phase**. The focus is on refining the conceptual architecture, principles, and specifications—not implementation.
+This project is currently in the **ideation and planning phase**. The focus is on refining the conceptual architecture,
+principles, and specifications—not implementation.
 
 Contributions are welcome in the form of:
 
@@ -664,14 +688,17 @@ Please open **issues** or **discussions** for:
 - proposed changes to core principles
 - identification of gaps or contradictions in the spec
 
-**Note:** This repository is a **blueprint and specification**, not a reference implementation. There are no plans to accept implementation PRs at this time.
+**Note:** This repository is a **blueprint and specification**, not a reference implementation. There are no plans to
+accept implementation PRs at this time.
 
 ---
 
 ## How to cite / describe Holon (one paragraph)
 
-Holon: Agentic Coder is a git-native architecture for autonomous coding agents that models work as a recursive tree of intents, evaluates multiple planning variants per intent, executes sub-intents in isolated sandboxes
-with mandatory rebasing, records all intent/action/outcome data in an append-only evolution ledger, curates learnings into a versioned knowledge base, and treats success prediction, entropy, and model routing as
+Holon: Agentic Coder is a git-native architecture for autonomous coding agents that models work as a recursive tree of
+intents, evaluates multiple planning variants per intent, executes sub-intents in isolated sandboxes
+with mandatory rebasing, records all intent/action/outcome data in an append-only evolution ledger, curates learnings
+into a versioned knowledge base, and treats success prediction, entropy, and model routing as
 first-class measurable signals driving selection pressure and earned autonomy.
 
 ---

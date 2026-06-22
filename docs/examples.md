@@ -1,6 +1,7 @@
 # examples.md
 
-This document provides **concrete examples** of how Holon operates in practice, from simple single-intent executions to complex multi-level recursive decompositions.
+This document provides **concrete examples** of how Holon operates in practice, from simple single-intent executions to
+complex multi-level recursive decompositions.
 
 These examples illustrate:
 
@@ -341,7 +342,6 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
 
 - EV improvement from v4 to v5: -3.4 (negative, no improvement)
 - **Convergence reason: EV plateau** (last variant did not improve)
-
 
 **Ledger events:**
 

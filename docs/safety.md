@@ -1,6 +1,7 @@
 # safety.md
 
-This document defines the **safety model** for Holon. Safety is achieved through **sandboxing**, **trust levels**, **entropy budgets**, **human review boundaries**, and **git-based isolation**.
+This document defines the **safety model** for Holon. Safety is achieved through **sandboxing**, **trust levels**, *
+*entropy budgets**, **human review boundaries**, and **git-based isolation**.
 
 The safety model enables:
 
@@ -13,12 +14,16 @@ The safety model enables:
 
 ## Core safety principles: Config-Driven Safety
 
-Safety in Holon is not a static set of hardcoded rules. It is a **governed layer** externalised in `holon-config/rules/`. This allows project-specific safety boundaries, trust thresholds, and sandboxing policies to be
+Safety in Holon is not a static set of hardcoded rules. It is a **governed layer** externalised in
+`holon-config/rules/`. This allows project-specific safety boundaries, trust thresholds, and sandboxing policies to be
 managed centrally.
 
-- **Trust Level Definitions:** Capabilities and escalation thresholds are loaded from `holon-config/rules/trust_levels.json`.
-- **Sandbox Selection Policy:** Logic for choosing sandbox types based on entropy and trust is loaded from `holon-config/rules/sandbox_policy.json`.
-- **Entropy Budgets:** Default allocations and enforcement rules are loaded from `holon-config/rules/entropy_rules.json`.
+- **Trust Level Definitions:** Capabilities and escalation thresholds are loaded from
+  `holon-config/rules/trust_levels.json`.
+- **Sandbox Selection Policy:** Logic for choosing sandbox types based on entropy and trust is loaded from
+  `holon-config/rules/sandbox_policy.json`.
+- **Entropy Budgets:** Default allocations and enforcement rules are loaded from
+  `holon-config/rules/entropy_rules.json`.
 - **Git Flow Constraints:** Mandatory rebase and merge rules are loaded from `holon-config/rules/git_flow_rules.json`.
 
 ---

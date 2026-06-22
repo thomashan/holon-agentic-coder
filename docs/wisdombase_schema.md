@@ -1,8 +1,11 @@
 # wb_schema.md
 
-This document defines the **Wisdom Base (WB)** schema for Holon. The WB is the apex of the cognitive hierarchy—a **highly curated, meta-evolving store** of universal invariants, safety axioms, and global engineering heuristics that hold true across all project worlds.
+This document defines the **Wisdom Base (WB)** schema for Holon. The WB is the apex of the cognitive hierarchy—a *
+*highly curated, meta-evolving store** of universal invariants, safety axioms, and global engineering heuristics that
+hold true across all project worlds.
 
 The WB enables:
+
 - **Zero-shot project bootstrapping** (agents start with global engineering "wisdom").
 - **Cross-project learning** (failures in Project A improve success in Project B).
 - **Axiomatic governance** (immutable safety and reasoning principles).
@@ -12,14 +15,19 @@ The WB enables:
 ## Core principles
 
 ### 1) Axiomatic and Universal
-- WB entries are **cross-project invariants**. They represent truths that do not change regardless of the local project "physics".
+
+- WB entries are **cross-project invariants**. They represent truths that do not change regardless of the local
+  project "physics".
 - If a local KB entry contradicts a WB invariant, the **WB takes precedence** for safety and core governance.
 
 ### 2) Meta-Evolution (Slow and Steady)
-- The WB evolves through **Ascension**. Knowledge is only promoted to the WB after it has been proven effective across multiple unrelated project ledgers.
+
+- The WB evolves through **Ascension**. Knowledge is only promoted to the WB after it has been proven effective across
+  multiple unrelated project ledgers.
 - Evolution is significantly slower than the local KB to ensure the stability of the system's "Constitutional Brain".
 
 ### 3) Multi-World Validation
+
 - Promotion to WB requires **cross-project backtesting**.
 - Evidence must be aggregated from $N$ different project environments (default $N \ge 3$).
 
@@ -79,6 +87,7 @@ Every WB entry MUST contain:
 **Definition:** Immutable laws governing behaviour, safety, and reasoning.
 
 **Schema Example:**
+
 ```json
 {
   "wb_id": "WB-invariant-git-001",
@@ -94,9 +103,11 @@ Every WB entry MUST contain:
 
 ### 2) Meta-Physics (The Decision Engine)
 
-**Definition:** The fundamental formulas and constants used for Expected Value ($EV$) calculation and entropy management.
+**Definition:** The fundamental formulas and constants used for Expected Value ($EV$) calculation and entropy
+management.
 
 **Schema Example:**
+
 ```json
 {
   "wb_id": "WB-physics-ev-formula",
@@ -118,11 +129,11 @@ Every WB entry MUST contain:
 
 ## Ascension process (WB Evolution)
 
-1.  **Local Provenance:** A pattern is identified as highly successful in a project-specific KB.
-2.  **Meta-Curation:** A **Researcher Agent** identifies the pattern's potential for universal application.
-3.  **Cross-Project Validation:** The pattern is backtested against the ledgers of at least 3 unrelated projects.
-4.  **Axiomatic Promotion:** If global ROI or calibration accuracy improves, the entry "ascends" to the Wisdom Base.
-5.  **Broadcast:** All Holon instances receive the updated WB version as their new baseline priors.
+1. **Local Provenance:** A pattern is identified as highly successful in a project-specific KB.
+2. **Meta-Curation:** A **Researcher Agent** identifies the pattern's potential for universal application.
+3. **Cross-Project Validation:** The pattern is backtested against the ledgers of at least 3 unrelated projects.
+4. **Axiomatic Promotion:** If global ROI or calibration accuracy improves, the entry "ascends" to the Wisdom Base.
+5. **Broadcast:** All Holon instances receive the updated WB version as their new baseline priors.
 
 ---
 

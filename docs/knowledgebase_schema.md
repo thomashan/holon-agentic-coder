@@ -1,6 +1,7 @@
 # kb_schema.md
 
-This document defines the **Knowledge Base (KB)** schema for Holon. The KB is a **curated, read/write store** that captures reusable knowledge extracted from the ledger to accelerate future planning, improve estimators,
+This document defines the **Knowledge Base (KB)** schema for Holon. The KB is a **curated, read/write store** that
+captures reusable knowledge extracted from the ledger to accelerate future planning, improve estimators,
 and avoid known failure modes.
 
 The KB enables:
@@ -568,7 +569,8 @@ Every KB entry MUST contain:
 
 ## Write-gated curation: Config-Driven Schemas
 
-KB entries are validated against schemas defined in `holon-config/schemas/kb.json`. This ensures that all proposed and active entries conform to the system’s structural and evidential requirements.
+KB entries are validated against schemas defined in `holon-config/schemas/kb.json`. This ensures that all proposed and
+active entries conform to the system’s structural and evidential requirements.
 
 ### KB write rules (curation gates)
 

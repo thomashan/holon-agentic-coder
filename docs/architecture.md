@@ -1,6 +1,7 @@
 ### architecture.md
 
-This document describes the **Holon / FIEE (Fractal Intent Evolution Engine)** architecture: a self-evolving, git-native multi-agent system that plans competitively, executes in sandboxes, and improves via measured
+This document describes the **Holon / FIEE (Fractal Intent Evolution Engine)** architecture: a self-evolving, git-native
+multi-agent system that plans competitively, executes in sandboxes, and improves via measured
 feedback loops.
 
 #### Scope
@@ -50,7 +51,8 @@ feedback loops.
 
 ### Core architecture: The Stateless Engine
 
-Holon operates as a **Stateless Engine**. It separates project-specific **Governance** (Priors) from **Experience** (Memory) using two mandatory directories.
+Holon operates as a **Stateless Engine**. It separates project-specific **Governance** (Priors) from **Experience** (
+Memory) using two mandatory directories.
 
 #### 1) `holon-config/` (The Static Priors)
 
@@ -70,7 +72,8 @@ Consolidates machine-authored history and the intelligence evolved from it.
 - `kb/`: (Knowledge Base) Project-specific patterns, tactics, and failure modes.
 - `wb/`: (Wisdom Base) Universal invariants and cross-project heuristics.
 
-Agents and system components are **config-driven**; they are initialised with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
+Agents and system components are **config-driven**; they are initialised with a `config_path` (defaulting to
+`holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
 
 ---
 
@@ -79,7 +82,8 @@ Agents and system components are **config-driven**; they are initialised with a 
 #### Component map
 
 - **Config Loader**
-    - The entry point for the "Static Priors". Provides a unified API to access prompts, schemas, and the world definition from `holon-config/`.
+    - The entry point for the "Static Priors". Provides a unified API to access prompts, schemas, and the world
+      definition from `holon-config/`.
 - **Knowledge Loader**
     - The entry point for the "Dynamic Experience". Provides agents with the Ledger, KB, and WB from `holon-knowledge/`.
 - **Intent Registry**
@@ -142,7 +146,12 @@ Agents and system components are **config-driven**; they are initialised with a 
 
 #### Instrumentation for Selection Pressure
 
-The system treats the `model` metadata as an evolvable trait. By recording architectural attributes (e.g., `tuning_type`, `parameter_class`, `reasoning_mode`), the **Researcher Agent** can extract "Wisdom" that generalises across model providers. This ensures that the system evolves toward the most efficient **Architecture + Tactic** pairings, rather than just chasing specific model IDs. Detailed instrumentation of modalities and runtime configurations enables the system to penalise inefficient resource usage (e.g., using vision for text-only tasks) and reward high-fitness pairings.
+The system treats the `model` metadata as an evolvable trait. By recording architectural attributes (e.g.,
+`tuning_type`, `parameter_class`, `reasoning_mode`), the **Researcher Agent** can extract "Wisdom" that generalises
+across model providers. This ensures that the system evolves toward the most efficient **Architecture + Tactic**
+pairings, rather than just chasing specific model IDs. Detailed instrumentation of modalities and runtime configurations
+enables the system to penalise inefficient resource usage (e.g., using vision for text-only tasks) and reward
+high-fitness pairings.
 
 ---
 
@@ -201,7 +210,8 @@ Routing decisions are logged with full "DNA" metadata:
 - routing_reason and expected_roi
 - selection_method (e.g., `autonomous_router` or `explicit_manual`)
 
-Routing becomes a **selection pressure**: better routing improves ROI. The system learns to associate specific task characteristics with the architectural traits that yield the highest EV.
+Routing becomes a **selection pressure**: better routing improves ROI. The system learns to associate specific task
+characteristics with the architectural traits that yield the highest EV.
 
 #### 5) Execution (sandboxed)
 
