@@ -80,39 +80,39 @@ event/knowledge logging.
 
 Codebase components are isolated based on whether they are runnable applications or shared libraries:
 
-* **`apps/holon-cli/`**: Contains the command-line interface entry points.
-* **`apps/sandbox-executor/`**: Config files and Docker runner scripts to run executions in isolated containers.
-* **`libs/holon-engine/`**: The core FIEE (Fractal Intent Evolution Engine) orchestrator, worker agent protocols, and
+- **`apps/holon-cli/`**: Contains the command-line interface entry points.
+- **`apps/sandbox-executor/`**: Config files and Docker runner scripts to run executions in isolated containers.
+- **`libs/holon-engine/`**: The core FIEE (Fractal Intent Evolution Engine) orchestrator, worker agent protocols, and
   decision algorithms.
 
 ### 2. `holon-config/` (Static Priors / Governance)
 
 Human-authored, static configuration defining how the system behaves and what constraints are active:
 
-* `prompts/`: Persona descriptions and template system prompts for planning, curation, and execution roles.
-* `world/`: Ruleset constraints for target code environments (e.g. constraints on libraries, programming styles,
+- `prompts/`: Persona descriptions and template system prompts for planning, curation, and execution roles.
+- `world/`: Ruleset constraints for target code environments (e.g. constraints on libraries, programming styles,
   conventions).
-* `rules/`: Core authorisation parameters, trust-level thresholds, and sandbox configuration.
-* `metrics/`: Static expected value ($EV$) coefficients, calibration targets, and entropy weight models.
+- `rules/`: Core authorisation parameters, trust-level thresholds, and sandbox configuration.
+- `metrics/`: Static expected value ($EV$) coefficients, calibration targets, and entropy weight models.
 
 ### 3. `holon-knowledge/` (Dynamic Experience / Memory)
 
 Machine-authored data generated from system executions. This directory is structured into three scope layers to enable
 both strict workspace isolation and cross-project knowledge sharing:
 
-* **Project-Specific Knowledge & State (`holon-knowledge/`):**
-    * `ledger/`: The forensic timeline containing all intent creations, planning variants, decision traces, and outcome
-      records for this specific codebase.
-    * `plans/`: The generated plan variants saved as Markdown reports.
-    * `kb/` (Knowledge Base): Curated rules, tactics, internal API structures, and coding patterns specific to this
-      project, extracted by the Curator Agent.
-* **User/Developer-Specific Knowledge (`~/.config/holon/user/`):**
-    * A shared local directory on the developer's machine (resolving to `~/.config/holon/user/`).
-    * Acts as a shared user-level Wisdom Base (WB), automatically inheriting generalised patterns ascended by Curator
-      Agents across all different projects worked on by the same user.
-* **Universal Holon Knowledge (`~/.config/holon/universal/`):**
-    * Universal truths that hold true irrespective of specific languages, frameworks, or codebases (e.g., development
-      methodologies like Red-Green refactoring, clean git branching discipline, and general clean code principles).
-    * This universal knowledge base is hosted in a separate dedicated Git repository (e.g.,
-      `github.com/Holon-Agentic-Coder/holon-universal-knowledge`), which is cloned into `~/.config/holon/universal/` and
-      pulled/synced dynamically by the Holon engine on startup.
+- **Project-Specific Knowledge & State (`holon-knowledge/`):**
+  - `ledger/`: The forensic timeline containing all intent creations, planning variants, decision traces, and outcome
+    records for this specific codebase.
+  - `plans/`: The generated plan variants saved as Markdown reports.
+  - `kb/` (Knowledge Base): Curated rules, tactics, internal API structures, and coding patterns specific to this
+    project, extracted by the Curator Agent.
+- **User/Developer-Specific Knowledge (`~/.config/holon/user/`):**
+  - A shared local directory on the developer's machine (resolving to `~/.config/holon/user/`).
+  - Acts as a shared user-level Wisdom Base (WB), automatically inheriting generalised patterns ascended by Curator
+    Agents across all different projects worked on by the same user.
+- **Universal Holon Knowledge (`~/.config/holon/universal/`):**
+  - Universal truths that hold true irrespective of specific languages, frameworks, or codebases (e.g., development
+    methodologies like Red-Green refactoring, clean git branching discipline, and general clean code principles).
+  - This universal knowledge base is hosted in a separate dedicated Git repository (e.g.,
+    `github.com/Holon-Agentic-Coder/holon-universal-knowledge`), which is cloned into `~/.config/holon/universal/` and
+    pulled/synced dynamically by the Holon engine on startup.

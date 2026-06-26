@@ -30,9 +30,9 @@ The KB enables:
 ### 3) Write-gated
 
 - KB writes require **validation**:
-    - Evidence from ledger (minimum N successful executions).
-    - Calibration improvement (for estimator proposals).
-    - Human approval (for governance changes).
+  - Evidence from ledger (minimum N successful executions).
+  - Calibration improvement (for estimator proposals).
+  - Human approval (for governance changes).
 - Prevents KB poisoning from bad agent proposals.
 
 ### 4) Retrieval-optimised
@@ -106,10 +106,10 @@ Every KB entry MUST contain:
 - `status` (string)  
   Example: `"active"`, `"deprecated"`, `"proposed"`, `"rejected"`
 - `evidence` (object)
-    - `ledger_refs` (array of strings) — intent IDs or ledger event seqs
-    - `success_count` (integer)
-    - `failure_count` (integer)
-    - `calibration_improvement` (number, optional)
+  - `ledger_refs` (array of strings) — intent IDs or ledger event seqs
+  - `success_count` (integer)
+  - `failure_count` (integer)
+  - `calibration_improvement` (number, optional)
 - `tags` (array of strings)  
   Example: `["metrics", "bootstrap", "p_success"]`
 - `human_approved` (boolean)
@@ -126,18 +126,11 @@ Every KB entry MUST contain:
   "created_by": "agent-curator-03",
   "status": "active",
   "evidence": {
-    "ledger_refs": [
-      "I-root-001-001",
-      "I-root-002-003"
-    ],
+    "ledger_refs": ["I-root-001-001", "I-root-002-003"],
     "success_count": 5,
     "failure_count": 0
   },
-  "tags": [
-    "git",
-    "rebase",
-    "conflict-resolution"
-  ],
+  "tags": ["git", "rebase", "conflict-resolution"],
   "human_approved": true,
   "payload": {}
 }
@@ -165,38 +158,21 @@ Every KB entry MUST contain:
   "created_by": "agent-curator-03",
   "status": "active",
   "evidence": {
-    "ledger_refs": [
-      "I-root-001-001",
-      "I-root-002-003",
-      "I-root-005-002"
-    ],
+    "ledger_refs": ["I-root-001-001", "I-root-002-003", "I-root-005-002"],
     "success_count": 8,
     "failure_count": 1,
     "avg_p_success": 0.92,
     "avg_entropy": 15.3
   },
-  "tags": [
-    "metrics",
-    "estimator",
-    "bootstrap"
-  ],
+  "tags": ["metrics", "estimator", "bootstrap"],
   "human_approved": true,
   "payload": {
     "name": "Weighted Feature Sum for P(success)",
     "description": "Estimate P(success) as a weighted sum of plan features: coverage, dependency confidence, novelty penalty, depth penalty.",
     "applicability": {
-      "intent_types": [
-        "implement_estimator",
-        "implement_calculator"
-      ],
-      "complexity_range": [
-        0.3,
-        0.7
-      ],
-      "entropy_range": [
-        5,
-        30
-      ]
+      "intent_types": ["implement_estimator", "implement_calculator"],
+      "complexity_range": [0.3, 0.7],
+      "entropy_range": [5, 30]
     },
     "structure": {
       "steps": [
@@ -215,10 +191,7 @@ Every KB entry MUST contain:
       "Weights may need tuning per domain",
       "Novelty penalty can be too harsh for exploratory work"
     ],
-    "related_patterns": [
-      "KB-pattern-002",
-      "KB-pattern-005"
-    ]
+    "related_patterns": ["KB-pattern-002", "KB-pattern-005"]
   }
 }
 ```
@@ -243,18 +216,11 @@ Every KB entry MUST contain:
   "created_by": "agent-executor-12",
   "status": "active",
   "evidence": {
-    "ledger_refs": [
-      "I-root-003-002",
-      "I-root-007-001"
-    ],
+    "ledger_refs": ["I-root-003-002", "I-root-007-001"],
     "success_count": 12,
     "failure_count": 0
   },
-  "tags": [
-    "git",
-    "rebase",
-    "automation"
-  ],
+  "tags": ["git", "rebase", "automation"],
   "human_approved": true,
   "payload": {
     "name": "Safe Git Rebase with Conflict Detection",
@@ -263,13 +229,8 @@ Every KB entry MUST contain:
     "code": "#!/bin/bash\nset -e\nPARENT_BRANCH=$1\ngit fetch origin\nif git rebase origin/$PARENT_BRANCH; then\n  echo 'Rebase successful'\n  exit 0\nelse\n  echo 'Rebase conflict detected'\n  git rebase --abort\n  exit 1\nfi",
     "usage": {
       "when": "Before execution or before merge",
-      "inputs": [
-        "parent_branch"
-      ],
-      "outputs": [
-        "exit_code",
-        "conflict_files"
-      ],
+      "inputs": ["parent_branch"],
+      "outputs": ["exit_code", "conflict_files"],
       "side_effects": [
         "modifies git history (if successful)",
         "aborts on conflict"
@@ -279,10 +240,7 @@ Every KB entry MUST contain:
       "Does not resolve conflicts automatically",
       "Requires clean working tree"
     ],
-    "related_tactics": [
-      "KB-tactic-002",
-      "KB-tactic-008"
-    ]
+    "related_tactics": ["KB-tactic-002", "KB-tactic-008"]
   }
 }
 ```
@@ -307,19 +265,11 @@ Every KB entry MUST contain:
   "created_by": "agent-curator-05",
   "status": "active",
   "evidence": {
-    "ledger_refs": [
-      "I-root-002-004",
-      "I-root-003-001",
-      "I-root-006-002"
-    ],
+    "ledger_refs": ["I-root-002-004", "I-root-003-001", "I-root-006-002"],
     "success_count": 0,
     "failure_count": 7
   },
-  "tags": [
-    "rebase",
-    "conflict",
-    "concurrent-work"
-  ],
+  "tags": ["rebase", "conflict", "concurrent-work"],
   "human_approved": true,
   "payload": {
     "name": "Rebase Conflict from Concurrent File Edits",
@@ -351,17 +301,14 @@ Every KB entry MUST contain:
         "strategy": "Conflict-aware entropy estimation",
         "description": "Increase predicted entropy for intents with high file overlap.",
         "cost": "Better routing (deeper models for high-conflict work)",
-        "effectiveness": 0.70
+        "effectiveness": 0.7
       }
     ],
     "detection_heuristic": {
       "condition": "rebase_conflicts > 0 AND concurrent_work_overlap > 0.5",
-      "confidence": 0.90
+      "confidence": 0.9
     },
-    "related_failures": [
-      "KB-failure-003",
-      "KB-failure-007"
-    ]
+    "related_failures": ["KB-failure-003", "KB-failure-007"]
   }
 }
 ```
@@ -386,20 +333,14 @@ Every KB entry MUST contain:
   "created_by": "agent-researcher-08",
   "status": "proposed",
   "evidence": {
-    "ledger_refs": [
-      "I-root-010-001"
-    ],
+    "ledger_refs": ["I-root-010-001"],
     "success_count": 0,
     "failure_count": 0,
     "calibration_improvement": 0.12,
     "backtest_window": "2026-02-01 to 2026-02-10",
     "backtest_sample_size": 47
   },
-  "tags": [
-    "p_success",
-    "estimator",
-    "improvement"
-  ],
+  "tags": ["p_success", "estimator", "improvement"],
   "human_approved": false,
   "payload": {
     "metric_name": "p_success",
@@ -408,9 +349,7 @@ Every KB entry MUST contain:
     "implementation": {
       "language": "python",
       "code": "def estimate_p_success_v2(plan, historical_calibration):\n    base_score = 0.5\n    weights = compute_adaptive_weights(historical_calibration)\n    score = base_score\n    score += weights['coverage'] * plan.coverage\n    score += weights['dependency_confidence'] * plan.dependency_confidence\n    score -= weights['novelty'] * plan.novelty\n    score -= weights['depth'] * max(0, plan.depth - 3)\n    return max(0.0, min(1.0, score))",
-      "dependencies": [
-        "historical_calibration data from ledger"
-      ]
+      "dependencies": ["historical_calibration data from ledger"]
     },
     "calibration_comparison": {
       "v1_mean_error": 0.28,
@@ -428,7 +367,7 @@ Every KB entry MUST contain:
     },
     "approval_requirements": {
       "human_review": true,
-      "backtest_threshold": 0.10,
+      "backtest_threshold": 0.1,
       "min_sample_size": 30
     },
     "related_estimators": [
@@ -463,11 +402,7 @@ Every KB entry MUST contain:
     "success_count": 0,
     "failure_count": 0
   },
-  "tags": [
-    "routing",
-    "model-selection",
-    "bootstrap"
-  ],
+  "tags": ["routing", "model-selection", "bootstrap"],
   "human_approved": true,
   "payload": {
     "name": "Entropy-Based Model Routing",
@@ -490,18 +425,9 @@ Every KB entry MUST contain:
       }
     ],
     "model_tiers": {
-      "flash": [
-        "gemini-2.0-flash",
-        "claude-3-haiku"
-      ],
-      "medium": [
-        "gemini-1.5-pro",
-        "claude-3.5-sonnet"
-      ],
-      "deep": [
-        "gemini-2.0-flash-thinking",
-        "claude-3.7-opus"
-      ]
+      "flash": ["gemini-2.0-flash", "claude-3-haiku"],
+      "medium": ["gemini-1.5-pro", "claude-3.5-sonnet"],
+      "deep": ["gemini-2.0-flash-thinking", "claude-3.7-opus"]
     },
     "evaluation_metric": "routing_roi",
     "roi_formula": "(actual_impact - actual_cost) / model_cost",
@@ -530,18 +456,11 @@ Every KB entry MUST contain:
   "created_by": "agent-extractor-02",
   "status": "active",
   "evidence": {
-    "ledger_refs": [
-      "I-root-001-001",
-      "I-root-002-002"
-    ],
+    "ledger_refs": ["I-root-001-001", "I-root-002-002"],
     "success_count": 6,
     "failure_count": 0
   },
-  "tags": [
-    "metrics",
-    "calibration",
-    "reusable"
-  ],
+  "tags": ["metrics", "calibration", "reusable"],
   "human_approved": true,
   "payload": {
     "name": "Calibration Tracker",
@@ -554,13 +473,9 @@ Every KB entry MUST contain:
       "get_agent_calibration"
     ],
     "usage_example": "from holon.metrics.calibration import CalibrationTracker\ntracker = CalibrationTracker(agent_id='agent-01')\ntracker.record(predicted=0.8, actual=1.0)\nerror = tracker.get_mean_error()",
-    "dependencies": [
-      "ledger.reader"
-    ],
+    "dependencies": ["ledger.reader"],
     "test_coverage": 0.95,
-    "related_modules": [
-      "KB-module-002"
-    ]
+    "related_modules": ["KB-module-002"]
   }
 }
 ```
@@ -651,36 +566,22 @@ Each KB subdirectory has an `index.json` for fast lookup:
     {
       "kb_id": "KB-pattern-001",
       "file": "pattern_001.json",
-      "tags": [
-        "metrics",
-        "estimator",
-        "bootstrap"
-      ],
+      "tags": ["metrics", "estimator", "bootstrap"],
       "status": "active",
       "created_ts": "2026-02-10T05:30:00Z"
     },
     {
       "kb_id": "KB-pattern-002",
       "file": "pattern_002.json",
-      "tags": [
-        "git",
-        "rebase",
-        "conflict"
-      ],
+      "tags": ["git", "rebase", "conflict"],
       "status": "active",
       "created_ts": "2026-02-10T06:00:00Z"
     }
   ],
   "tag_index": {
-    "metrics": [
-      "KB-pattern-001"
-    ],
-    "git": [
-      "KB-pattern-002"
-    ],
-    "rebase": [
-      "KB-pattern-002"
-    ]
+    "metrics": ["KB-pattern-001"],
+    "git": ["KB-pattern-002"],
+    "rebase": ["KB-pattern-002"]
   }
 }
 ```
@@ -738,7 +639,7 @@ Automated checks are run on the proposal:
 
 Curation capability depends on the agent's Trust Level:
 
-- **Baseline / Medium Agents:** Can only submit proposals that *must* be approved by a human.
+- **Baseline / Medium Agents:** Can only submit proposals that _must_ be approved by a human.
 - **High / Highest Agents:** Can commit standard code patterns and failure mode entries directly (`active`). However,
   modifications to estimators, configuration weights, or core guidelines always require human approval.
 
@@ -772,17 +673,17 @@ Once approved/validated:
 
 ## KB vs Ledger: When to use which?
 
-| Use case                       | Ledger | KB |
-|--------------------------------|--------|----|
-| Record what happened           | ✓      |    |
-| Audit trail                    | ✓      |    |
-| Calibration measurement        | ✓      |    |
-| Retrieve proven patterns       |        | ✓  |
-| Avoid known failures           |        | ✓  |
-| Propose estimator improvements |        | ✓  |
-| Query "similar intents"        |        | ✓  |
-| Immutable history              | ✓      |    |
-| Curated, actionable knowledge  |        | ✓  |
+| Use case                       | Ledger | KB  |
+| ------------------------------ | ------ | --- |
+| Record what happened           | ✓      |     |
+| Audit trail                    | ✓      |     |
+| Calibration measurement        | ✓      |     |
+| Retrieve proven patterns       |        | ✓   |
+| Avoid known failures           |        | ✓   |
+| Propose estimator improvements |        | ✓   |
+| Query "similar intents"        |        | ✓   |
+| Immutable history              | ✓      |     |
+| Curated, actionable knowledge  |        | ✓   |
 
 **Rule of thumb:**
 

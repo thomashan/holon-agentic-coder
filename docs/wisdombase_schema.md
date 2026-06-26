@@ -1,7 +1,7 @@
 # wb_schema.md
 
-This document defines the **Wisdom Base (WB)** schema for Holon. The WB is the apex of the cognitive hierarchy—a *
-*highly curated, meta-evolving store** of universal invariants, safety axioms, and global engineering heuristics that
+This document defines the **Wisdom Base (WB)** schema for Holon. The WB is the apex of the cognitive hierarchy—a \*
+\*highly curated, meta-evolving store\*\* of universal invariants, safety axioms, and global engineering heuristics that
 hold true across all project worlds.
 
 The WB enables:
@@ -69,13 +69,13 @@ Every WB entry MUST contain:
 - `scope` (string) — Always `"global"`
 - `status` (string) — `"active"`, `"deprecated"`, `"experimental"`
 - `ascension_evidence` (object)
-    - `project_count` (integer) — Number of unique projects where this was validated.
-    - `total_executions` (integer) — Aggregated success count across all projects.
-    - `global_improvement` (number) — Delta in EV or calibration accuracy measured globally.
-    - `provenance` (array of objects) — Forensic links to source KB entries.
-        - `project_id` (string) — The unique ID of the project world.
-        - `kb_id` (string) — The source ID in the local Knowledge Base.
-        - `kb_version` (string) — The specific version of the local pattern.
+  - `project_count` (integer) — Number of unique projects where this was validated.
+  - `total_executions` (integer) — Aggregated success count across all projects.
+  - `global_improvement` (number) — Delta in EV or calibration accuracy measured globally.
+  - `provenance` (array of objects) — Forensic links to source KB entries.
+    - `project_id` (string) — The unique ID of the project world.
+    - `kb_id` (string) — The source ID in the local Knowledge Base.
+    - `kb_version` (string) — The specific version of the local pattern.
 - `human_approved` (boolean) — Requires high-level architectural approval.
 
 ---
@@ -181,4 +181,3 @@ When breaking changes or core parameter updates are merged into the canonical re
 - [`ledger_schema.md`](ledger_schema.md) — Source of evidence for ascension
 - [`architecture.md`](architecture.md) — How the WB fits into the Stateless Engine
 - [`appendix.md`](appendix.md) — Reference Glossary for formulas and metrics
-

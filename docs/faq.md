@@ -69,8 +69,8 @@ thresholds for each unique environment.
 
 ## 10. Why force all communication through the Ledger?
 
-There is no "fast path." Every interaction, including simple clarifying questions, must be recorded to ensure the *
-*Evolutionary Record** is 100% traceable and reproducible. We prioritise the integrity of the system's "
+There is no "fast path." Every interaction, including simple clarifying questions, must be recorded to ensure the \*
+\*Evolutionary Record\*\* is 100% traceable and reproducible. We prioritise the integrity of the system's "
 DNA" over micro-optimisations in performance.
 
 ## 11. Why is the documentation so extensive for an MVP?
@@ -96,29 +96,29 @@ significantly. For new worlds, the initial high cost is a necessary investment i
 
 ### Large Projects and Monorepos
 
-* **Scoped State Space:** For monorepos, State Surface Area (SSA) calculation and file discovery tools are scoped
+- **Scoped State Space:** For monorepos, State Surface Area (SSA) calculation and file discovery tools are scoped
   strictly to the sub-project directory.
-* **Sandbox Path Restrictions:** Sandboxes are mounted with read-only access to the monorepo root and read-write access
+- **Sandbox Path Restrictions:** Sandboxes are mounted with read-only access to the monorepo root and read-write access
   restricted to the targeted module.
-* **Sub-Tree Rebasing:** Git flow conflict checking (Conflict Likelihood) is optimized by ignoring commits in unrelated
+- **Sub-Tree Rebasing:** Git flow conflict checking (Conflict Likelihood) is optimized by ignoring commits in unrelated
   sub-folders, preventing false conflict warnings.
 
 ### Very Long-Running Intents or Workflows
 
-* **Mandatory Checkpointing:** Intents expected to take a long time are broken down into child intents representing
+- **Mandatory Checkpointing:** Intents expected to take a long time are broken down into child intents representing
   logical milestones.
-* **Active Rebase Pulses:** If an execution branch remains open for a long period, the orchestrator periodically pushes
+- **Active Rebase Pulses:** If an execution branch remains open for a long period, the orchestrator periodically pushes
   a background rebase onto the parent branch to catch up with concurrent changes early, rather than waiting for a
   massive end-of-execution conflict.
-* **Budget Checks & Pause State:** If an intent exceeds its cost or time budget, the harness commits current progress to
+- **Budget Checks & Pause State:** If an intent exceeds its cost or time budget, the harness commits current progress to
   the branch, saves the intermediate state to the Ledger, pauses the intent, and alerts human operators for a review or
   budget expansion.
 
 ### Niche or Unsupported Languages and Frameworks
 
-* **Language-Agnostic Core:** The engine relies on standard shell execution, Git files, and JSON payloads, making it
+- **Language-Agnostic Core:** The engine relies on standard shell execution, Git files, and JSON payloads, making it
   independent of any language.
-* **Bootstrapping New Worlds:** When the system is introduced to a new language/framework, it uses a generic shell
+- **Bootstrapping New Worlds:** When the system is introduced to a new language/framework, it uses a generic shell
   environment. The Curator Agent watches the ledger, records linter/compiler failures as new KB `failure_modes`, and
   extracts successful configuration patterns (like new Makefiles or build scripts) into KB `patterns`. Over time, future
   planners retrieve these patterns to handle the new environment seamlessly.
@@ -128,7 +128,7 @@ significantly. For new worlds, the initial high cost is a necessary investment i
 To understand when to choose Holon over other agentic architectures, consider the following comparison:
 
 | Dimension               | Standard Coding Agents (e.g., SWE-agent, Devin, Claude Code)                    | Multi-Agent Frameworks (e.g., AutoGen, CrewAI)                       | Holon Architecture                                                                      |
-|:------------------------|:--------------------------------------------------------------------------------|:---------------------------------------------------------------------|:----------------------------------------------------------------------------------------|
+| :---------------------- | :------------------------------------------------------------------------------ | :------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
 | **Workflow State**      | Linear thread / conversation history.                                           | Message routing between agents in a chat loop.                       | **Git-native fractal tree** (every intent is a branch).                                 |
 | **Concurrency**         | Single-agent execution. Concurrency managed outside the agent.                  | Agents chat concurrently, but conflict resolution on code is ad-hoc. | **Git transaction isolation** (automatic concurrent rebasing/merging).                  |
 | **Planning Approach**   | Single-plan / linear execution. Iterative correction (run-error-fix loops).     | Role-based collaboration. Plans are generated via chat protocols.    | **Competitive planning** (generates multiple distinct plan graphs; ranks by EV).        |
@@ -139,12 +139,12 @@ To understand when to choose Holon over other agentic architectures, consider th
 
 1. **The Iterative Loop Trap (Infinite Budget Exhaustion):** Traditional agents can get trapped in infinite "
    try-fail-repeat" terminal loops on a single complex file. Holon stops this by:
-    - Requiring explicit plan variants up front.
-    - Decomposing work fractally so failures are localized.
-    - Using EV calculations and convergence policies to stop execution before budgets blowout.
+   - Requiring explicit plan variants up front.
+   - Decomposing work fractally so failures are localized.
+   - Using EV calculations and convergence policies to stop execution before budgets blowout.
 2. **Concurrent Collaboration Failures:** In typical multi-agent systems, if two agents modify overlapping code, they
    overwrite each other or cause merge conflicts. Holon treats Git branches as database transactions, resolving
    conflicts automatically via reactive sub-intents.
-3. **Estimation & Calibration Error:** Holon requires agents to predict outcomes ($P(success)$ and Entropy) *before*
-   execution and measures *actual* outcomes *afterwards*. The Curator Agent utilizes this difference to calibrate future
+3. **Estimation & Calibration Error:** Holon requires agents to predict outcomes ($P(success)$ and Entropy) _before_
+   execution and measures _actual_ outcomes _afterwards_. The Curator Agent utilizes this difference to calibrate future
    estimations.

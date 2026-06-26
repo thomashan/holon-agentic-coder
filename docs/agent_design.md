@@ -30,7 +30,7 @@ to act) remains distinct from experience (what has been learnt).
 ## 2) Agent Roles and Responsibilities
 
 | Agent Type | Primary Role                                  | Autonomy Scope                   |
-|------------|-----------------------------------------------|----------------------------------|
+| ---------- | --------------------------------------------- | -------------------------------- |
 | Meta-Agent | Orchestrates intent lifecycle and agent tasks | System-wide coordination         |
 | Planner    | Generates and evaluates plan variants         | Intent-level planning            |
 | Executor   | Executes plans in sandboxed environments      | Intent-level execution           |
@@ -45,7 +45,7 @@ to act) remains distinct from experience (what has been learnt).
 Agents operate under a **trust-bounded autonomy** framework, where capabilities expand with demonstrated reliability.
 
 | Trust Level   | Capabilities                                                        | Autonomy Examples                         |
-|---------------|---------------------------------------------------------------------|-------------------------------------------|
+| ------------- | ------------------------------------------------------------------- | ----------------------------------------- |
 | Baseline      | Execute assigned tasks, generate basic plans                        | Execute plans, generate simple variants   |
 | Medium        | Spawn sub-intents, propose patterns and tactics                     | Decompose intents, propose KB entries     |
 | High          | Propose root intents, novel plans, and advanced tactics             | Autonomous goal-setting, complex planning |

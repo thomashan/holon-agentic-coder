@@ -128,42 +128,42 @@ flowchart TD
 #### Component map
 
 - **Config Loader**
-    - The entry point for the "Static Priors". Provides a unified API to access prompts, schemas, and the world
-      definition from `holon-config/`.
+  - The entry point for the "Static Priors". Provides a unified API to access prompts, schemas, and the world
+    definition from `holon-config/`.
 - **Knowledge Loader**
-    - The entry point for the "Dynamic Experience". Provides agents with the Ledger, KB, and WB from `holon-knowledge/`.
+  - The entry point for the "Dynamic Experience". Provides agents with the Ledger, KB, and WB from `holon-knowledge/`.
 - **Intent Registry**
-    - Stores intent metadata: IDs, parent/child links, state, constraints, trust requirements.
+  - Stores intent metadata: IDs, parent/child links, state, constraints, trust requirements.
 - **Planner (Variant Generator)**
-    - Config-driven: Loads missions and project context from `holon-config/`.
-    - Knowledge-driven: Utilises local patterns (KB) and universal reasoning (WB) from `holon-knowledge/`.
-    - Produces multiple candidate **Plan Graphs** for the same intent.
+  - Config-driven: Loads missions and project context from `holon-config/`.
+  - Knowledge-driven: Utilises local patterns (KB) and universal reasoning (WB) from `holon-knowledge/`.
+  - Produces multiple candidate **Plan Graphs** for the same intent.
 - **Plan Evaluator**
-    - Config-driven: Loads metric weights from `holon-config/metrics/`.
-    - Scores plan variants using metrics + constraints defined in `holon-config/world/`.
+  - Config-driven: Loads metric weights from `holon-config/metrics/`.
+  - Scores plan variants using metrics + constraints defined in `holon-config/world/`.
 - **Convergence Policy**
-    - Config-driven: Loads thresholds from `holon-config/rules/`.
-    - Decides when to stop generating new plan variants.
+  - Config-driven: Loads thresholds from `holon-config/rules/`.
+  - Decides when to stop generating new plan variants.
 - **Router**
-    - Selects model tiers per task, recorded as metadata.
+  - Selects model tiers per task, recorded as metadata.
 - **Executor (Sandbox Runner)**
-    - Config-driven: Loads safety rules from `holon-config/rules/`.
-    - Knowledge-driven: Adheres to universal safety invariants from `holon-knowledge/wb/`.
-    - Runs a chosen plan variant in an isolated environment.
+  - Config-driven: Loads safety rules from `holon-config/rules/`.
+  - Knowledge-driven: Adheres to universal safety invariants from `holon-knowledge/wb/`.
+  - Runs a chosen plan variant in an isolated environment.
 - **Evolution Ledger (Write-once log)**
-    - Knowledge-driven: Stores events in `holon-knowledge/ledger/`.
-    - Validates events against `holon-config/schemas/`.
+  - Knowledge-driven: Stores events in `holon-knowledge/ledger/`.
+  - Validates events against `holon-config/schemas/`.
 - **Knowledge Base (Read/write store)**
-    - Knowledge-driven: Stores patterns and tactics in `holon-knowledge/kb/`.
-    - Validates entries against `holon-config/schemas/`.
+  - Knowledge-driven: Stores patterns and tactics in `holon-knowledge/kb/`.
+  - Validates entries against `holon-config/schemas/`.
 - **Wisdom Base (Global Store)**
-    - Knowledge-driven: Stores universal axioms in `holon-knowledge/wb/`.
-    - Meta-evolving: Universal knowledge that "ascends" from local KBs.
+  - Knowledge-driven: Stores universal axioms in `holon-knowledge/wb/`.
+  - Meta-evolving: Universal knowledge that "ascends" from local KBs.
 - **Meta-Agent / Orchestrator**
-    - Initialised with `config_path` and `knowledge_path`.
-    - Watches for new work, dispatches planner/executor jobs, enforces git discipline and budgets.
+  - Initialised with `config_path` and `knowledge_path`.
+  - Watches for new work, dispatches planner/executor jobs, enforces git discipline and budgets.
 - **Human Review Boundary**
-    - Where humans approve promotions (typically parent intent → `main`).
+  - Where humans approve promotions (typically parent intent → `main`).
 
 ---
 
@@ -173,22 +173,22 @@ flowchart TD
 
 - Purpose: auditability and measurement.
 - Stores:
-    - intent_id, plan_id, variant_id
-    - predicted metrics (P(success), ΔS, Impact, Cost, LearningValue, EV)
-    - routing decision (model_id, tier, reason)
-    - execution logs and outcomes
-    - git commit SHAs / diffs
-    - post-execution measurements + calibration errors
+  - intent_id, plan_id, variant_id
+  - predicted metrics (P(success), ΔS, Impact, Cost, LearningValue, EV)
+  - routing decision (model_id, tier, reason)
+  - execution logs and outcomes
+  - git commit SHAs / diffs
+  - post-execution measurements + calibration errors
 
 #### Knowledge Base (curated, reusable)
 
 - Purpose: accelerate future planning and improve estimators.
 - Stores:
-    - proven tactics/patterns (“playbooks”)
-    - common failure modes + mitigations
-    - reusable code snippets/modules
-    - estimator proposals, comparisons, and approvals
-    - routing heuristics and observed ROI
+  - proven tactics/patterns (“playbooks”)
+  - common failure modes + mitigations
+  - reusable code snippets/modules
+  - estimator proposals, comparisons, and approvals
+  - routing heuristics and observed ROI
 
 #### Instrumentation for Selection Pressure
 
@@ -224,12 +224,12 @@ For each intent, the planner generates plan variants:
 
 - Each variant is a structured plan graph (steps + dependencies + sub-intents)
 - Each variant includes predicted:
-    - P(success)
-    - ΔS (entropy)
-    - Impact
-    - LearningValue
-    - Cost
-    - EV
+  - P(success)
+  - ΔS (entropy)
+  - Impact
+  - LearningValue
+  - Cost
+  - EV
 
 Variants are recorded even if rejected.
 
@@ -346,25 +346,25 @@ Rationale: executing bounded work in a sandbox is safer than inventing new goals
 #### Medium trust (decomposition allowed)
 
 - Agent can spawn **sub-intents** during planning/execution, subject to:
-    - parent intent constraints
-    - entropy/cost budgets
-    - mandatory rebase + parent-only merge rules
+  - parent intent constraints
+  - entropy/cost budgets
+  - mandatory rebase + parent-only merge rules
 - Agent still cannot propose new root intents.
 
 #### High trust (autonomous goal-setting)
 
 - Agent can propose **new root intents** (agent-generated intents) that enter the same validation pipeline:
-    - predicted metrics (P(success), ΔS, Impact, Cost, LearningValue, EV)
-    - justification + alignment constraints
-    - explicit scope boundaries
+  - predicted metrics (P(success), ΔS, Impact, Cost, LearningValue, EV)
+  - justification + alignment constraints
+  - explicit scope boundaries
 - Root-intent proposals may still require human acceptance depending on configuration.
 
 #### Highest trust (governance proposals; still human-approved)
 
 - Agent can propose changes to:
-    - estimator implementations
-    - routing heuristics
-    - governance policies
+  - estimator implementations
+  - routing heuristics
+  - governance policies
 - Human approval remains required for any changes that affect metric definitions (“physics”) or system invariants.
 
 #### Trust is earned via measurement
@@ -381,23 +381,23 @@ Trust level is influenced by:
 ### Minimal module map (conceptual)
 
 - `core/`
-    - intent model, plan model, IDs, invariants
+  - intent model, plan model, IDs, invariants
 - `planning/`
-    - variant generation, plan graph, convergence policy
+  - variant generation, plan graph, convergence policy
 - `routing/`
-    - model router, routing evaluation
+  - model router, routing evaluation
 - `execution/`
-    - sandbox runner, tool adapters, rebase enforcer
+  - sandbox runner, tool adapters, rebase enforcer
 - `metrics/`
-    - estimators, post-measurement, calibration
+  - estimators, post-measurement, calibration
 - `holon-knowledge/ledger/`
-    - append-only event logging, schemas
+  - append-only event logging, schemas
 - `holon-knowledge/kb/`
-    - curated knowledge, retrieval APIs, write rules
+  - curated knowledge, retrieval APIs, write rules
 - `holon-knowledge/wb/`
-    - universal invariants, cross-project heuristics
+  - universal invariants, cross-project heuristics
 - `orchestrator/`
-    - meta-agent loop, scheduling, work queue
+  - meta-agent loop, scheduling, work queue
 
 ---
 

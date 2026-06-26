@@ -132,7 +132,7 @@ Estimators must return a confidence or variance when possible.
 - Predicted metrics are logged when a plan is selected and execution starts.
 - Post-execution, actual metrics are computed and logged.
 - Calibration data is stored in the ledger for each estimator:
-    - `predicted_value`, `actual_value`, `context_features`
+  - `predicted_value`, `actual_value`, `context_features`
 - Curator/Researcher agents periodically compute calibration errors and propose improved estimators to KB.
 
 Ledger event examples:
@@ -208,7 +208,7 @@ sequenceDiagram
     participant P as Planner Agent
     participant L as Evolution Ledger
     participant E as Evaluator (Convergence Policy)
-    
+
     rect rgb(240, 240, 245)
         Note over O, L: Loop until Convergence
         O->>P: 1. Generate plan variant
@@ -217,7 +217,7 @@ sequenceDiagram
         O->>E: 3. Run evaluation & check convergence
         E-->>O: Return Decision (not_converged / converged)
     end
-    
+
     Note over O, L: Upon Convergence
     O->>L: 4. Log selection (plan_selected)
     O->>O: 5. Transition to Execution branch
@@ -229,9 +229,9 @@ sequenceDiagram
 3. **Evaluation:** The orchestrator runs the **Evaluator Agent** (or a local policy evaluator) to rank all active
    variants by Expected Value and apply the convergence triggers.
 4. **Decision:**
-    - If *not converged*, the planning cycle repeats (or spawns child intents if the root is too complex).
-    - If *converged*, the orchestrator logs the chosen variant (`plan_selected`), locks the plan graph, and switches the
-      git branch environment to execution mode.
+   - If _not converged_, the planning cycle repeats (or spawns child intents if the root is too complex).
+   - If _converged_, the orchestrator logs the chosen variant (`plan_selected`), locks the plan graph, and switches the
+     git branch environment to execution mode.
 
 Planning must terminate when one or more of the convergence conditions are met. The system uses a configurable
 Convergence Policy; a recommended default is the three-tier policy:
@@ -239,12 +239,12 @@ Convergence Policy; a recommended default is the three-tier policy:
 #### Convergence triggers (recommended defaults)
 
 1. Dominant Plan (fast stop)
-    - If EV_gap = best.ev - second_best.ev > `dominant_threshold`, then converge.
+   - If EV_gap = best.ev - second_best.ev > `dominant_threshold`, then converge.
 2. EV Plateau (diminishing returns)
-    - If recent improvements across generated variants < `ev_plateau_threshold` for `k` iterations, then converge.
+   - If recent improvements across generated variants < `ev_plateau_threshold` for `k` iterations, then converge.
 3. Entropy / Cost Budget Exhaustion
-    - If cumulative planning cost > `planning_budget` OR selecting the best plan would cause `S_system` to exceed
-      `entropy_budget`, then converge (select best safe plan or delay).
+   - If cumulative planning cost > `planning_budget` OR selecting the best plan would cause `S_system` to exceed
+     `entropy_budget`, then converge (select best safe plan or delay).
 
 Additional triggers:
 
@@ -292,8 +292,8 @@ Where thresholds `T_*` and budgets `B_*` are system-configurable.
 #### Retry policy
 
 - Retry only when:
-    - Failure is transient or can be fixed with deterministic retries (e.g., flaky tests)
-    - A new plan variant has materially higher predicted EV
+  - Failure is transient or can be fixed with deterministic retries (e.g., flaky tests)
+  - A new plan variant has materially higher predicted EV
 - Count retries; excessive retries lower agent trust and may trigger human review.
 
 ---
@@ -320,11 +320,11 @@ All agents must:
 Plan artifacts and planning events must be recorded in the ledger and correspond to git branches:
 
 - Plan artifact branch naming: branch for work derived from a plan should follow:
-    - `intent/{intent_branch}/plan/{plan_id}` or use integrated branch `intent/{intent_branch}/{plan_id}` depending on
-      repo layout.
+  - `intent/{intent_branch}/plan/{plan_id}` or use integrated branch `intent/{intent_branch}/{plan_id}` depending on
+    repo layout.
 - Ledger must capture:
-    - `plan_created`, `plan_predicted_metrics`, `planning_converged`, `plan_selected`, `plan_execution_started/ended`,
-      `planner_agent_id`, `model_id`, `routing_reason`.
+  - `plan_created`, `plan_predicted_metrics`, `planning_converged`, `plan_selected`, `plan_execution_started/ended`,
+    `planner_agent_id`, `model_id`, `routing_reason`.
 - Include diffs, plan_graph serialisations, and review packages (for root intents).
 
 Example ledger entry (planning_converged):
@@ -334,10 +334,7 @@ Example ledger entry (planning_converged):
   "event_type": "planning_converged",
   "payload": {
     "intent_id": "I-root-050",
-    "variants_considered": [
-      "P-I-root-050-v1-flash",
-      "P-I-root-050-v2-deep"
-    ],
+    "variants_considered": ["P-I-root-050-v1-flash", "P-I-root-050-v2-deep"],
     "winner_plan_id": "P-I-root-050-v2-deep",
     "reason": "dominant_plan",
     "convergence_at": "2026-02-11T09:12:00Z"
@@ -352,9 +349,9 @@ Example ledger entry (planning_converged):
 #### Example 1 — Simple plan selection
 
 - Three variants generated:
-    - v1: p=0.6, impact=10, learning=2, cost=1, entropy=5 → EV = 0.6*10 + μ*2 - 1 - λ*5
-    - v2: p=0.75, impact=8, learning=1, cost=2, entropy=15 → EV = 0.75*8 + μ*1 - 2 - λ*15
-    - v3: p=0.45, impact=25, learning=8, cost=3, entropy=30 → EV = 0.45*25 + μ*8 - 3 - λ*30
+  - v1: p=0.6, impact=10, learning=2, cost=1, entropy=5 → EV = 0.6*10 + μ*2 - 1 - λ\*5
+  - v2: p=0.75, impact=8, learning=1, cost=2, entropy=15 → EV = 0.75*8 + μ*1 - 2 - λ\*15
+  - v3: p=0.45, impact=25, learning=8, cost=3, entropy=30 → EV = 0.45*25 + μ*8 - 3 - λ\*30
 - Rank by EV and apply dominant/plateau checks. If v2 dominates, select v2.
 
 #### Example 2 — Exploration allowed

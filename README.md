@@ -22,7 +22,7 @@ A **holon** is something that is simultaneously a **whole** and a **part**. In t
 - generate multiple plans for the same intent,
 - choose actions via explicit decision physics (success probability + entropy + EV),
 - execute in isolated sandboxes,
-- record *everything* in an append-only ledger,
+- record _everything_ in an append-only ledger,
 - promote durable learnings into a curated knowledge base,
 - and (long-term goal) propose their **own** intents and evaluate intent quality—earning increasing autonomy over time.
 
@@ -46,7 +46,7 @@ Holon is designed to make these failure modes structurally difficult by:
 
 - using **Git as the universal state machine**,
 - isolating exploration via **one sandbox per sub-intent**,
-- capturing *intent → plan → action → result* into an **append-only Evolution Ledger**,
+- capturing _intent → plan → action → result_ into an **append-only Evolution Ledger**,
 - treating planning as a **versioned hypothesis space**,
 - and making model routing and exploration risk explicit via **entropy-aware metrics**.
 
@@ -214,7 +214,7 @@ A plan is a versioned variant tied to an intent and the model tier used to produ
 - `P-{timestamp}-{agent}-{model}`
 - Example: `P-1771890396-claude-code-opus-4.6`
 
-*Note: This example shows a "Deep" model planning for an intent that was originally proposed by a "Flash" model.*
+_Note: This example shows a "Deep" model planning for an intent that was originally proposed by a "Flash" model._
 
 ### Branch naming (Fractal Nesting)
 
@@ -518,7 +518,7 @@ Unconstrained autonomous intent generation can lead to:
 Agents progress through **capability tiers** based on demonstrated performance:
 
 | Level | Name           | Capabilities                                 | Unlock Criteria                                         |
-|-------|----------------|----------------------------------------------|---------------------------------------------------------|
+| ----- | -------------- | -------------------------------------------- | ------------------------------------------------------- |
 | **0** | **Observer**   | Read ledger, read K.B.                       | Default                                                 |
 | **1** | **Proposer**   | Propose atomic intents (no sub-intents)      | 10 successful executions                                |
 | **2** | **Decomposer** | Propose intents with 1 level of sub-intents  | Intent Quality > 0.7 for 20 proposals                   |
@@ -671,35 +671,35 @@ flowchart TD
     CC["core_concepts.md (Foundational Principles & Terms)"]
     APP["appendix.md (Glossary of Metrics & Terms)"]
     ARCH["architecture.md (Technical Design Blueprint)"]
-    
+
     CC --> ARCH
     CC -.-> APP
-    
+
     subgraph OperationalPillars [Operational Pillars]
         GF["git_flow.md (Git-Native Isolation Rules)"]
         PE["planning_and_evaluation.md (Variant Evaluation)"]
         MET["metrics.md (Mathematical Estimators & Formulas)"]
         SF["safety.md (Trust Levels & Budgets)"]
     end
-    
+
     subgraph KnowledgeAndLedger [Knowledge & Ledgers]
         KB["knowledgebase_schema.md (Curation Workflow)"]
         WB["wisdombase_schema.md (Meta-Evolution)"]
         LD["ledger_schema.md (Audit Logs & Records)"]
     end
-    
+
     subgraph AgentImplementation [Agent Implementation]
         AD["agent_design.md (Agent Contracts)"]
         AGS["agents.md (Execution CLI Adapters)"]
     end
-    
+
     ARCH --> OperationalPillars
     ARCH --> KnowledgeAndLedger
     ARCH --> AgentImplementation
-    
+
     PE <--> MET
     AD --> AGS
-    
+
     EX["examples.md (Practical Scenarios & Workflows)"]
     OperationalPillars --> EX
     AgentImplementation --> EX
@@ -707,25 +707,25 @@ flowchart TD
 
 ### Document Directory
 
-* **Foundations & Core Blueprint:**
-    * [`docs/core_concepts.md`](docs/core_concepts.md) — Conceptual definitions and principles.
-    * [`docs/architecture.md`](docs/architecture.md) — Full technical architecture design.
-    * [`docs/appendix.md`](docs/appendix.md) — Glossary of mathematical symbols and terms.
-* **Operational Rules & Evaluation:**
-    * [`docs/git_flow.md`](docs/git_flow.md) — Git-native branch, rebase, and merge invariants.
-    * [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — Planning lifecycle, variants, and
-      convergence policies.
-    * [`docs/metrics.md`](docs/metrics.md) — Detailed formulation of estimators ($P(success)$, $\Delta S$, $EV$, and
-      calibration).
-    * [`docs/safety.md`](docs/safety.md) — Resource limits, budgets, sandboxing, and trust ladders.
-* **Knowledge & Ledgers:**
-    * [`docs/knowledgebase_schema.md`](docs/knowledgebase_schema.md) — Propose/validate/promote schemas.
-    * [`docs/wisdombase_schema.md`](docs/wisdombase_schema.md) — Universal code invariants and meta-principles.
-    * [`docs/ledger_schema.md`](docs/ledger_schema.md) — JSON schemas for the evolution ledger.
-* **Execution & Integrations:**
-    * [`docs/agent_design.md`](docs/agent_design.md) — High-level agent architecture and behavioral contracts.
-    * [`docs/agents.md`](docs/agents.md) — Instructions for integrating specific agents (Gemini, Claude, etc.).
-    * [`docs/examples.md`](docs/examples.md) — End-to-end practical walkthroughs.
+- **Foundations & Core Blueprint:**
+  - [`docs/core_concepts.md`](docs/core_concepts.md) — Conceptual definitions and principles.
+  - [`docs/architecture.md`](docs/architecture.md) — Full technical architecture design.
+  - [`docs/appendix.md`](docs/appendix.md) — Glossary of mathematical symbols and terms.
+- **Operational Rules & Evaluation:**
+  - [`docs/git_flow.md`](docs/git_flow.md) — Git-native branch, rebase, and merge invariants.
+  - [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — Planning lifecycle, variants, and
+    convergence policies.
+  - [`docs/metrics.md`](docs/metrics.md) — Detailed formulation of estimators ($P(success)$, $\Delta S$, $EV$, and
+    calibration).
+  - [`docs/safety.md`](docs/safety.md) — Resource limits, budgets, sandboxing, and trust ladders.
+- **Knowledge & Ledgers:**
+  - [`docs/knowledgebase_schema.md`](docs/knowledgebase_schema.md) — Propose/validate/promote schemas.
+  - [`docs/wisdombase_schema.md`](docs/wisdombase_schema.md) — Universal code invariants and meta-principles.
+  - [`docs/ledger_schema.md`](docs/ledger_schema.md) — JSON schemas for the evolution ledger.
+- **Execution & Integrations:**
+  - [`docs/agent_design.md`](docs/agent_design.md) — High-level agent architecture and behavioral contracts.
+  - [`docs/agents.md`](docs/agents.md) — Instructions for integrating specific agents (Gemini, Claude, etc.).
+  - [`docs/examples.md`](docs/examples.md) — End-to-end practical walkthroughs.
 
 ---
 

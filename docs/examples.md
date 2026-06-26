@@ -51,9 +51,7 @@ $ holon intent create \
       "time_budget_sec": 3600
     },
     "scope": {
-      "allowed_paths": [
-        "holon/metrics/"
-      ],
+      "allowed_paths": ["holon/metrics/"],
       "sandbox_required": true
     }
   }
@@ -222,7 +220,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
     "sub_intents": []
   },
   "predicted": {
-    "p_success": 0.80,
+    "p_success": 0.8,
     "entropy": 15.0,
     "impact": 85,
     "learning_value": 2.0,
@@ -288,7 +286,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
   "plan_id": "P-I-root-001-bootstrap-p-success-v4-flash",
   "variant_id": "v4",
   "predicted": {
-    "p_success": 0.60,
+    "p_success": 0.6,
     "entropy": 5.0,
     "impact": 50,
     "learning_value": 8.0,
@@ -431,12 +429,12 @@ $ docker run --rm --network none -v $(pwd):/workspace holon-sandbox:latest
 ```python
 # Step 1: Implement simple heuristic
 def estimate_p_success_v1(plan, ledger):
-    
+
     # Simple heuristic: base 0.6, adjust for novelty
     base = 0.6
     novelty_penalty = 0.2 * plan.novelty
     return max(0.0, min(1.0, base - novelty_penalty))
-    
+
 # Step 2: Write to file
 with open('holon/metrics/p_success.py', 'w') as f:
         f.write(code)
@@ -497,7 +495,7 @@ actual_cost = 18  # Measured: 3 minutes execution time
       "cost": 18
     },
     "calibration": {
-      "p_success_error": 0.40,
+      "p_success_error": 0.4,
       "entropy_error": 0.8,
       "impact_error": 5.0,
       "learning_value_error": 0.5
@@ -542,7 +540,7 @@ $ git rebase origin/main
   "status": "awaiting_review",
   "branch": "intent/I-root-001-bootstrap-p-success",
   "predicted_metrics": {
-    "p_success": 0.60,
+    "p_success": 0.6,
     "entropy": 5.0,
     "impact": 50,
     "learning_value": 8.0,
@@ -556,7 +554,7 @@ $ git rebase origin/main
     "ev": 12.5
   },
   "calibration": {
-    "p_success_error": 0.40,
+    "p_success_error": 0.4,
     "entropy_error": 0.8,
     "impact_error": 5.0,
     "learning_value_error": 0.5
@@ -949,9 +947,7 @@ $ git rebase intent/I-root-003-refactor-metrics
   "payload": {
     "intent_id": "I-root-003-002-add-logging",
     "status": "conflict",
-    "conflict_files": [
-      "holon/metrics/p_success.py"
-    ]
+    "conflict_files": ["holon/metrics/p_success.py"]
   }
 }
 ```
@@ -1084,11 +1080,7 @@ mean_p_success_error = mean(e.calibration.p_success_error for e in recent_execut
     "goal": "Improve P(success) estimator to reduce calibration error",
     "rationale": "Mean calibration error over last 7 days is 0.42, exceeding threshold of 0.30",
     "evidence": {
-      "ledger_refs": [
-        "I-root-005-001",
-        "I-root-006-002",
-        "I-root-007-001"
-      ],
+      "ledger_refs": ["I-root-005-001", "I-root-006-002", "I-root-007-001"],
       "mean_error": 0.42,
       "sample_size": 15
     }
@@ -1498,12 +1490,12 @@ Over the course of 10 simple intents (e.g., adding unit tests, documentation, si
 
 - **Success Rate:** $100\%$ ($10$ out of $10$ succeed).
 - **Predictions vs. Actuals:**
-    - Plotted average predicted $P(success) = 0.85$. Actual success for all was $1.0$.
-    - Mean calibration error: $0.15$.
-    - Mean entropy error: $0.8$ (predicted entropy average was $3.0$; actual was $3.8$).
+  - Plotted average predicted $P(success) = 0.85$. Actual success for all was $1.0$.
+  - Mean calibration error: $0.15$.
+  - Mean entropy error: $0.8$ (predicted entropy average was $3.0$; actual was $3.8$).
 - **Incident History:**
-    - Sandbox escapes: $0$.
-    - Rebase conflicts: $0$.
+  - Sandbox escapes: $0$.
+  - Rebase conflicts: $0$.
 
 #### 3) Trust score calculation
 
@@ -1623,9 +1615,9 @@ workflow when executing a sub-intent.
 **Intent Context:**
 
 - Root Intent: `I-100-refactor-api`
-    - Current Branch: `I-100-refactor-api/_`
+  - Current Branch: `I-100-refactor-api/_`
 - Sub-Intent: `I-101-add-serializers`
-    - Sub-Branch: `I-100-refactor-api/I-101-add-serializers/_`
+  - Sub-Branch: `I-100-refactor-api/I-101-add-serializers/_`
 
 ### Git Command Sequence
 
@@ -1701,7 +1693,7 @@ git push origin --delete I-100-refactor-api/I-101-add-serializers/_
 ## Summary of examples
 
 | Example | Demonstrates                                                                          |
-|---------|---------------------------------------------------------------------------------------|
+| ------- | ------------------------------------------------------------------------------------- |
 | 1       | Simple root intent, competitive planning, human review, promotion to main             |
 | 2       | Recursive sub-intent decomposition, git branch hierarchy, automatic sub-intent merges |
 | 3       | Rebase conflict detection, reactive intent spawning, conflict resolution              |

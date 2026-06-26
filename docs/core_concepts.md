@@ -160,11 +160,11 @@ overall system stability, enabling a balanced evolution of the project world.
 - A measure of disorder, uncertainty, or risk **introduced by a single intent or action**.
 - Quantifies how much an intent’s changes increase unpredictability or instability locally.
 - Modeled as a weighted sum of five key components:
-    - **SSA** (State Surface Area)
-    - **IRR** (Irreversibility)
-    - **CL** (Conflict Likelihood)
-    - **SER** (Sandbox Escape Risk)
-    - **NOV** (Novelty)
+  - **SSA** (State Surface Area)
+  - **IRR** (Irreversibility)
+  - **CL** (Conflict Likelihood)
+  - **SER** (Sandbox Escape Risk)
+  - **NOV** (Novelty)
 - For detailed definitions of these factors, see the [Appendix](appendix.md).
 - Used to evaluate and rank intents during planning and merging.
 
@@ -177,8 +177,8 @@ overall system stability, enabling a balanced evolution of the project world.
 
 #### 3.2.1 Why System Entropy is Needed (Motivation)
 
-While Per-Intent Entropy ($\Delta S_{intent}$) measures the local risk of running a *single* plan, System
-Entropy ($S_{system}$) tracks the *systemic debt* of the repository:
+While Per-Intent Entropy ($\Delta S_{intent}$) measures the local risk of running a _single_ plan, System
+Entropy ($S_{system}$) tracks the _systemic debt_ of the repository:
 
 1. **Branch Divergence:** If many agents work on separate branches simultaneously, they diverge from the main codebase.
    System Entropy aggregates this drift; as branches age or proliferate, $S_{system}$ rises, signaling that the system
@@ -188,10 +188,10 @@ Entropy ($S_{system}$) tracks the *systemic debt* of the repository:
    conflicts, and rebase, bringing the repository back to a stable state.
 
 - Managed by:
-    - Pruning or discarding high-entropy intents
-    - Merging completed intents to reduce branch divergence
-    - Resolving conflicts and rebasing frequently
-    - Enforcing entropy budgets to limit exploration risk
+  - Pruning or discarding high-entropy intents
+  - Merging completed intents to reduce branch divergence
+  - Resolving conflicts and rebasing frequently
+  - Enforcing entropy budgets to limit exploration risk
 
 ### 3.3 Relationship Between Intent and System Entropy
 
@@ -209,10 +209,10 @@ Entropy ($S_{system}$) tracks the *systemic debt* of the repository:
   When the budget is exceeded, the system triggers automated pruning of the branch namespace to reduce
   disorder.
 - **Constraint-Driven Actions:** Intents or plans that would cause system entropy to exceed the budget are subject to:
-    - **Pruning or Discarding:** High-entropy or low-value branches are abandoned and deleted.
-    - **Execution Delay:** Work is paused until system maintenance (e.g., merging or pruning) reduces entropy.
-    - **Fractal Decomposition:** Complex intents are broken down into smaller, lower-entropy sub-intents to distribute
-      risk.
+  - **Pruning or Discarding:** High-entropy or low-value branches are abandoned and deleted.
+  - **Execution Delay:** Work is paused until system maintenance (e.g., merging or pruning) reduces entropy.
+  - **Fractal Decomposition:** Complex intents are broken down into smaller, lower-entropy sub-intents to distribute
+    risk.
 - **Recursive Upward Propagation:** Entropy is not static. Each time a child intent's entropy is merged or updated, the
   parent intent's entropy and the entropy of all ancestors up to the root intent is automatically
   recalculated. This ensures that the "blast radius" of changes is accurately reflected throughout the entire intent
@@ -243,7 +243,7 @@ $$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_
 ### 5.1 States
 
 | State     | Description                                   |
-|-----------|-----------------------------------------------|
+| --------- | --------------------------------------------- |
 | Proposed  | Intent has been created but not yet executed. |
 | Executing | Intent is currently being worked on.          |
 | Completed | Intent execution finished successfully.       |
@@ -282,10 +282,10 @@ execution.
   exploration that could destabilise the system.
 
 - **Types of Convergence Triggers:**
-    - **Dominant Plan:** One plan’s EV is sufficiently higher than all others.
-    - **EV Plateau:** Recent new plans do not improve EV meaningfully.
-    - **Budget Exhaustion:** Planning cost or entropy budget is reached.
-    - **Max Variants or Time Limit:** Hard limits on planning iterations or duration.
+  - **Dominant Plan:** One plan’s EV is sufficiently higher than all others.
+  - **EV Plateau:** Recent new plans do not improve EV meaningfully.
+  - **Budget Exhaustion:** Planning cost or entropy budget is reached.
+  - **Max Variants or Time Limit:** Hard limits on planning iterations or duration.
 
 - **Outcome:**  
   Once converged, the best plan is selected and passed to the executor agent for sandboxed execution.
@@ -301,7 +301,7 @@ execution.
 ## 7) Summary Table of Core Terms
 
 | Term                                     | Definition                                                              | Role in System                                                                            |
-|------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| ---------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | Intent                                   | Unit of work or goal                                                    | Basic building block                                                                      |
 | Root Intent                              | Top-level intent requiring human review                                 | Human review boundary                                                                     |
 | Parent Intent                            | Immediate parent of a sub-intent                                        | Receives automatic merges                                                                 |
@@ -309,7 +309,7 @@ execution.
 | $P(success)$                             | Probability intent will succeed                                         | Guides planning and merging decisions                                                     |
 | Impact                                   | Expected benefit delivered                                              | Prioritisation metric                                                                     |
 | Cost                                     | Resources required                                                      | Balances benefit vs expenditure                                                           |
-| Learning Value                           | Epistemic gain delivered by executing an intent, independent of success | Encourages bounded exploration, accelerates estimator calibration, and promotes KB growth | 
+| Learning Value                           | Epistemic gain delivered by executing an intent, independent of success | Encourages bounded exploration, accelerates estimator calibration, and promotes KB growth |
 | Per-Intent Entropy ($\Delta S_{intent}$) | Measure of local disorder or risk introduced by a specific plan         | Evaluates planning risk and ranks plan variants                                           |
 | Expected Value ($EV$)                    | Combined metric for decision-making and selection                       | Drives autonomous agent behaviour                                                         |
 | Convergence                              | Condition when planning sufficiently explores and selects a best plan   | Signals planning termination and readiness for execution                                  |

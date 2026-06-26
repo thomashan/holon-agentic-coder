@@ -1,0 +1,26 @@
+name: Lint Documentation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**/*.md'
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Prettier check
+        run: |
+          npx prettier@3.8.4 --check "**/*.md"

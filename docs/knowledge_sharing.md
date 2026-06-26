@@ -61,19 +61,19 @@ explicitly segmented into namespaces:
 
 When the Holon CLI is first run on a developer machine:
 
-* The directory `~/.config/holon/` is created.
-* The universal repository is cloned into the `universal/` subdirectory:
+- The directory `~/.config/holon/` is created.
+- The universal repository is cloned into the `universal/` subdirectory:
   ```bash
   git clone https://github.com/Holon-Agentic-Coder/holon-universal-knowledge.git ~/.config/holon/universal
   ```
-* An empty directory structure is initialised under `user/` to act as the destination for the user's custom heuristics.
+- An empty directory structure is initialised under `user/` to act as the destination for the user's custom heuristics.
 
 ### 2. Updating Universal Knowledge
 
 The universal knowledge base is updated periodically or manually via the CLI:
 
-* **Automatic updates:** The engine performs a shallow pull in the background during engine startup.
-* **Manual updates:** The user runs the sync command:
+- **Automatic updates:** The engine performs a shallow pull in the background during engine startup.
+- **Manual updates:** The user runs the sync command:
   ```bash
   holon sync
   ```

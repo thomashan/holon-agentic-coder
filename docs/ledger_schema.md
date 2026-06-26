@@ -92,14 +92,14 @@ Every ledger event MUST contain:
 - `agent_id` (string)  
   Example: `"agent-planner-07"`
 - `host` (object)
-    - `hostname` (string)
-    - `platform` (string)
-    - `repo_root` (string)
+  - `hostname` (string)
+  - `platform` (string)
+  - `repo_root` (string)
 - `git` (object)
-    - `repo` (string) — optional remote URL or logical name
-    - `branch` (string)
-    - `head_sha` (string)
-    - `dirty` (boolean)
+  - `repo` (string) — optional remote URL or logical name
+  - `branch` (string)
+  - `head_sha` (string)
+  - `dirty` (boolean)
 
 **Minimal envelope example**
 
@@ -154,37 +154,37 @@ Every ledger event MUST contain:
     "tier": "deep"
   },
   "architecture": {
-    "type": "moe",               // moe, dense, ssm, hybrid, dit
-    "quantisation": "fp16",      // null, 4-bit, fp8, etc.
+    "type": "moe", // moe, dense, ssm, hybrid, dit
+    "quantisation": "fp16", // null, 4-bit, fp8, etc.
     "parameter_class": "frontier", // small, medium, large, frontier
-    "tuning_type": "rlhf"        // rlhf, dpo, sft, distilled
+    "tuning_type": "rlhf" // rlhf, dpo, sft, distilled
   },
   "capabilities": {
     "primary_specialisation": "coding", // coding, reasoning, creative, tool-use
-    "reasoning_mode": true,             // true if using specific "thinking" / CoT paths
-    "long_context_ready": true,          // supports 1M+ tokens
-    "structured_output": "strict_json",  // regex, strict_json, constrained, none
-    "safety_governance": "censored"      // censored, uncensored, custom_guard
+    "reasoning_mode": true, // true if using specific "thinking" / CoT paths
+    "long_context_ready": true, // supports 1M+ tokens
+    "structured_output": "strict_json", // regex, strict_json, constrained, none
+    "safety_governance": "censored" // censored, uncensored, custom_guard
   },
   "modalities": {
     "supported": ["text", "image", "audio", "video"],
     "active_in_session": ["text", "image"], // Which "senses" were used in this turn
-    "sensory_premium": 1.25                 // Cost multiplier for multimodal use
+    "sensory_premium": 1.25 // Cost multiplier for multimodal use
   },
   "runtime_config": {
-    "hosting": "api",           // api, local, edge, private_cluster
+    "hosting": "api", // api, local, edge, private_cluster
     "temperature": 0.0,
     "top_p": 1.0,
-    "deterministic": true,      // true if greedy search/seed used
+    "deterministic": true, // true if greedy search/seed used
     "context_window_used": 15000,
     "max_tokens_budget": 4096
   },
   "routing": {
     "routing_reason": "high_novelty_ui_debug", // Why the choice was made
     "routing_policy_version": "v2.1",
-    "expected_roi": 0.85,                      // Predicted value gain vs token cost
-    "selection_method": "explicit_manual",     // explicit_manual, autonomous_router, human_override
-    "assigned_by": "human@user.com"            // User or Agent ID who made the choice
+    "expected_roi": 0.85, // Predicted value gain vs token cost
+    "selection_method": "explicit_manual", // explicit_manual, autonomous_router, human_override
+    "assigned_by": "human@user.com" // User or Agent ID who made the choice
   }
 }
 ```
@@ -196,47 +196,47 @@ Every ledger event MUST contain:
 ### Predicted metrics (required for plan selection)
 
 - `predicted` (object)
-    - `p_success` (number, 0..1)
-    - `entropy` (number, >= 0)  — predicted ΔS
-    - `impact` (number, >= 0)   — project-specific scale
-    - `learning_value` (number, 0..10)
-    - `cost` (number, >= 0)     — normalised cost units
-    - `ev` (number)             — computed EV
-    - `lambda` (number, >= 0)   — entropy penalty weight
-    - `mu` (number, >= 0)       — learning value weight
-    - `estimator_versions` (object)
-        - `p_success` (string)
-        - `entropy` (string)
-        - `impact` (string)
-        - `learning_value` (string)
-        - `ev` (string)
+  - `p_success` (number, 0..1)
+  - `entropy` (number, >= 0) — predicted ΔS
+  - `impact` (number, >= 0) — project-specific scale
+  - `learning_value` (number, 0..10)
+  - `cost` (number, >= 0) — normalised cost units
+  - `ev` (number) — computed EV
+  - `lambda` (number, >= 0) — entropy penalty weight
+  - `mu` (number, >= 0) — learning value weight
+  - `estimator_versions` (object)
+    - `p_success` (string)
+    - `entropy` (string)
+    - `impact` (string)
+    - `learning_value` (string)
+    - `ev` (string)
 
 ### Actual metrics (required after execution)
 
 - `actual` (object)
-    - `p_success` (number, 0..1) — typically 0 or 1
-    - `entropy` (number, >= 0)
-    - `impact` (number, >= 0)
-    - `learning_value` (number, 0..10)
-    - `cost` (number, >= 0)
-    - `measurements` (object) — supporting evidence
-        - `files_modified` (integer)
-        - `modules_modified` (integer)
-        - `lines_added` (integer)
-        - `lines_deleted` (integer)
-        - `new_dependencies` (integer)
-        - `removed_dependencies` (integer)
-        - `coverage_delta` (number)
-        - `rebase_conflicts` (integer)
-        - `tests_passed` (boolean)
+  - `p_success` (number, 0..1) — typically 0 or 1
+  - `entropy` (number, >= 0)
+  - `impact` (number, >= 0)
+  - `learning_value` (number, 0..10)
+  - `cost` (number, >= 0)
+  - `measurements` (object) — supporting evidence
+    - `files_modified` (integer)
+    - `modules_modified` (integer)
+    - `lines_added` (integer)
+    - `lines_deleted` (integer)
+    - `new_dependencies` (integer)
+    - `removed_dependencies` (integer)
+    - `coverage_delta` (number)
+    - `rebase_conflicts` (integer)
+    - `tests_passed` (boolean)
 
 ### Calibration errors
 
 - `calibration` (object)
-    - `p_success_error` (number) — abs(pred - actual)
-    - `entropy_error` (number)   — normalised or absolute
-    - `impact_error` (number)
-    - `learning_value_error` (number)
+  - `p_success_error` (number) — abs(pred - actual)
+  - `entropy_error` (number) — normalised or absolute
+  - `impact_error` (number)
+  - `learning_value_error` (number)
 
 ---
 
@@ -252,14 +252,14 @@ Payload:
 - `parent_intent_id` (nullable)
 - `goal` (string)
 - `constraints` (object)
-    - `entropy_budget` (number)
-    - `cost_budget` (number)
-    - `time_budget_sec` (number)
-    - `trust_required` (string)
+  - `entropy_budget` (number)
+  - `cost_budget` (number)
+  - `time_budget_sec` (number)
+  - `trust_required` (string)
 - `scope` (object)
-    - `allowed_paths` (array of strings)
-    - `forbidden_paths` (array of strings)
-    - `sandbox_required` (boolean)
+  - `allowed_paths` (array of strings)
+  - `forbidden_paths` (array of strings)
+  - `sandbox_required` (boolean)
 
 ```json
 {
@@ -291,12 +291,8 @@ Payload:
       "trust_required": "human"
     },
     "scope": {
-      "allowed_paths": [
-        "holon/"
-      ],
-      "forbidden_paths": [
-        "holon/core/invariants.py"
-      ],
+      "allowed_paths": ["holon/"],
+      "forbidden_paths": ["holon/core/invariants.py"],
       "sandbox_required": true
     }
   }
@@ -345,10 +341,10 @@ Payload:
 - `plan_id`
 - `variant_id`
 - `score_breakdown` (object)
-    - `p_success_components` (object)
-    - `entropy_components` (object)
-    - `impact_components` (object)
-    - `cost_components` (object)
+  - `p_success_components` (object)
+  - `entropy_components` (object)
+  - `impact_components` (object)
+  - `cost_components` (object)
 - `predicted` (object)
 
 #### 6) `planning_converged`
@@ -384,10 +380,10 @@ Payload:
 - `task_kind` (string) — e.g., `planning`, `coding`, `review`, `tests`
 - `model` (object)
 - `signals` (object)
-    - `novelty` (number)
-    - `complexity` (number)
-    - `predicted_entropy` (number)
-    - `expected_cost` (number)
+  - `novelty` (number)
+  - `complexity` (number)
+  - `predicted_entropy` (number)
+  - `expected_cost` (number)
 - `routing_policy_version` (string)
 
 ---
@@ -467,9 +463,9 @@ Payload:
 - `status` (string) — `success` or `failure`
 - `failure_reason` (string, optional)
 - `artifacts` (array of objects)
-    - `kind` (string) — `diff`, `report`, `log`, `test_results`
-    - `path` (string)
-    - `sha256` (string, optional)
+  - `kind` (string) — `diff`, `report`, `log`, `test_results`
+  - `path` (string)
+  - `sha256` (string, optional)
 - `actual` (object) — actual metrics (see above)
 - `calibration` (object)
 
@@ -486,8 +482,8 @@ Payload:
 - `review_kind` (string) — `promotion`, `governance`, `estimator_change`
 - `summary` (string)
 - `diff_range` (object)
-    - `from_sha` (string)
-    - `to_sha` (string)
+  - `from_sha` (string)
+  - `to_sha` (string)
 
 #### 17) `human_review_decision`
 
@@ -522,9 +518,9 @@ Payload:
 - `based_on_version` (string)
 - `proposal_intent_id` (string)
 - `evidence` (object)
-    - `backtest_window` (string)
-    - `calibration_improvement` (number)
-    - `failure_cases` (array)
+  - `backtest_window` (string)
+  - `calibration_improvement` (number)
+  - `failure_cases` (array)
 - `human_approval_required` (boolean)
 
 #### 20) `estimator_approved`
@@ -561,10 +557,10 @@ These are invariants that validators should enforce:
 6. Every rebase attempt must be recorded (`git_rebase_started` + `git_rebase_completed`).
 7. If `execution_completed.status == "success"`, then `actual.p_success` must be `1.0`.
 8. Metric ranges must hold:
-    - `0 <= predicted.p_success <= 1`
-    - `0 <= predicted.learning_value <= 10`
-    - `predicted.entropy >= 0`
-    - `actual.entropy >= 0`
+   - `0 <= predicted.p_success <= 1`
+   - `0 <= predicted.learning_value <= 10`
+   - `predicted.entropy >= 0`
+   - `actual.entropy >= 0`
 9. If intent merges into parent, parent branch must match hierarchy (no merges to `main` from sub-intents).
 
 ---

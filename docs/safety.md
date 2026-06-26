@@ -1,7 +1,7 @@
 # safety.md
 
-This document defines the **safety model** for Holon. Safety is achieved through **sandboxing**, **trust levels**, *
-*entropy budgets**, **human review boundaries**, and **git-based isolation**.
+This document defines the **safety model** for Holon. Safety is achieved through **sandboxing**, **trust levels**, \*
+\*entropy budgets**, **human review boundaries**, and **git-based isolation\*\*.
 
 The safety model enables:
 
@@ -183,11 +183,11 @@ The system defines four distinct trust tiers for agents, representing an escalat
 historical performance and calibration reliability.
 
 | Trust Level                                 | Capabilities (Can)                                                                                      | Restrictions (Cannot)                                                                                         | Promotion/Escalation Criteria                                                                             |
-|:--------------------------------------------|:--------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------|
-| **Baseline** <br>*(Default for new agents)* | <ul><li>Plan actions</li><li>Execute in isolated sandbox</li><li>Read Ledger and KB</li></ul>           | <ul><li>Spawn sub-intents</li><li>Propose root intents</li><li>Propose estimators</li><li>Modify KB</li></ul> | Initial baseline state upon agent registration                                                            |
-| **Medium** <br>*(Earned)*                   | <ul><li>All Baseline capabilities</li><li>Spawn sub-intents (up to depth 3)</li></ul>                   | <ul><li>Propose root intents</li><li>Propose estimators</li><li>Modify KB directly</li></ul>                  | $\ge 10$ successful executions with average success calibration error $< 0.30$                            |
-| **High** <br>*(Earned)*                     | <ul><li>All Medium capabilities</li><li>Propose root intents (requires human approval)</li></ul>        | <ul><li>Propose estimators</li><li>Modify core invariants</li></ul>                                           | $\ge 30$ successful executions with average success calibration error $< 0.20$                            |
-| **Highest** <br>*(Earned)*                  | <ul><li>All High capabilities</li><li>Propose estimators (requires human approval & backtest)</li></ul> | <ul><li>Modify core invariants directly (always requires human gating)</li></ul>                              | $\ge 100$ successful executions with average success calibration error $< 0.15$ (manual promotion review) |
+| :------------------------------------------ | :------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------- |
+| **Baseline** <br>_(Default for new agents)_ | <ul><li>Plan actions</li><li>Execute in isolated sandbox</li><li>Read Ledger and KB</li></ul>           | <ul><li>Spawn sub-intents</li><li>Propose root intents</li><li>Propose estimators</li><li>Modify KB</li></ul> | Initial baseline state upon agent registration                                                            |
+| **Medium** <br>_(Earned)_                   | <ul><li>All Baseline capabilities</li><li>Spawn sub-intents (up to depth 3)</li></ul>                   | <ul><li>Propose root intents</li><li>Propose estimators</li><li>Modify KB directly</li></ul>                  | $\ge 10$ successful executions with average success calibration error $< 0.30$                            |
+| **High** <br>_(Earned)_                     | <ul><li>All Medium capabilities</li><li>Propose root intents (requires human approval)</li></ul>        | <ul><li>Propose estimators</li><li>Modify core invariants</li></ul>                                           | $\ge 30$ successful executions with average success calibration error $< 0.20$                            |
+| **Highest** <br>_(Earned)_                  | <ul><li>All High capabilities</li><li>Propose estimators (requires human approval & backtest)</li></ul> | <ul><li>Modify core invariants directly (always requires human gating)</li></ul>                              | $\ge 100$ successful executions with average success calibration error $< 0.15$ (manual promotion review) |
 
 ---
 
@@ -292,9 +292,9 @@ If parent intent's entropy budget is exhausted:
 
 - No more sub-intents can be spawned.
 - Agent must either:
-    - Complete remaining work within budget.
-    - Request budget increase (requires human approval).
-    - Abandon intent.
+  - Complete remaining work within budget.
+  - Request budget increase (requires human approval).
+  - Abandon intent.
 
 ---
 
@@ -305,32 +305,32 @@ If parent intent's entropy budget is exhausted:
 Human review is **required** for:
 
 1. **Parent intent merge to `main`**
-    - All parent intents (direct children of `main`) require human approval before merge.
-    - Sub-intents merge to parent without human review (parent review covers them).
+   - All parent intents (direct children of `main`) require human approval before merge.
+   - Sub-intents merge to parent without human review (parent review covers them).
 
 2. **Estimator proposals**
-    - Any change to P(success), ΔS, Impact, Learning Value, or EV estimators.
-    - Requires backtest validation + human approval.
+   - Any change to P(success), ΔS, Impact, Learning Value, or EV estimators.
+   - Requires backtest validation + human approval.
 
 3. **Routing policy changes**
-    - Changes to model routing heuristics.
-    - Requires ROI validation + human approval.
+   - Changes to model routing heuristics.
+   - Requires ROI validation + human approval.
 
 4. **Core invariant changes**
-    - Changes to git discipline rules, metric constraints, trust model.
-    - Always requires human approval (highest trust + explicit approval).
+   - Changes to git discipline rules, metric constraints, trust model.
+   - Always requires human approval (highest trust + explicit approval).
 
 5. **Entropy budget exceeded**
-    - If `actual_entropy > budget * 1.5`, human reviews to understand why.
+   - If `actual_entropy > budget * 1.5`, human reviews to understand why.
 
 6. **Sandbox escape attempt**
-    - Immediate human review + trust degradation.
+   - Immediate human review + trust degradation.
 
 7. **Repeated failures**
-    - If agent fails 3+ consecutive intents, human reviews agent state.
+   - If agent fails 3+ consecutive intents, human reviews agent state.
 
 8. **Novel intent types**
-    - If intent type has no historical precedent in KB, human reviews plan before execution.
+   - If intent type has no historical precedent in KB, human reviews plan before execution.
 
 ### Human review workflow
 
@@ -351,7 +351,7 @@ Human review is **required** for:
     - **Reject:** Intent branch abandoned, feedback recorded
     - **Request changes:** Agent spawns new intent to address feedback
 6. Decision logged to ledger (human_review_decision)
-   ```
+```
 
 ### Review package format
 
@@ -388,10 +388,7 @@ Human review is **required** for:
     "files_modified": 8,
     "lines_added": 342,
     "lines_deleted": 12,
-    "modules_added": [
-      "holon/metrics/p_success.py",
-      "holon/metrics/entropy.py"
-    ]
+    "modules_added": ["holon/metrics/p_success.py", "holon/metrics/entropy.py"]
   },
   "test_results": {
     "passed": 15,

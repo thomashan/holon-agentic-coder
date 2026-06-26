@@ -15,9 +15,9 @@ $$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_
 
 A binary outcome representing whether an executed intent satisfied its acceptance criteria.
 
-* $success_{actual} = 1$: The intent's acceptance criteria were fully met (all tests pass, lint requirements satisfied,
+- $success_{actual} = 1$: The intent's acceptance criteria were fully met (all tests pass, lint requirements satisfied,
   no sandbox violations, no merge conflicts).
-* $success_{actual} = 0$: Otherwise.
+- $success_{actual} = 0$: Otherwise.
 
 ### $P(success)$ / $P(success)_{pred}$
 
