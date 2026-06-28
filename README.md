@@ -1,6 +1,6 @@
 # Holon: Agentic Coder
 
-**Git-native, sandbox-isolated, self-evolving agentic coding architecture** built around **fractal (recursive) 
+**Git-native, sandbox-isolated, self-evolving agentic coding architecture** built around **fractal (recursive)
 intents**, **competitive planning variants**, **append-only learning**, and **entropy-aware decision-making**.
 
 Repository: [https://github.com/thomashan/holon-agentic-coder](https://github.com/thomashan/holon-agentic-coder)
