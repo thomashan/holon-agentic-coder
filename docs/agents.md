@@ -1,6 +1,7 @@
 # agents.md
 
-This document defines the **agent model** for Holon. Agents are autonomous AI entities that plan, execute, learn, and evolve within the constraints of the safety model, git discipline, and metric-driven decision-making.
+This document defines the **agent model** for Holon. Agents are autonomous AI entities that plan, execute, learn, and
+evolve within the constraints of the safety model, git discipline, and metric-driven decision-making.
 
 Agents enable:
 
@@ -16,7 +17,8 @@ Agents enable:
 
 ### 1) Agents are config-driven
 
-- Agents are initialised with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to `holon-knowledge/`).
+- Agents are initialised with a `config_path` (defaulting to `holon-config/`) and a `knowledge_path` (defaulting to
+  `holon-knowledge/`).
 - Agents load their identity, mission, physics (metrics), safety rules, and local project priors from `holon-config/`.
 - Agents load their historical memory (Ledger, KB) and universal wisdom (WB) from `holon-knowledge/`.
 
@@ -76,7 +78,8 @@ Agents enable:
 
 1. **Context Retrieval:** Queries the KB and WB for similar successful patterns and universal reasoning invariants.
 2. **Plan Generation:** Uses the config-driven mission to produce multiple candidate plan graphs (competitive planning).
-3. **Metric Estimation:** Applies the EV formula using coefficients from `holon-config/metrics/` and calibration data from the Ledger.
+3. **Metric Estimation:** Applies the EV formula using coefficients from `holon-config/metrics/` and calibration data
+   from the Ledger.
 4. **Variant Creation:** Packages each candidate as a Plan Variant with unique IDs and predicted outcomes.
 
 ---
@@ -101,8 +104,10 @@ Agents enable:
 
 **Operational Logic:**
 
-1. **Sandbox Initialisation:** Prepares an isolated environment and applies safety rules defined in `holon-config/rules/`.
-2. **Step Execution:** Runs plan steps sequentially, utilising proven tactics from the KB or generating new implementations based on the mission.
+1. **Sandbox Initialisation:** Prepares an isolated environment and applies safety rules defined in
+   `holon-config/rules/`.
+2. **Step Execution:** Runs plan steps sequentially, utilising proven tactics from the KB or generating new
+   implementations based on the mission.
 3. **Validation:** Executes tests and captures all tool outputs (git, pytest, etc.) to the Ledger.
 4. **Post-Execution Measurement:** Measures actual entropy, impact, and cost to compute calibration errors.
 
@@ -126,9 +131,11 @@ Agents enable:
 
 **Operational Logic:**
 
-1. **Pattern Extraction:** Scans the Ledger for recurring successful intent structures and extracts them as reusable patterns.
+1. **Pattern Extraction:** Scans the Ledger for recurring successful intent structures and extracts them as reusable
+   patterns.
 2. **Failure Analysis:** Groups failed intents by reason to identify root causes and propose mitigations.
-3. **Validation:** Ensures all proposals meet the evidence thresholds and schema requirements defined in `holon-config/`.
+3. **Validation:** Ensures all proposals meet the evidence thresholds and schema requirements defined in
+   `holon-config/`.
 4. **Ledger Logging:** Records all proposals and evidence to the Ledger for human or higher-trust agent review.
 
 ---
@@ -151,8 +158,10 @@ Agents enable:
 **Operational Logic:**
 
 1. **Ranking:** Sorts variants by EV based on the "physics" defined in the configuration.
-2. **Convergence Check:** Evaluates the variant set against the convergence policy (e.g., is the EV gap between the top two variants wide enough?).
-3. **Decision:** Signals whether to proceed with the best plan or continue generating more variants to reduce uncertainty.
+2. **Convergence Check:** Evaluates the variant set against the convergence policy (e.g., is the EV gap between the top
+   two variants wide enough?).
+3. **Decision:** Signals whether to proceed with the best plan or continue generating more variants to reduce
+   uncertainty.
 
 ---
 
@@ -174,7 +183,8 @@ Agents enable:
 
 **Operational Logic:**
 
-1. **Dispatch:** Assigns planning and execution tasks to specialised agents based on their capabilities and trust levels.
+1. **Dispatch:** Assigns planning and execution tasks to specialised agents based on their capabilities and trust
+   levels.
 2. **State Management:** Tracks intents through their lifecycle (Proposed → Planning → Executing → Merged).
 3. **Git Flow Coordination:** Enforces mandatory rebase/merge rules defined in `holon-config/world/constraints.md`.
 4. **Escalation:** Generates review packages for humans when intents reach promotion boundaries or safety triggers.
@@ -197,9 +207,11 @@ Agents enable:
 
 **Operational Logic:**
 
-1. **Bias Detection:** Analyses calibration errors in the Ledger to find systematic inaccuracies in the engine's "physics."
+1. **Bias Detection:** Analyses calibration errors in the Ledger to find systematic inaccuracies in the engine's
+   "physics."
 2. **Hypothesis Testing:** Generates improved estimator formulas and backtests them against historical project data.
-3. **Wisdom Ascension:** Identifies project-specific patterns in the KB that are successful across multiple projects and proposes them for promotion to the Wisdom Base.
+3. **Wisdom Ascension:** Identifies project-specific patterns in the KB that are successful across multiple projects and
+   proposes them for promotion to the Wisdom Base.
 
 ---
 
@@ -207,15 +219,18 @@ Agents enable:
 
 ### 1) Agent creation
 
-Agents are instantiated with a unique ID, a specific model tier, and a trust level. They are linked to `config_path` and `knowledge_path` to ensure they "wake up" with the correct priors and memory.
+Agents are instantiated with a unique ID, a specific model tier, and a trust level. They are linked to `config_path` and
+`knowledge_path` to ensure they "wake up" with the correct priors and memory.
 
 ### 2) Agent execution
 
-Every task execution is wrapped in a logging envelope. The system records the start, any tool calls made during execution, and the final outcome (success/failure) to the immutable Ledger.
+Every task execution is wrapped in a logging envelope. The system records the start, any tool calls made during
+execution, and the final outcome (success/failure) to the immutable Ledger.
 
 ### 3) Agent trust update
 
-The system periodically recalculates agent trust scores based on successful executions, calibration accuracy, and adherence to safety invariants. Level transitions (e.g., Baseline to Medium) are governed by rules in
+The system periodically recalculates agent trust scores based on successful executions, calibration accuracy, and
+adherence to safety invariants. Level transitions (e.g., Baseline to Medium) are governed by rules in
 `holon-config/rules/trust_levels.json`.
 
 ---

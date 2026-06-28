@@ -64,8 +64,8 @@ Specifically, it introduces:
 - **Competitive Planning:** Generating and comparing multiple distinct plan hypotheses (variants) for a single intent.
 - **Expected Value ($EV$):** The core decision metric used to rank plans, balancing success probability ($P(success)$),
   value, cost, and risk.
-- **The Entropy Framework:** Measuring local plan complexity and risk ($\Delta S_{intent}$) and global system
-  disorder ($S_{system}$) to enforce safety limits.
+- **The Entropy Framework:** Measuring local plan complexity and risk ($\Delta S_{intent}$) and global system disorder
+  ($S_{system}$) to enforce safety limits.
 - **The Intent Lifecycle State Machine:** Tracking intents from proposed to executing, completed, failed, merged, or
   discarded states.
 
@@ -131,8 +131,8 @@ Each project is effectively its own **unique world** with distinct rules, constr
 provide powerful priors but cannot fully capture the infinite variety of possible project worlds.
 
 True progress arises from **autonomous exploration and evolution within these unique rules**. Agents use foundational
-models as starting hypotheses but actively experiment, learn from failures, and evolve domain-specific
-strategies tailored to the project’s context.
+models as starting hypotheses but actively experiment, learn from failures, and evolve domain-specific strategies
+tailored to the project’s context.
 
 This recursive, fractal-like learning process is the core of Holon’s value proposition, shifting the focus from scaling
 models alone to building self-improving agentic systems that adapt within their own environments.
@@ -245,8 +245,8 @@ I-1771890389-refactor-metrics/P-{timestamp}-{agent}-{model}
 I-1771890389-refactor-metrics/E-{timestamp}-{agent}-{model}
 ```
 
-Example Plan Branch: `I-1771890389-refactor-metrics/P-1771890396-claude-code-opus-4.6`
-Example Execution Branch: `I-1771890389-refactor-metrics/E-1771890398-opencode-big-pickle`
+Example Plan Branch: `I-1771890389-refactor-metrics/P-1771890396-claude-code-opus-4.6` Example Execution Branch:
+`I-1771890389-refactor-metrics/E-1771890398-opencode-big-pickle`
 
 ---
 
@@ -712,8 +712,8 @@ flowchart TD
   - [`docs/appendix.md`](docs/appendix.md) — Glossary of mathematical symbols and terms.
 - **Operational Rules & Evaluation:**
   - [`docs/git_flow.md`](docs/git_flow.md) — Git-native branch, rebase, and merge invariants.
-  - [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — Planning lifecycle, variants, and
-    convergence policies.
+  - [`docs/planning_and_evaluation.md`](docs/planning_and_evaluation.md) — Planning lifecycle, variants, and convergence
+    policies.
   - [`docs/metrics.md`](docs/metrics.md) — Detailed formulation of estimators ($P(success)$, $\Delta S$, $EV$, and
     calibration).
   - [`docs/safety.md`](docs/safety.md) — Resource limits, budgets, sandboxing, and trust ladders.
@@ -754,10 +754,10 @@ accept implementation PRs at this time.
 ## How to cite / describe Holon (one paragraph)
 
 Holon: Agentic Coder is a git-native architecture for autonomous coding agents that models work as a recursive tree of
-intents, evaluates multiple planning variants per intent, executes sub-intents in isolated sandboxes
-with mandatory rebasing, records all intent/action/outcome data in an append-only evolution ledger, curates learnings
-into a versioned knowledge base, and treats success prediction, entropy, and model routing as
-first-class measurable signals driving selection pressure and earned autonomy.
+intents, evaluates multiple planning variants per intent, executes sub-intents in isolated sandboxes with mandatory
+rebasing, records all intent/action/outcome data in an append-only evolution ledger, curates learnings into a versioned
+knowledge base, and treats success prediction, entropy, and model routing as first-class measurable signals driving
+selection pressure and earned autonomy.
 
 ---
 

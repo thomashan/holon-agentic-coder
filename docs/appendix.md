@@ -7,8 +7,7 @@ documentation.
 
 ### Expected Value ($EV$)
 
-The primary selection objective used to compare competing plan variants for the same intent.
-Formula:
+The primary selection objective used to compare competing plan variants for the same intent. Formula:
 $$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_{intent} - Cost$$
 
 ### Success ($success_{actual}$)

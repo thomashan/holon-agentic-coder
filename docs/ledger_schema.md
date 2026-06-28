@@ -1,7 +1,7 @@
 # ledger_schema.md
 
-This document defines the **Evolution Ledger** schema for Holon. The ledger is an **append-only, write-once** event log that captures every intent, plan, action, result, and measurement with full traceability back to
-git.
+This document defines the **Evolution Ledger** schema for Holon. The ledger is an **append-only, write-once** event log
+that captures every intent, plan, action, result, and measurement with full traceability back to git.
 
 The ledger enables:
 
@@ -142,8 +142,7 @@ Every ledger event MUST contain:
   Example: `"v3"`
 - `sandbox_id` (string)  
   Example: `"S-20260210-0315-2f93"`
-- `model` (object)
-  Full "DNA" of the execution engine to enable high-resolution evolutionary analysis.
+- `model` (object) Full "DNA" of the execution engine to enable high-resolution evolutionary analysis.
 
 ```json
 {
@@ -308,7 +307,8 @@ Payload:
 - `to_state` (string)
 - `reason` (string)
 
-States (suggested): `proposed`, `planning`, `ready`, `executing`, `rebasing`, `testing`, `complete`, `merged`, `promoted`, `abandoned`
+States (suggested): `proposed`, `planning`, `ready`, `executing`, `rebasing`, `testing`, `complete`, `merged`,
+`promoted`, `abandoned`
 
 #### 3) `intent_abandoned`
 
@@ -584,7 +584,8 @@ Everything else can be layered later.
 
 ## Validation and tooling: Config-Driven Schemas
 
-The ledger is validated against schemas defined in `holon-config/schemas/ledger.json`. This ensures that all events appended to the ledger conform to the required structure and business rules.
+The ledger is validated against schemas defined in `holon-config/schemas/ledger.json`. This ensures that all events
+appended to the ledger conform to the required structure and business rules.
 
 ### Ledger validator
 

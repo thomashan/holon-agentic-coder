@@ -33,20 +33,19 @@ This directory acts as the **"Evolving Memory"** for Holon, containing machine-a
 
 Foundational models provide broad priors but cannot fully capture the project-specific "physics" of these unique worlds.
 By externalising these into `holon-config/` and `holon-knowledge/`, Holon agents become **config-driven**. They are
-initialised with a `config_path` and a `knowledge_path` and load their missions, constraints,
-and "physics" from these external brains. Each project world is unique and dynamic, evolving over
-time as rules and constraints change.
+initialised with a `config_path` and a `knowledge_path` and load their missions, constraints, and "physics" from these
+external brains. Each project world is unique and dynamic, evolving over time as rules and constraints change.
 
 This ensures agents remain stateless and portable while their behaviour is governed by both the specific, evolving rules
 of the project and the universal wisdom of the engine.
 
 Holon’s agents must therefore **learn, adapt, and evolve within the context of these unique worlds**. They do this by
-generating hypotheses (plans and intents) that test assumptions about the rule set and constraints,
-learning from outcomes, and updating their internal models accordingly.
+generating hypotheses (plans and intents) that test assumptions about the rule set and constraints, learning from
+outcomes, and updating their internal models accordingly.
 
 This recursive, fractal-like exploration and adaptation is the core mechanism that enables Holon to bridge the gap
-between general foundational knowledge and project-specific expertise, delivering solutions tailored to
-the unique physics of each project world.
+between general foundational knowledge and project-specific expertise, delivering solutions tailored to the unique
+physics of each project world.
 
 ---
 
@@ -86,10 +85,10 @@ A **Sub-Intent** is an intent spawned by another intent to break down complex wo
 
 ### 1.5 Understanding Fractal Recursion (Why it matters)
 
-**What it means:**
-Fractal recursion in Holon means that tasks look and behave the same way regardless of size or depth. A massive,
-high-level feature request (e.g., "Implement OAuth") and a tiny refactoring task (e.g., "Add test for helper") are both
-modeled as **Intents**. Each has a git branch, competitive planning phase, execution sandbox, and performance metrics.
+**What it means:** Fractal recursion in Holon means that tasks look and behave the same way regardless of size or depth.
+A massive, high-level feature request (e.g., "Implement OAuth") and a tiny refactoring task (e.g., "Add test for
+helper") are both modeled as **Intents**. Each has a git branch, competitive planning phase, execution sandbox, and
+performance metrics.
 
 **Why we use it (Motivation):**
 
@@ -136,12 +135,11 @@ modeled as **Intents**. Each has a git branch, competitive planning phase, execu
 ## 3) The Entropy Framework - Disorder, Novelty, and Stability
 
 At its core, entropy measures the **degree of disorder, uncertainty, and novelty** introduced by an intent or plan
-within the unique project world. It quantifies how much a plan disrupts the current stable state —
-introducing complexity, unpredictability, or divergence from known patterns.
+within the unique project world. It quantifies how much a plan disrupts the current stable state — introducing
+complexity, unpredictability, or divergence from known patterns.
 
 Think of entropy as the "amount of surprise or disruption" a plan causes. Just as physical entropy measures disorder in
-a thermodynamic system, Holon's entropy measures disorder in the informational and operational state
-of the project.
+a thermodynamic system, Holon's entropy measures disorder in the informational and operational state of the project.
 
 Managing entropy is crucial:
 
@@ -149,8 +147,7 @@ Managing entropy is crucial:
 - **Too little entropy** leads to stagnation, lack of innovation, and missed opportunities for improvement.
 
 Entropy is distinct from a simple risk score or probability of failure. It captures both known risks and the unknown
-unknowns — the hidden complexities and emergent behaviours that can arise in a complex project
-environment.
+unknowns — the hidden complexities and emergent behaviours that can arise in a complex project environment.
 
 By explicitly measuring and budgeting entropy, Holon agents can safely explore novel strategies while maintaining
 overall system stability, enabling a balanced evolution of the project world.
@@ -177,8 +174,8 @@ overall system stability, enabling a balanced evolution of the project world.
 
 #### 3.2.1 Why System Entropy is Needed (Motivation)
 
-While Per-Intent Entropy ($\Delta S_{intent}$) measures the local risk of running a _single_ plan, System
-Entropy ($S_{system}$) tracks the _systemic debt_ of the repository:
+While Per-Intent Entropy ($\Delta S_{intent}$) measures the local risk of running a _single_ plan, System Entropy
+($S_{system}$) tracks the _systemic debt_ of the repository:
 
 1. **Branch Divergence:** If many agents work on separate branches simultaneously, they diverge from the main codebase.
    System Entropy aggregates this drift; as branches age or proliferate, $S_{system}$ rises, signaling that the system
@@ -206,17 +203,16 @@ Entropy ($S_{system}$) tracks the _systemic debt_ of the repository:
 - **System Stability Limit:** A predefined limit on allowable system entropy that ensures the project world remains
   stable, navigable, and manageable.
 - **Branch Pruning and Maintenance:** System entropy accounts for the proliferation of old, stale, or merged branches.
-  When the budget is exceeded, the system triggers automated pruning of the branch namespace to reduce
-  disorder.
+  When the budget is exceeded, the system triggers automated pruning of the branch namespace to reduce disorder.
 - **Constraint-Driven Actions:** Intents or plans that would cause system entropy to exceed the budget are subject to:
   - **Pruning or Discarding:** High-entropy or low-value branches are abandoned and deleted.
   - **Execution Delay:** Work is paused until system maintenance (e.g., merging or pruning) reduces entropy.
   - **Fractal Decomposition:** Complex intents are broken down into smaller, lower-entropy sub-intents to distribute
     risk.
 - **Recursive Upward Propagation:** Entropy is not static. Each time a child intent's entropy is merged or updated, the
-  parent intent's entropy and the entropy of all ancestors up to the root intent is automatically
-  recalculated. This ensures that the "blast radius" of changes is accurately reflected throughout the entire intent
-  hierarchy in real-time.
+  parent intent's entropy and the entropy of all ancestors up to the root intent is automatically recalculated. This
+  ensures that the "blast radius" of changes is accurately reflected throughout the entire intent hierarchy in
+  real-time.
 
 ---
 
@@ -262,9 +258,8 @@ $$EV = P(success)\cdot Impact + \mu\cdot LearningValue - \lambda \cdot \Delta S_
 ## 6) Convergence
 
 In this system, **convergence** of a plan or intent means that the planning process has reached a point where further
-generation and evaluation of new plan variants is no longer expected to yield significantly better
-options. In other words, the planner and evaluator agree that the current best plan(s) are good enough to proceed to
-execution.
+generation and evaluation of new plan variants is no longer expected to yield significantly better options. In other
+words, the planner and evaluator agree that the current best plan(s) are good enough to proceed to execution.
 
 ### Key points about convergence:
 
@@ -274,8 +269,8 @@ execution.
 
 - **Based on Metrics:**  
   Convergence decisions rely on metrics like Expected Value (EV), entropy, planning cost, and improvement trends. For
-  example, if the EV improvements between new variants become negligible (an EV plateau), or if one plan
-  clearly dominates others by a significant margin, the system considers the plan converged.
+  example, if the EV improvements between new variants become negligible (an EV plateau), or if one plan clearly
+  dominates others by a significant margin, the system considers the plan converged.
 
 - **Entropy and Budget Constraints:**  
   Convergence also occurs if the planning process risks exceeding entropy or resource budgets, preventing runaway

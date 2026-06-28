@@ -16,8 +16,8 @@ The WB enables:
 
 ### 1) Axiomatic and Universal
 
-- WB entries are **cross-project invariants**. They represent truths that do not change regardless of the local
-  project "physics".
+- WB entries are **cross-project invariants**. They represent truths that do not change regardless of the local project
+  "physics".
 - If a local KB entry contradicts a WB invariant, the **WB takes precedence** for safety and core governance.
 
 ### 2) Meta-Evolution (Slow and Steady)

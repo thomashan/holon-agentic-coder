@@ -1210,13 +1210,7 @@ validate_evidence(pattern, intents)
   "version": "1.0",
   "status": "proposed",
   "evidence": {
-    "ledger_refs": [
-      "I-root-001-001",
-      "I-root-002-003",
-      "I-root-005-002",
-      "I-root-007-001",
-      "I-root-008-001"
-    ],
+    "ledger_refs": ["I-root-001-001", "I-root-002-003", "I-root-005-002", "I-root-007-001", "I-root-008-001"],
     "success_count": 5,
     "failure_count": 0,
     "avg_p_success": 0.88,

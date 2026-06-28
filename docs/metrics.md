@@ -19,8 +19,8 @@ This document defines the **bootstrap (day-zero) metrics** used by Holon to:
 ## 1) Core Definitions: Config-Driven Physics
 
 Holon’s "physics" — the weights, coefficients, and constants that drive decision-making — are not hardcoded. They are
-externalised in `holon-config/metrics/`. This allows the system's behaviour to be tuned and evolved
-without changing the underlying engine.
+externalised in `holon-config/metrics/`. This allows the system's behaviour to be tuned and evolved without changing the
+underlying engine.
 
 - **`λ` (Entropy penalty):** Loaded from `holon-config/metrics/ev_config.json`.
 - **`μ` (Learning Value weight):** Loaded from `holon-config/metrics/ev_config.json`.
@@ -287,8 +287,7 @@ It captures the value of:
 - Reducing NOV (Novelty) for future similar intents.
 
 Learning value is the primary justification for executing high-`entropy`, low-`p_success` intents. Without it, the EV
-formula would always penalise exploration and the system would converge prematurely on known-safe
-paths.
+formula would always penalise exploration and the system would converge prematurely on known-safe paths.
 
 ---
 
@@ -517,8 +516,8 @@ For calibration and measurement, the ledger must store:
 
 - Keep normalisation simple and consistent.
 - Do not overfit early; record data first.
-- “Entropy” here is a **risk proxy**; later you can add more principled components,
-  but do not change its meaning without a human-approved meta-change.
+- “Entropy” here is a **risk proxy**; later you can add more principled components, but do not change its meaning
+  without a human-approved meta-change.
 
 ---
 
@@ -554,14 +553,12 @@ must use the following validation and testing strategies.
 
 We measure the accuracy of predicted metrics against actual post-execution outcomes logged in the Ledger:
 
-- **P(success) Calibration (Brier Score):**
-  We calculate the Brier Score over the last $N = 100$ executions:
-  $$BS = \frac{1}{N} \sum_{t=1}^{N} (P(success)_{pred,t} - success_{actual,t})^2$$
-  _Target:_ A well-calibrated system should maintain a Brier Score $BS \le 0.15$.
-- **Entropy Prediction Error (MAE):**
-  We calculate the Mean Absolute Error for Per-Intent Entropy predictions:
-  $$MAE_{\Delta S} = \frac{1}{N} \sum_{t=1}^{N} |\Delta S_{intent,pred,t} - \Delta S_{intent,actual,t}|$$
-  _Target:_ $MAE_{\Delta S} \le 1.5$ (on the 0–10 normalized scale).
+- **P(success) Calibration (Brier Score):** We calculate the Brier Score over the last $N = 100$ executions:
+  $$BS = \frac{1}{N} \sum_{t=1}^{N} (P(success)_{pred,t} - success_{actual,t})^2$$ _Target:_ A well-calibrated system
+  should maintain a Brier Score $BS \le 0.15$.
+- **Entropy Prediction Error (MAE):** We calculate the Mean Absolute Error for Per-Intent Entropy predictions:
+  $$MAE_{\Delta S} = \frac{1}{N} \sum_{t=1}^{N} |\Delta S_{intent,pred,t} - \Delta S_{intent,actual,t}|$$ _Target:_
+  $MAE_{\Delta S} \le 1.5$ (on the 0–10 normalized scale).
 
 If either metric drifts above targets, it indicates estimator degradation, triggering the Curator Agent to recalculate
 weights or suggest new model routing parameters.
@@ -598,5 +595,5 @@ Validate the harness's Git flow compliance by running mock intent trees:
 - **Rebase and Merge Accuracy:** Simulate two sibling sub-intents modifying overlapping files concurrently. Verify that
   the harness detects the rebase conflict, spawns a reactive conflict resolution intent, successfully merges both
   without human intervention, and outputs a clean git history.
-- **Schema Conformance:** Run validation checks to ensure all intermediate and final ledger entries conform
-  to [ledger_schema.md](ledger_schema.md).
+- **Schema Conformance:** Run validation checks to ensure all intermediate and final ledger entries conform to
+  [ledger_schema.md](ledger_schema.md).

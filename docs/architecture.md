@@ -1,8 +1,7 @@
 ### architecture.md
 
 This document describes the **Holon / FIEE (Fractal Intent Evolution Engine)** architecture: a self-evolving, git-native
-multi-agent system that plans competitively, executes in sandboxes, and improves via measured
-feedback loops.
+multi-agent system that plans competitively, executes in sandboxes, and improves via measured feedback loops.
 
 #### Scope
 
@@ -128,8 +127,8 @@ flowchart TD
 #### Component map
 
 - **Config Loader**
-  - The entry point for the "Static Priors". Provides a unified API to access prompts, schemas, and the world
-    definition from `holon-config/`.
+  - The entry point for the "Static Priors". Provides a unified API to access prompts, schemas, and the world definition
+    from `holon-config/`.
 - **Knowledge Loader**
   - The entry point for the "Dynamic Experience". Provides agents with the Ledger, KB, and WB from `holon-knowledge/`.
 - **Intent Registry**

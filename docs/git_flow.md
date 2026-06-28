@@ -115,9 +115,7 @@ I-1771890389-refactor-metrics/P-1771422315-claude-code-sonnet-4.5/E-1771422350-i
 
 ### 2.6 Hierarchy Summary
 
-`/_` is the Intent Root (The "What")
-`/P-.../_` is the Plan (The "How")
-`/P-.../E-.../_` is the Execution (The "Do")
+`/_` is the Intent Root (The "What") `/P-.../_` is the Plan (The "How") `/P-.../E-.../_` is the Execution (The "Do")
 
 ---
 

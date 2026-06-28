@@ -1,17 +1,17 @@
 ### planning_and_evaluation.md
 
 This document specifies the Planning and Evaluation subsystem: how plans are generated, scored, compared, and converged.
-It defines the planners' contracts, evaluation metrics, convergence/termination policies, failure
-handling, and how the results integrate with the ledger and git flow.
+It defines the planners' contracts, evaluation metrics, convergence/termination policies, failure handling, and how the
+results integrate with the ledger and git flow.
 
 ---
 
 ### Overview
 
 Planning is the process of converting an Intent (goal + constraints) into one or more actionable Plan Variants.
-Evaluation ranks these variants and decides when to stop planning and move to execution. Planning is
-competitive: multiple hypotheses (variants) are created, scored, and compared using stable metrics. All planning
-activity is logged to the ledger and materialised as plan artefacts (plan graph + metadata + branch).
+Evaluation ranks these variants and decides when to stop planning and move to execution. Planning is competitive:
+multiple hypotheses (variants) are created, scored, and compared using stable metrics. All planning activity is logged
+to the ledger and materialised as plan artefacts (plan graph + metadata + branch).
 
 Key goals:
 
@@ -122,8 +122,7 @@ Estimators must return a confidence or variance when possible.
 
 - `ΔS_intent` (or `ΔS`): entropy introduced by this plan (local). For detailed definitions of its constituent factors (
   SSA, IRR, CL, SER, NOV), see the [Appendix](appendix.md).
-- `S_system`: global system entropy (aggregated)
-  Planners must produce `ΔS_intent`. The Meta-Agent maintains `S_system`.
+- `S_system`: global system entropy (aggregated) Planners must produce `ΔS_intent`. The Meta-Agent maintains `S_system`.
 
 ---
 

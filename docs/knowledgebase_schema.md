@@ -1,8 +1,8 @@
 # kb_schema.md
 
 This document defines the **Knowledge Base (KB)** schema for Holon. The KB is a **curated, read/write store** that
-captures reusable knowledge extracted from the ledger to accelerate future planning, improve estimators,
-and avoid known failure modes.
+captures reusable knowledge extracted from the ledger to accelerate future planning, improve estimators, and avoid known
+failure modes.
 
 The KB enables:
 
@@ -181,16 +181,9 @@ Every KB entry MUST contain:
         "Compute weighted sum",
         "Clamp to [0, 1]"
       ],
-      "sub_intents": [
-        "Extract plan features",
-        "Compute weighted score",
-        "Validate range"
-      ]
+      "sub_intents": ["Extract plan features", "Compute weighted score", "Validate range"]
     },
-    "known_pitfalls": [
-      "Weights may need tuning per domain",
-      "Novelty penalty can be too harsh for exploratory work"
-    ],
+    "known_pitfalls": ["Weights may need tuning per domain", "Novelty penalty can be too harsh for exploratory work"],
     "related_patterns": ["KB-pattern-002", "KB-pattern-005"]
   }
 }
@@ -231,15 +224,9 @@ Every KB entry MUST contain:
       "when": "Before execution or before merge",
       "inputs": ["parent_branch"],
       "outputs": ["exit_code", "conflict_files"],
-      "side_effects": [
-        "modifies git history (if successful)",
-        "aborts on conflict"
-      ]
+      "side_effects": ["modifies git history (if successful)", "aborts on conflict"]
     },
-    "known_limitations": [
-      "Does not resolve conflicts automatically",
-      "Requires clean working tree"
-    ],
+    "known_limitations": ["Does not resolve conflicts automatically", "Requires clean working tree"],
     "related_tactics": ["KB-tactic-002", "KB-tactic-008"]
   }
 }
@@ -370,10 +357,7 @@ Every KB entry MUST contain:
       "backtest_threshold": 0.1,
       "min_sample_size": 30
     },
-    "related_estimators": [
-      "KB-estimator-p_success-v1",
-      "KB-estimator-entropy-v2"
-    ]
+    "related_estimators": ["KB-estimator-p_success-v1", "KB-estimator-entropy-v2"]
   }
 }
 ```
@@ -467,11 +451,7 @@ Every KB entry MUST contain:
     "description": "Tracks prediction accuracy over time for a given agent/model.",
     "language": "python",
     "module_path": "holon/metrics/calibration.py",
-    "exports": [
-      "CalibrationTracker",
-      "compute_calibration_error",
-      "get_agent_calibration"
-    ],
+    "exports": ["CalibrationTracker", "compute_calibration_error", "get_agent_calibration"],
     "usage_example": "from holon.metrics.calibration import CalibrationTracker\ntracker = CalibrationTracker(agent_id='agent-01')\ntracker.record(predicted=0.8, actual=1.0)\nerror = tracker.get_mean_error()",
     "dependencies": ["ledger.reader"],
     "test_coverage": 0.95,
