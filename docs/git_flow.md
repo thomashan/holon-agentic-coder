@@ -41,8 +41,9 @@ This document defines the **Git branching, rebasing, and merging discipline** fo
 
 ## 2) Branch Naming Convention
 
-Every intent uses the `/_` suffix to serve as a terminal leaf node, which prevents naming collisions and enables the
-creation of a clean, filesystem-like hierarchy for nested sub-intents, plans, and executions.
+Any branch in the hierarchy that can have child branches (including root intents, nested sub-intents, and plan variants)
+must finish with the `/_` suffix. This serves as a terminal leaf node for that specific directory level, preventing
+branch/sub-branch naming collisions in Git and enabling the creation of a clean, filesystem-like hierarchy.
 
 ### 2.1 Root Intent Branch
 
@@ -88,13 +89,13 @@ Plan branches are created as siblings to the `/_` node within the same intent di
 to allow for multiple competing proposals.
 
 ```
-I-{timestamp}-{slug}/P-{timestamp}-{agent}-{model}
+I-{timestamp}-{slug}/P-{timestamp}-{agent}-{model}/_
 ```
 
 Example:
 
 ```
-I-1771890389-refactor-metrics/P-1771422315-claude-code-claude-sonnet-4.5
+I-1771890389-refactor-metrics/P-1771422315-claude-code-claude-sonnet-4.5/_
 ```
 
 ### 2.5 Execution Branch (Action)
@@ -103,20 +104,20 @@ Execution branches are branched off a specific plan, appending the action slug t
 lineage from intent to proposal to implementation.
 
 ```
-I-{timestamp}-{slug}/P-{timestamp}-{agent}-{model}/E-{timestamp}-{action-slug}
+I-{timestamp}-{slug}/P-{timestamp}-{agent}-{model}/E-{timestamp}-{action-slug}/_
 ```
 
 Example:
 
 ```
-I-1771890389-refactor-metrics/P-1771422315-claude-code-sonnet-4.5/E-1771422350-init-project
+I-1771890389-refactor-metrics/P-1771422315-claude-code-sonnet-4.5/E-1771422350-init-project/_
 ```
 
 ### 2.6 Hierarchy Summary
 
 `/_` is the Intent Root (The "What")
-`/P-...` is the Plan (The "How")
-`/P-.../E-...` is the Execution (The "Do")
+`/P-.../_` is the Plan (The "How")
+`/P-.../E-.../_` is the Execution (The "Do")
 
 ---
 
@@ -412,11 +413,15 @@ main
 └── I-1771890389-refactor-metrics
     ├── _
     ├── P-1771890396-claude-code-opus-4.6
+    │   └── _
     ├── P-1771890397-gemini-cli-gemini-3
+    │   ├── _
     │   └── E-1771890398-opencode-big-pickle
+    │       └── _
     ├── I-1771890390-improve-estimators
     │   ├── _
     │   ├── P-1771890398-claude-code-opus-4.6
+    │   │   └── _
     │   ├── I-1771890391-p-success
     │   │   └── _
     │   ├── I-1771890392-entropy
