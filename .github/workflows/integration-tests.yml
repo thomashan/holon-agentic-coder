@@ -38,9 +38,9 @@ jobs:
           uv run ruff check .
           uv run ruff format --check .
 
-      - name: Build orchestrator docker image
+      - name: Build all Docker images
         run: |
-          docker build --target holon-orchestrator -t holon/orchestrator ./apps/sandbox-executor
+          ./apps/sandbox-executor/build_all_images.sh
 
       - name: Run integration tests
         run: |

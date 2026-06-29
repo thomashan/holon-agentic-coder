@@ -14,6 +14,15 @@ RUN apt-get update && \
 # Create non-root user
 RUN useradd -m holon
 WORKDIR /home/holon
+
+# Copy orchestrator entrypoints and scripts
+COPY --chown=holon:holon src/sandbox_executor/entrypoints/ /home/holon/entrypoints/
+
+# Provide a lightweight entry that delegates to role-specific scripts
+ENV LEDGER_PATH=/workspace/repo/holon/ledger
+
+ENTRYPOINT ["/home/holon/entrypoints/role_dispatcher.sh"]
+
 USER holon
 ENV PATH="/home/holon/.local/bin:${PATH}"
 
@@ -63,11 +72,3 @@ RUN curl -fsSL https://antigravity.google/cli/install.sh | bash
 
 # --- Final Orchestrator Image ---
 FROM holon-base AS holon-orchestrator
-
-# Copy orchestrator entrypoints and scripts
-COPY src/sandbox_executor/entrypoints/ /home/holon/entrypoints/
-
-# Provide a lightweight entry that delegates to role-specific scripts
-ENV LEDGER_PATH=/workspace/repo/holon/ledger
-
-ENTRYPOINT ["/home/holon/entrypoints/role_dispatcher.sh"]

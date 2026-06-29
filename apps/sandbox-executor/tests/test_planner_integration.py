@@ -95,6 +95,18 @@ class TestPlannerIntegration(unittest.TestCase):
                         # Introduce a short delay to guarantee a unique timestamp for the plan
                         time.sleep(1)
 
+                        agent_images = {
+                            "pi-agent": "holon/agent-pi",
+                            "open-codex-agent": "holon/agent-open-codex",
+                            "claude-agent": "holon/agent-claude",
+                            "gemini-agent": "holon/agent-gemini",
+                            "opencode-agent": "holon/agent-opencode",
+                            "codex-agent": "holon/agent-codex",
+                            "hermes-agent": "holon/agent-hermes",
+                            "antigravity-agent": "holon/agent-antigravity",
+                        }
+                        image_name = agent_images.get(agent, "holon/orchestrator")
+
                         cmd = [
                             "docker",
                             "run",
@@ -105,7 +117,7 @@ class TestPlannerIntegration(unittest.TestCase):
                             "GIT_SSH_COMMAND=ssh -o StrictHostKeyChecking=no",
                             "-v",
                             f"{ssh_dir}:/home/holon/.ssh:ro",
-                            "holon/orchestrator",
+                            image_name,
                             intent_branch,
                             agent,
                             "gemini-2.0-flash",

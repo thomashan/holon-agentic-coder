@@ -170,3 +170,11 @@ These agents are invoked dynamically depending on the task's complexity, cost, u
     - **Role:** Drafts pull request descriptions, release notes, and documentation updates mapping the plan's outcome to
       business metrics.
     - **Status:** **OPTIONAL** (Triggered for root intents merging into the canonical base branch).
+
+---
+
+## 10. References & Requirements
+
+For details on the API key and credential configuration required to run each supported agent in the sandbox planning
+phase, see the
+[Agent Credentials & API Key Requirements](file:///Users/thomashan/git/holon-agentic-coder-ref/docs/planner/agent_credentials_requirements.md).

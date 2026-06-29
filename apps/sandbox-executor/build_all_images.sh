@@ -39,6 +39,7 @@ docker build $NO_CACHE_FLAG --target agent-hermes --build-arg AGENT_BASE=holon/b
 docker build $NO_CACHE_FLAG --target agent-opencode --build-arg AGENT_BASE=holon/base -t holon/agent-opencode "$SCRIPT_DIR"
 docker build $NO_CACHE_FLAG --target agent-open-codex --build-arg AGENT_BASE=holon/base -t holon/agent-open-codex "$SCRIPT_DIR"
 docker build $NO_CACHE_FLAG --target agent-pi --build-arg AGENT_BASE=holon/base -t holon/agent-pi "$SCRIPT_DIR"
+docker build $NO_CACHE_FLAG --target agent-antigravity --build-arg AGENT_BASE=holon/base -t holon/agent-antigravity "$SCRIPT_DIR"
 docker build $NO_CACHE_FLAG --target holon-orchestrator --build-arg AGENT_BASE=holon/base -t holon/orchestrator "$SCRIPT_DIR"
 
 echo "All images built successfully!"
