@@ -409,9 +409,9 @@ Every KB entry MUST contain:
       }
     ],
     "model_tiers": {
-      "flash": ["gemini-3.6-flash", "claude-4.6-haiku"],
-      "medium": ["gemini-3.1-pro", "claude-4.6-sonnet"],
-      "deep": ["gemini-3.6-flash-thinking", "claude-4.6-opus"]
+      "flash": ["gemini-3.6-flash", "claude-haiku-4.6"],
+      "medium": ["gemini-3.1-pro", "claude-sonnet-4.6"],
+      "deep": ["gemini-3.6-flash-thinking", "claude-opus-4.6"]
     },
     "evaluation_metric": "routing_roi",
     "roi_formula": "(actual_impact - actual_cost) / model_cost",

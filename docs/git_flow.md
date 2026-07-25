@@ -95,7 +95,7 @@ I-{timestamp}-{slug}/P-{timestamp}-{agent}-{model}/_
 Example:
 
 ```
-I-1771890389-refactor-metrics/P-1771422315-claude-code-claude-4.6-sonnet/_
+I-1771890389-refactor-metrics/P-1771422315-claude-code-claude-sonnet-4.6/_
 ```
 
 ### 2.5 Execution Branch (Action)
@@ -110,7 +110,7 @@ I-{timestamp}-{slug}/P-{timestamp}-{agent}-{model}/E-{timestamp}-{action-slug}/_
 Example:
 
 ```
-I-1771890389-refactor-metrics/P-1771422315-claude-code-claude-4.6-sonnet/E-1771422350-init-project/_
+I-1771890389-refactor-metrics/P-1771422315-claude-code-claude-sonnet-4.6/E-1771422350-init-project/_
 ```
 
 ### 2.6 Hierarchy Summary
@@ -410,7 +410,7 @@ Git branch structure:
 main
 └── I-1771890389-refactor-metrics
     ├── _
-    ├── P-1771890396-claude-code-claude-4.6-opus
+    ├── P-1771890396-claude-code-claude-opus-4.6
     │   └── _
     ├── P-1771890397-gemini-cli-gemini-3.6-flash
     │   ├── _
@@ -418,7 +418,7 @@ main
     │       └── _
     ├── I-1771890390-improve-estimators
     │   ├── _
-    │   ├── P-1771890398-claude-code-claude-4.6-opus
+    │   ├── P-1771890398-claude-code-claude-opus-4.6
     │   │   └── _
     │   ├── I-1771890391-p-success
     │   │   └── _
