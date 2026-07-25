@@ -148,8 +148,8 @@ Every ledger event MUST contain:
 {
   "identity": {
     "provider": "anthropic",
-    "model_id": "claude-3-7-sonnet",
-    "version": "2025-02-24",
+    "model_id": "claude-4.6-sonnet",
+    "version": "2026-02-24",
     "tier": "deep"
   },
   "architecture": {

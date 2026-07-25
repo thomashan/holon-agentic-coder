@@ -83,7 +83,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
   "variant_id": "v1",
   "model": {
     "provider": "gemini",
-    "model_id": "gemini-2.0-flash",
+    "model_id": "gemini-3.6-flash",
     "tier": "flash"
   },
   "plan_graph": {
@@ -137,7 +137,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
   "variant_id": "v2",
   "model": {
     "provider": "gemini",
-    "model_id": "gemini-2.0-flash",
+    "model_id": "gemini-3.6-flash",
     "tier": "flash"
   },
   "plan_graph": {
@@ -186,7 +186,7 @@ $ git checkout -b intent/I-root-001-bootstrap-p-success
   "variant_id": "v3",
   "model": {
     "provider": "gemini",
-    "model_id": "gemini-2.0-flash",
+    "model_id": "gemini-3.6-flash",
     "tier": "flash"
   },
   "plan_graph": {
@@ -1306,7 +1306,7 @@ Two intents with different complexity levels are routed to different model tiers
 
 ```python
 model = router.select_model(predicted_entropy=5.0, novelty=0.2, complexity=0.3)
-# Returns: gemini-2.0-flash (flash tier)
+# Returns: gemini-3.6-flash (flash tier)
 # Reason: "Low entropy and familiar work, fast model sufficient"
 ```
 
@@ -1320,7 +1320,7 @@ model = router.select_model(predicted_entropy=5.0, novelty=0.2, complexity=0.3)
     "intent_id": "I-root-015-add-docstrings",
     "model": {
       "provider": "gemini",
-      "model_id": "gemini-2.0-flash",
+      "model_id": "gemini-3.6-flash",
       "tier": "flash"
     },
     "routing_reason": "Low entropy and familiar work"
@@ -1350,7 +1350,7 @@ model = router.select_model(predicted_entropy=5.0, novelty=0.2, complexity=0.3)
 
 ```python
 model = router.select_model(predicted_entropy=45.0, novelty=0.9, complexity=0.8)
-# Returns: gemini-2.0-flash-thinking (deep tier)
+# Returns: gemini-3.6-flash-thinking (deep tier)
 # Reason: "High entropy and novel problem, deep reasoning required"
 ```
 
@@ -1364,7 +1364,7 @@ model = router.select_model(predicted_entropy=45.0, novelty=0.9, complexity=0.8)
     "intent_id": "I-root-020-design-entropy-algorithm",
     "model": {
       "provider": "gemini",
-      "model_id": "gemini-2.0-flash-thinking",
+      "model_id": "gemini-3.6-flash-thinking",
       "tier": "deep"
     },
     "routing_reason": "High entropy and novel problem"
