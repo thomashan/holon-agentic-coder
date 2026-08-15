@@ -1,7 +1,7 @@
 # wb_schema.md
 
-This document defines the **Wisdom Base (WB)** schema for Holon. The WB is the apex of the cognitive hierarchy—a \*
-\*highly curated, meta-evolving store\*\* of universal invariants, safety axioms, and global engineering heuristics that
+This document defines the **Wisdom Base (WB)** schema for Holon. The WB is the apex of the cognitive hierarchy—a
+**highly curated, meta-evolving store** of universal invariants, safety axioms, and global engineering heuristics that
 hold true across all project worlds.
 
 The WB enables:

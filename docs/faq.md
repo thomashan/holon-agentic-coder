@@ -69,8 +69,8 @@ unique environment.
 
 ## 10. Why force all communication through the Ledger?
 
-There is no "fast path." Every interaction, including simple clarifying questions, must be recorded to ensure the \*
-\*Evolutionary Record\*\* is 100% traceable and reproducible. We prioritise the integrity of the system's " DNA" over
+There is no "fast path." Every interaction, including simple clarifying questions, must be recorded to ensure the
+**Evolutionary Record** is 100% traceable and reproducible. We prioritise the integrity of the system's "DNA" over
 micro-optimisations in performance.
 
 ## 11. Why is the documentation so extensive for an MVP?

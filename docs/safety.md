@@ -1,7 +1,7 @@
 # safety.md
 
-This document defines the **safety model** for Holon. Safety is achieved through **sandboxing**, **trust levels**, \*
-\*entropy budgets**, **human review boundaries**, and **git-based isolation\*\*.
+This document defines the **safety model** for Holon. Safety is achieved through **sandboxing**, **trust levels**,
+**entropy budgets**, **human review boundaries**, and **git-based isolation**.
 
 The safety model enables:
 

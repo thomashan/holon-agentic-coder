@@ -245,8 +245,8 @@ I-1771890389-refactor-metrics/P-{timestamp}-{agent}-{model}
 I-1771890389-refactor-metrics/E-{timestamp}-{agent}-{model}
 ```
 
-Example Plan Branch: `I-1771890389-refactor-metrics/P-1771890396-claude-code-claude-opus-4.6` Example Execution Branch:
-`I-1771890389-refactor-metrics/E-1771890398-opencode-big-pickle`
+Example Plan Branch: `I-1771890389-refactor-metrics/P-1771890396-claude-code-claude-opus-4.6`  
+Example Execution Branch: `I-1771890389-refactor-metrics/E-1771890398-opencode-big-pickle`
 
 ---
 

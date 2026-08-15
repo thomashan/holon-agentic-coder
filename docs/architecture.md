@@ -50,8 +50,8 @@ multi-agent system that plans competitively, executes in sandboxes, and improves
 
 ### Core architecture: The Stateless Engine
 
-Holon operates as a **Stateless Engine**. It separates project-specific **Governance** (Priors) from **Experience** (
-Memory) using two mandatory directories.
+Holon operates as a **Stateless Engine**. It separates project-specific **Governance** (Priors) from **Experience**
+(Memory) using two mandatory directories.
 
 #### 1) `holon-config/` (The Static Priors)
 
